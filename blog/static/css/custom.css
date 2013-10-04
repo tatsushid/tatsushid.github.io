@@ -1,0 +1,133 @@
+/* Bootstrap customize start */
+body { padding-top: 70px; }
+h1 { font-size: 30px; }
+h2 { font-size: 24px; }
+h3 { font-size: 20px; }
+h4 { font-size: 16px; }
+
+.page-header { margin-top: 20px }
+
+.pager {
+    margin: 0;
+}
+
+.pager li > a {
+    border-radius: 12px 12px 12px 12px;
+    padding: 3px 12px;
+    font-size: 12px;
+}
+
+.pager .previous > a {
+    float: right;
+}
+
+.pager .next > a {
+    float: left;
+}
+
+/* Bootstrap customize end */
+
+/* My customize start */
+
+.blog-separator {
+    height: 10px;
+}
+
+.blog-footer {
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid #CCCCCC;
+    text-align: center;
+}
+
+.blog-tags {
+    margin-top: 0;
+    margin-bottom: 0;
+    padding: 10px 20px;
+    border-radius: 5px 5px 5px 5px;
+    background-color: #F5F5F5;
+}
+
+.blog-tags li > a {
+    display: block;
+    position: relative;
+    padding: 5px 20px;
+}
+
+.blog-tags-header {
+    display: block;
+    font-size: 14px;
+    font-weight: normal;
+    margin-top: 0;
+    margin-bottom: 0;
+    padding: 5px 0;
+}
+
+.blog-list-group {
+    margin-left: 0;
+    margin-right: 0;
+    padding-left: 0;
+    padding-right: 0;
+}
+
+.blog-list-group-item {
+    margin-left: 0;
+    margin-right: 0;
+    padding-left: 0;
+    padding-right: 0;
+}
+
+.blog-list-group-item > a {
+    display: block;
+    padding: 5px 15px;
+    color: #555555;
+    background-color: #FFFFFF;
+    border-right: 1px dotted #CCCCCC;
+    border-bottom: 1px dotted #CCCCCC;
+    position: relative;
+}
+
+.blog-list-group-item > a:hover,
+.blog-list-group-item > a:focus {
+    background-color: #F5F5F5;
+    text-decoration: none;
+}
+
+.blog-list-group-item-header {
+}
+
+.blog-list-group-item-date {
+    text-align: right;
+}
+
+.blog-entry-title {
+    border-bottom: 1px solid #CCCCCC;
+    padding-bottom: 5px;
+}
+
+.blog-entry-meta {
+    text-align: right;
+}
+
+dl.blog-entry-meta {
+    margin-top: 0;
+    margin-bottom: 0;
+    font-size: 12px;
+}
+
+dl.blog-entry-meta > dt {
+    display: inline-block;
+}
+
+dl.blog-entry-meta > dd {
+    display: inline-block;
+}
+
+dl.blog-entry-meta > dd > ul {
+    margin-bottom: 5px;
+}
+
+.blog-entry-detail {
+    border-top: 1px solid #CCCCCC;
+    font-size: 12px;
+}

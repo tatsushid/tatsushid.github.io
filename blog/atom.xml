@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+<title>tatsushid&apos;s blog</title>
+<link rel="alternate" href="http://tatsushid.github.io/blog" />
+<author>tatsushid</author>
+<generator uri="https://github.com/Songmu/p5-Riji" version="0.0.10">Perl Riji</generator>
+<id>tag:tatsushid.github.io,2013-09-23:blog:</id>
+<updated>2013-10-04T23:33:06+09:00</updated>
+<entry>
+<title type="text">Rijiでブログ始めてみます</title>
+<link href="http://tatsushid.github.io/blog/entry/2013-10-04-01.html" />
+<author>
+<name>tatsushid</name>
+</author>
+<content><![CDATA[<h1>Rijiでブログ始めてみます</h1>
+
+<p>昔から事ある毎にブログを書こうかなと思いつつも、そのたびツールを自作しようとして果たせず、結果ブログを書くことも断念し続けて早数年が経ちましたが、先日<a href="http://yapcasia.org/2013/">YAPC::Asia 2013</a>に参加してみたら、LTで<a href="https://github.com/Songmu/p5-Riji">Riji</a>というPerl製ブログツールの存在を知りました。特徴は</p>
+
+<ul>
+<li>記事はMarkdownで書ける</li>
+<li>静的HTMLでサイト生成できる</li>
+<li>Gitで記事を管理</li>
+<li>Git情報を元にRSSも自動で作られる</li>
+</ul>
+
+
+<p>といったところで、<a href="http://pages.github.com/">Github Pages</a>での公開も簡単にできるとの触れ込みです。似たようなツールとして<a href="http://jekyllrb.com/">Jekyll</a>やその派生の<a href="http://octopress.org/">Octopress</a>があるかと思いますが、Rubyの事はまだよくわかっていないので、慣れ親しんだPerlの方で、というところでこれでしばらく遊んでみるつもりです</p>
+
+<p>動作させるまでは<a href="http://songmu.github.io/p5-Riji/blog/">チュートリアル</a>の通り進めることで、特に苦労もなくできましたが、なんだかんだでサイトデザインをあれこれいじり回していたため、公開までえらい時間がかかってしまいました。Bootstrap慣れてなさ過ぎですね</p>
+]]></content>
+<id>tag:tatsushid.github.io,2013-10-04:blog:entry-2013-10-04-01.html</id>
+<published>2013-10-04T33:33:06+0900</published>
+<updated>2013-10-04T23:33:06+09:00</updated>
+</entry>
+</feed>
