@@ -51,7 +51,7 @@ h4 { font-size: 16px; }
 .blog-tags li > a {
     display: block;
     position: relative;
-    padding: 5px 20px;
+    padding: 5px 0 5px 14px;
 }
 
 .blog-tags-header {
@@ -84,6 +84,7 @@ h4 { font-size: 16px; }
     background-color: #FFFFFF;
     border-right: 1px dotted #CCCCCC;
     border-bottom: 1px dotted #CCCCCC;
+    min-height: 100px;
     position: relative;
 }
 
@@ -98,6 +99,10 @@ h4 { font-size: 16px; }
 
 .blog-list-group-item-date {
     text-align: right;
+    position: absolute;
+    bottom: 5px;
+    right: 10px;
+    margin: 0;
 }
 
 .blog-entry-title {

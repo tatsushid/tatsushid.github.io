@@ -3,9 +3,53 @@
 <title>tatsushid&apos;s blog</title>
 <link rel="alternate" href="http://tatsushid.github.io/blog" />
 <author>tatsushid</author>
-<generator uri="https://github.com/Songmu/p5-Riji" version="0.0.10">Perl Riji</generator>
+<generator uri="https://github.com/Songmu/p5-Riji" version="0.0.11">Perl Riji</generator>
 <id>tag:tatsushid.github.io,2013-09-23:blog:</id>
-<updated>2013-10-04T23:33:06+09:00</updated>
+<updated>2013-10-31T00:44:54+09:00</updated>
+<entry>
+<title type="text">Snow LeopardでexpatをUniversal Binaryビルドする</title>
+<link href="http://tatsushid.github.io/blog/entry/2013-10-30-01.html" />
+<author>
+<name>tatsushid</name>
+</author>
+<content><![CDATA[<h1>Snow LeopardでexpatをUniversal Binaryビルドする</h1>
+
+<p>Homebrew経由でとあるソフトウェアをアップデートしようとすると、expatのシンボルが見つからないというエラーが出て、ビルドが失敗する問題に遭遇しました。よくよく調べてみると、どうやらこれまたHomebrewでインストールしたexpatにi386バイナリが含まれていないため、シンボルを見つけられないのだということが判明。しかしながら、普通に</p>
+
+<pre><code>$ brew install expat
+</code></pre>
+
+<p>しても、x86_64バイナリは作られますが、i386バイナリは作られません。Universal Binaryビルドの方法については <a href="http://lists.gnu.org/archive/html/discuss-gnuradio/2010-09/msg00312.html">Re: [Discuss-gnuradio] GRC running on Mac OS X 10.6.4 using GTK+ Quartz</a> の内容が参考にできそうでしたので、</p>
+
+<pre><code>$ brew install --interactive expat
+</code></pre>
+
+<p>としてHomebrewのビルドディレクトリに移動し、</p>
+
+<pre><code>$ CC=/usr/bin/gcc-4.0 CPP=/usr/bin/cpp-4.0 CXX=/usr/bin/g++-4.0 CXXCPP=/usr/bin/cpp-4.0 \
+  CFLAGS="-arch i386 -arch x86_64" CPPFLAGS="-arch i386 -arch x86_64" \
+  CXXFLAGS="-arch i386 -arch x86_64" LDFLAGS="-arch i386 -arch x86_64" \
+  ./configure --prefix=/usr/local/Cellar/expat/2.1.0 \
+  --mandir=/usr/local/Cellar/expat/2.1.0/share/man \
+  --disable-dependency-tracking
+$ make install
+$ exit
+</code></pre>
+
+<p>のように実行してあげることで、Homebrewのインストール先に</p>
+
+<pre><code>$ file /usr/local/lib/libexpat.dylib
+/usr/local/lib/libexpat.dylib: Mach-O universal binary with 2 architectures
+/usr/local/lib/libexpat.dylib (for architecture i386):  Mach-O dynamically linked shared library i386
+/usr/local/lib/libexpat.dylib (for architecture x86_64):    Mach-O 64-bit dynamically linked shared library x86_64
+</code></pre>
+
+<p>と、Universal Binaryを作ることに成功しました。Mavericksがリリースされて、Snow Leopardからのアップグレードパスも用意された昨今としては、あまり役立つ機会もなさそうなTipsでした</p>
+]]></content>
+<id>tag:tatsushid.github.io,2013-10-31:blog:entry-2013-10-30-01.html</id>
+<published>2013-10-31T44:44:54+0900</published>
+<updated>2013-10-31T00:44:54+09:00</updated>
+</entry>
 <entry>
 <title type="text">Rijiでブログ始めてみます</title>
 <link href="http://tatsushid.github.io/blog/entry/2013-10-04-01.html" />
