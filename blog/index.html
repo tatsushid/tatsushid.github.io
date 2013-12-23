@@ -34,6 +34,41 @@
       <div class="col-sm-12 col-md-9 col-lg-10">
         <section>
   <article>
+    <h1 class="blog-entry-title"><a href="http://tatsushid.github.io/blog/entry/2013-12-23-01.html">xmllint に標準入力の内容を読ませる</a></h1>
+    <dl class="blog-entry-meta">
+      <dt><span class="glyphicon glyphicon-tags"></span></dt>
+      <dd>
+        <ul class="list-inline">
+          <li><a href="http://tatsushid.github.io/blog/tag/bash.html">bash</a></li>
+        </ul>
+      </dd>
+      <dt><span class="glyphicon glyphicon-time"></span></dt>
+      <dd>
+        <time pubdate class="text-right">2013-12-23 21:49</time>
+      </dd>
+    </dl>
+    <div class="blog-entry-body">
+      
+
+<p>ときどきAPIなどから返ってきた生の XML を読みたいことがあるんですが、その時、 XML 要素の並びやインデントがきれいに整理されていると、非常に読みやすくていろいろと捗ります。こういう目的のためには xmllint コマンドが便利なのですが、残念ながら標準入力からの読み込みに対応していません。ゆえにパイプなんかも使えず、しばしば困る場合があります。が、 bash を使っていれば、こんな感じで標準入力内容を読ませることができます（ xml_generator.sh は XML を生成するコマンド例）</p>
+
+<p><code>bash
+xmllint --format &lt;(xml_generator.sh)
+</code></p>
+
+<p>上記例では XML を返すようなコマンドをそのまま指定してますが、ヒアドキュメントを読みたい場合は、</p>
+
+<p><code>bash
+xmllint --format &lt;(cat &lt;&lt;_XML_
+&lt;foo&gt;&lt;bar&gt;baz&lt;/bar&gt;&lt;/foo&gt;
+_XML_)
+</code></p>
+
+<p>みたいに書く事もできます。毎度一時ファイル作る必要もないため、個人的には結構これで助かっています</p>
+
+    </div>
+  </article>
+  <article>
     <h1 class="blog-entry-title"><a href="http://tatsushid.github.io/blog/entry/2013-10-30-01.html">Snow LeopardでexpatをUniversal Binaryビルドする</a></h1>
     <dl class="blog-entry-meta">
       <dt><span class="glyphicon glyphicon-tags"></span></dt>
@@ -128,6 +163,7 @@ $ exit
             <ul class="nav">
               <li><a href="http://tatsushid.github.io/blog/tag/b32.JVQWGT2TEBMA.html">MacOS X <span class="badge">1</span></a></li>
               <li><a href="http://tatsushid.github.io/blog/tag/Homebrew.html">Homebrew <span class="badge">1</span></a></li>
+              <li><a href="http://tatsushid.github.io/blog/tag/bash.html">bash <span class="badge">1</span></a></li>
               <li><a href="http://tatsushid.github.io/blog/tag/Riji.html">Riji <span class="badge">1</span></a></li>
             </ul>
           </div>

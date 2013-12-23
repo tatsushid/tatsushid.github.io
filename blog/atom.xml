@@ -5,7 +5,35 @@
 <author>tatsushid</author>
 <generator uri="https://github.com/Songmu/p5-Riji" version="0.0.11">Perl Riji</generator>
 <id>tag:tatsushid.github.io,2013-09-23:blog:</id>
-<updated>2013-10-31T00:44:54+09:00</updated>
+<updated>2013-12-23T21:49:44+09:00</updated>
+<entry>
+<title type="text">xmllint に標準入力の内容を読ませる</title>
+<link href="http://tatsushid.github.io/blog/entry/2013-12-23-01.html" />
+<author>
+<name>tatsushid</name>
+</author>
+<content><![CDATA[<h1>xmllint に標準入力の内容を読ませる</h1>
+
+<p>ときどきAPIなどから返ってきた生の XML を読みたいことがあるんですが、その時、 XML 要素の並びやインデントがきれいに整理されていると、非常に読みやすくていろいろと捗ります。こういう目的のためには xmllint コマンドが便利なのですが、残念ながら標準入力からの読み込みに対応していません。ゆえにパイプなんかも使えず、しばしば困る場合があります。が、 bash を使っていれば、こんな感じで標準入力内容を読ませることができます（ xml_generator.sh は XML を生成するコマンド例）</p>
+
+<p><code>bash
+xmllint --format &lt;(xml_generator.sh)
+</code></p>
+
+<p>上記例では XML を返すようなコマンドをそのまま指定してますが、ヒアドキュメントを読みたい場合は、</p>
+
+<p><code>bash
+xmllint --format &lt;(cat &lt;&lt;_XML_
+&lt;foo&gt;&lt;bar&gt;baz&lt;/bar&gt;&lt;/foo&gt;
+_XML_)
+</code></p>
+
+<p>みたいに書く事もできます。毎度一時ファイル作る必要もないため、個人的には結構これで助かっています</p>
+]]></content>
+<id>tag:tatsushid.github.io,2013-12-23:blog:entry-2013-12-23-01.html</id>
+<published>2013-12-23T49:49:44+0900</published>
+<updated>2013-12-23T21:49:44+09:00</updated>
+</entry>
 <entry>
 <title type="text">Snow LeopardでexpatをUniversal Binaryビルドする</title>
 <link href="http://tatsushid.github.io/blog/entry/2013-10-30-01.html" />
