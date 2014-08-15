@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+      <title>Cli on tatsushid.github.io </title>
+      <generator uri="https://hugo.spf13.com">Hugo</generator>
+    <link>http://tatsushid.github.io/tags/cli/index.xml</link>
+    <language>ja-jp</language>
+    
+    
+    <updated>Mon, 11 Aug 2014 16:54:00 JST</updated>
+    
+    <item>
+      <title>wgetでの保存先ディレクトリを指定する</title>
+      <link>http://tatsushid.github.io/blog/2014/08/specify-wget-savedir</link>
+      <pubDate>Mon, 11 Aug 2014 16:54:00 JST</pubDate>
+      
+      <guid>http://tatsushid.github.io/blog/2014/08/specify-wget-savedir</guid>
+      <description>&lt;p&gt;wget コマンドを使っていると、たまにカレントディレクトリではなくて他の場所にデータを保存したい時があるのだけれど、その方法をしばしば忘れるのでメモ。これをやりたい時は、 -P オプションを使えばよい。たとえば&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;bash&#34;&gt;wget -P path/to/dstdir http://localhost/path/to/srcfile.tar.gz
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;の様に実行すると、 &lt;code&gt;path/to/dstdir/srcfile.tar.gz&lt;/code&gt; の様に保存される&lt;/p&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>

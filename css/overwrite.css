@@ -1,0 +1,148 @@
+/*
+ * My customization of lanyon theme
+ *
+ * Contents
+ *
+ * Global resets
+ * Sidebar
+ * Posts and pages
+ * Themes
+ *
+ */
+
+/*
+ * Global resets
+ *
+ * Update the foundational and global aspects of the page.
+ */
+
+html {
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+@media (min-width: 38em) {
+  html {
+    font-size: 18px;
+  }
+}
+
+
+/*
+ * Sidebar
+ *
+ * The sidebar is the drawer, the item we are toggling with our handy hamburger
+ * button in the corner of the page.
+ *
+ * This particular sidebar implementation was inspired by Chris Coyier's
+ * "Offcanvas Menu with CSS Target" article, and the checkbox variation from the
+ * comments by a reader. It modifies both implementations to continue using the
+ * checkbox (no change in URL means no polluted browser history), but this uses
+ * `position` for the menu to avoid some potential content reflow issues.
+ *
+ * Source: http://css-tricks.com/off-canvas-menu-with-css-target/#comment-207504
+ */
+
+/* Sidebar nav */
+.sidebar-nav ul {
+  margin-bottom: 0;
+  padding-left: 0;
+  list-style-type: none;
+}
+.sidebar-nav ul ul {
+  padding-left: 1rem;
+}
+
+/*
+ * Posts and pages
+ *
+ * Each post is wrapped in `.post` and is used on default and post layouts. Each
+ * page is wrapped in `.page` and is only used on the page layout.
+ */
+
+.container > .post .post-title a {
+  pointer-events: none;
+  color: inherit;
+  text-decoration: none;
+}
+
+/* Meta data line below post title */
+.post-meta {
+  display: block;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+  border-bottom: 1px solid #9a9a9a;
+  color: #9a9a9a;
+}
+.post-meta ul {
+  display: inline;
+  margin-bottom: 0;
+  padding-left: 1rem;
+  list-style-type: none;
+}
+.post-meta li {
+  display: inline-block;
+  padding-left: .5rem;
+}
+
+/* Related posts */
+.related-posts li small {
+  display: block;
+  padding-left: 1rem;
+}
+.related-posts li a:hover {
+  text-decoration: underline;
+}
+.related-posts li small ul {
+  display: inline;
+  margin-bottom: 0;
+  padding-left: 1rem;
+  list-style-type: none;
+}
+.related-posts li small ul li {
+  display: inline-block;
+  padding-left: .5rem;
+}
+
+/* Prev, next posts navigation */
+.prev-next {
+	overflow: hidden;
+	margin-bottom: 4em;
+}
+.prev-next ul {
+	display: inline;
+	margin-left: 0;
+	margin-right: 0;
+	padding-left: 0;
+	padding-right: 0;
+	list-style-type: none;
+}
+.prev-next ul li {
+	display: inline-block;
+	float: left;
+	width: 50%;
+	color: #ccc;
+}
+.prev-next ul li:first-child {
+	text-align: left;
+}
+.prev-next ul li:first-child a:before {
+	content: "< "
+}
+.prev-next ul li:last-child {
+	text-align: right;
+}
+.prev-next ul li:last-child a:after {
+	content: " >"
+}
+
+
+/*
+ * Themes
+ *
+ * Apply custom color schemes by adding the appropriate class to the `body`.
+ * Based on colors from Base16: http://chriskempson.github.io/base16/#default.
+ */
+
+/* Blue */
+.theme-base-0d .post-title a {
+  color: #303030;
+}

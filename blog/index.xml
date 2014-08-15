@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+      <title>Blogs on tatsushid.github.io </title>
+      <generator uri="https://hugo.spf13.com">Hugo</generator>
+    <link>http://tatsushid.github.io/blog/index.xml</link>
+    <language>ja-jp</language>
+    
+    
+    <updated>Mon, 11 Aug 2014 16:54:00 JST</updated>
+    
+    <item>
+      <title>wgetでの保存先ディレクトリを指定する</title>
+      <link>http://tatsushid.github.io/blog/2014/08/specify-wget-savedir</link>
+      <pubDate>Mon, 11 Aug 2014 16:54:00 JST</pubDate>
+      
+      <guid>http://tatsushid.github.io/blog/2014/08/specify-wget-savedir</guid>
+      <description>&lt;p&gt;wget コマンドを使っていると、たまにカレントディレクトリではなくて他の場所にデータを保存したい時があるのだけれど、その方法をしばしば忘れるのでメモ。これをやりたい時は、 -P オプションを使えばよい。たとえば&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;bash&#34;&gt;wget -P path/to/dstdir http://localhost/path/to/srcfile.tar.gz
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;の様に実行すると、 &lt;code&gt;path/to/dstdir/srcfile.tar.gz&lt;/code&gt; の様に保存される&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>CentOS7をGPTパーティションで新規インストールする</title>
+      <link>http://tatsushid.github.io/blog/2014/07/install-centos7-on-gpt-drive</link>
+      <pubDate>Fri, 25 Jul 2014 13:04:00 JST</pubDate>
+      
+      <guid>http://tatsushid.github.io/blog/2014/07/install-centos7-on-gpt-drive</guid>
+      <description>&lt;p&gt;CentOS 7 を GPT パーティションでインストールするのは難しくない。 &lt;a href=&#34;https://bugzilla.redhat.com/show_bug.cgi?id=1032428&#34;&gt;Bug 1032428 - Need a 1MB &amp;lsquo;biosboot&amp;rsquo; type partition when install RHEL7 on a GPT disk with custom partition&lt;/a&gt; によると、&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;2TB 未満のディスクを使用すると自動的に MSDOS パーティションを使用&lt;/li&gt;
+&lt;li&gt;2TB 以上のディスクを使用すると自動的に GPT パーティションを使用&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;という形となっているため、通常は意識して選択する必要がない。また、 2TB 未満のディスクも GPT パーティションとしてインストールしたければ、インストール CD からインストーラーをブートする時のカーネルオプションに inst.gpt を指定しておくと、ディスク種別にかかわらず GTP パーティションが使われるようになる&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>CentOS5をGPTパーティションで新規インストールする</title>
+      <link>http://tatsushid.github.io/blog/2014/07/install-centos5-on-gpt-drive</link>
+      <pubDate>Tue, 08 Jul 2014 20:06:00 JST</pubDate>
+      
+      <guid>http://tatsushid.github.io/blog/2014/07/install-centos5-on-gpt-drive</guid>
+      <description>&lt;p&gt;CentOS 5 の新規インストール時に GTP パーティションを使いたい場合は、 CentOS 6 の様に一筋縄では行かない。今回は&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;http://blog.endpoint.com/2013/11/installing-centos-5-on-3tb-drive.html&#34;&gt;Installing CentOS 5 on a 3 TB Drive&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://wiki.tkr.mydns.jp/index.php?title=Linux関連/CentOS5_GPT_対応インストール手順&#34;&gt;CentOS5 GPT 対応インストール手順&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;を参考に、下記のような手順で仮想マシン作成作業を行ってみた&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;ネットワークインストール用の ISO イメージをダウンロードし、仮想マシンに CD イメージとして読み込ませる設定を行う&lt;/li&gt;
+&lt;li&gt;起動選択画面で &lt;code&gt;linux resque&lt;/code&gt; と入力し、レスキューモードでサーバを起動する&lt;/li&gt;
+&lt;li&gt;起動後は言語選択、キーボード設定、ネットワーク設定、レスキューモード用イメージのダウンロード先を指定して進める。既存 OS 選択画面では Skip を選択して進める&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;レスキューモードのシェルが立ち上がるので、下記のようにコマンドを実行してディスクのパーティションを切る&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;bash&#34;&gt;parted /dev/sda
+(parted) mklabel gpt
+(parted) mkpart primary ext3 0 200MB
+(parted) mkpart primary linux-swap 200MB 2248MB
+(parted) mkpart primary ext3 2248MB 21.5GB
+(parted) set 1 boot on
+(parted) quit
+mkfs.ext3 /dev/sda1
+mkfs.ext3 /dev/sda3
+mkswap /dev/sda2
+tune2fs -c 0 -i 0 /dev/sda1
+tune2fs -c 0 -i 0 /dev/sda3
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;そのままでは Anaconda のエラーメッセージが出てインストール処理を先に進められないので、 Anaconda を下記の手順で上書きする&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;bash&#34;&gt;mkdir /mnt/anaconda
+mount -t tmpfs none /mnt/anaconda
+cd /mnt/anaconda
+tar -cpf - -C /mnt/runtime/usr/lib/anaconda . | tar -xpf -
+vi partitions.py # ここで 1082 行目の errors を warnings に書き換えて保存する
+mount -o bind /mnt/anaconda /mnt/runtime/usr/lib/anaconda
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;このまま Anaconda を起動すると &lt;code&gt;/sbin&lt;/code&gt; が存在しているというエラーが出て起動できないため、下記の手順で空の &lt;code&gt;/sbin&lt;/code&gt; を用意する&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;bash&#34;&gt;export PATH=$PATH:/sbin.bak
+mv /sbin /sbin.bak
+mkdir /sbin
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;Anaconda の起動準備が完了したので、適切なミラーサイトの URL を使って Anaconda を起動する&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;bash&#34;&gt;anaconda --dmraid --selinux -T -m &amp;quot;http://ftp.iij.ad.jp/pub/linux/centos/5/os/x86_64/&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;インストール処理は、ディスクのパーティション設定以外、いつもの通りに進める。パーティション設定の画面では、すでに作成されているパーティションにマウントポイントを割り当てるにとどめ。パーティションの再フォーマットなどは行わない。 GPT では起動できないとの警告が出たら、そのまま OK を押して進める&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;インストールが終わったら再起動を行うが、その前に、後の GRUB のインストール作業のために、 ISO イメージを CentOS 5 のものから CentOS 6 のものに差し替えておく&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;再起動を行う。そのまま再起動ボタンを押しても、 Anaconda が終了するだけで再起動処理が行われないので、 &lt;code&gt;Ctrl+Alt+Delete&lt;/code&gt; を入力するなどして再起動する&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;CentOS 6 のディスクで起動してきたら、レスキューモードを選択して進める。言語選択、キーボード設定を行うが、ネットワーク設定は不要。既存 OS 選択画面では Skip を選択して進める&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;シェルが立ち上がったら下記の手順で &lt;code&gt;/boot&lt;/code&gt; パーティションをマウントし、必要な GRUB のファイルを上書きする&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;bash&#34;&gt;mkdir /boot
+mount /dev/sda1 /boot
+cp /usr/share/grub/x86_64-redhat/e2fs_stage1_5 /boot/grub/
+cp /usr/share/grub/x86_64-redhat/fat_stage1_5 /boot/grub/
+cp /usr/share/grub/x86_64-redhat/ffs_stage1_5 /boot/grub/
+cp /usr/share/grub/x86_64-redhat/iso9660_stage1_5 /boot/grub/
+cp /usr/share/grub/x86_64-redhat/jfs_stage1_5 /boot/grub/
+cp /usr/share/grub/x86_64-redhat/minix_stage1_5 /boot/grub/
+cp /usr/share/grub/x86_64-redhat/reiserfs_stage1_5 /boot/grub/
+cp /usr/share/grub/x86_64-redhat/stage1 /boot/grub/
+cp /usr/share/grub/x86_64-redhat/stage2 /boot/grub/
+cp /usr/share/grub/x86_64-redhat/ufs2_stage1_5 /boot/grub/
+cp /usr/share/grub/x86_64-redhat/vstafs_stage1_5 /boot/grub/
+cp /usr/share/grub/x86_64-redhat/xfs_stage1_5 /boot/grub/
+umount /boot
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;ファイルを上書きしたら、 MBR へ GRUB をインストールする&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;bash&#34;&gt;grub
+grub&amp;gt; root (hd0,0)
+grub&amp;gt; setup (hd0)
+grub&amp;gt; quit
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;GRUB のインストールが完了したら、 ISO イメージを取り出し、再起動を行う&lt;/p&gt;&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;以上の手順で、 GTP パーティションが有効な状態で、新規インストールした CentOS 5 が起動できた&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>CentOS6をGPTパーティションで新規インストールする</title>
+      <link>http://tatsushid.github.io/blog/2014/07/install-centos6-on-gpt-drive</link>
+      <pubDate>Mon, 07 Jul 2014 19:15:00 JST</pubDate>
+      
+      <guid>http://tatsushid.github.io/blog/2014/07/install-centos6-on-gpt-drive</guid>
+      <description>&lt;p&gt;毎度毎度コマンドの打ち方を忘れてしまうのでメモ。 RHEL 6 互換のディストリビューションを新規インストールする際、 GPT パーティションを使いたい場合は、インストーラーで適当なところ（パーティション設定の直前辺り）まで進めたところで下記のようにコマンドを実行すると、自分でパーティションを切ることができる&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;Alt + Ctrl + F2&lt;/code&gt; でターミナルに切り替える&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;parted /dev/sdx&lt;/code&gt; （ sdx は実際のデバイス名を指定）を実行する&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;mklabel gpt&lt;/code&gt; と入力して実行&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;quit&lt;/code&gt; を入力して parted を抜ける&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;Alt + F6&lt;/code&gt; でターミナルを抜ける&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;以上のように実行すると、ディスクデバイスに GPT パーティションが設定される。後は普通にパーティション設定を行ってインストールを進めていけば、 GPT パーティションのサーバができあがる&lt;/p&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>

@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+
+  <head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+      CentOS5をGPTパーティションで新規インストールする &middot; tatsushid.github.io
+    
+  </title>
+
+  
+  <link rel="stylesheet" href="/css/poole.css">
+  <link rel="stylesheet" href="/css/syntax.css">
+  <link rel="stylesheet" href="/css/lanyon.css">
+  <link rel="stylesheet" href="/css/overwrite.css">
+  <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=PT+Serif:400,400italic,700|PT+Sans:400">
+  <link rel="stylesheet" href="/css/styles/zenburn.css">
+
+  
+  <script src="/js/highlight.pack.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script>
+
+  
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/apple-touch-icon-precomposed.png">
+  <link rel="shortcut icon" href="/favicon.ico">
+
+  
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="">
+</head>
+
+
+  <body class="theme-base-0d layout-reverse sidebar-overlay">
+
+    
+<input type="checkbox" class="sidebar-checkbox" id="sidebar-checkbox">
+
+
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-item">
+    <p>   </p>
+  </div>
+
+  <nav class="sidebar-nav">
+    <ul>
+      <li><a class="sidebar-nav-item" href="/">Home</a></li>
+
+      
+      <li>
+        <a class="sidebar-nav-item" href="/blog">Blog</a>
+        
+      </li>
+      
+      <li>
+        <a class="sidebar-nav-item" href="/tags">Tags</a>
+        
+      </li>
+      
+
+    </ul>
+  </nav>
+
+  <div class="sidebar-item">
+    <p>
+       &copy; 2014. Tatsushi Demachi All rights reserved. 
+    </p>
+  </div>
+</div>
+
+
+    
+    <div class="wrap">
+      <div class="masthead">
+        <div class="container">
+          <h3 class="masthead-title">
+            <a href="/" title="Home">tatsushid.github.io</a>
+          </h3>
+        </div>
+      </div>
+
+      <div class="container content">
+        <div class="post">
+  <h1 class="post-title">
+    <a href="/blog/2014/07/install-centos5-on-gpt-drive">
+      CentOS5をGPTパーティションで新規インストールする
+    </a>
+  </h1>
+
+  <div class="post-meta">
+    2014-07-08
+    <ul>
+    
+      <li><a href="/tags/centos">centos</a></li>
+    </span>
+    </ul>
+  </div>
+
+  <p>CentOS 5 の新規インストール時に GTP パーティションを使いたい場合は、 CentOS 6 の様に一筋縄では行かない。今回は</p>
+
+<ul>
+<li><a href="http://blog.endpoint.com/2013/11/installing-centos-5-on-3tb-drive.html">Installing CentOS 5 on a 3 TB Drive</a></li>
+<li><a href="http://wiki.tkr.mydns.jp/index.php?title=Linux関連/CentOS5_GPT_対応インストール手順">CentOS5 GPT 対応インストール手順</a></li>
+</ul>
+
+<p>を参考に、下記のような手順で仮想マシン作成作業を行ってみた</p>
+
+<ol>
+<li>ネットワークインストール用の ISO イメージをダウンロードし、仮想マシンに CD イメージとして読み込ませる設定を行う</li>
+<li>起動選択画面で <code>linux resque</code> と入力し、レスキューモードでサーバを起動する</li>
+<li>起動後は言語選択、キーボード設定、ネットワーク設定、レスキューモード用イメージのダウンロード先を指定して進める。既存 OS 選択画面では Skip を選択して進める</li>
+
+<li><p>レスキューモードのシェルが立ち上がるので、下記のようにコマンドを実行してディスクのパーティションを切る</p>
+
+<pre><code class="bash">parted /dev/sda
+(parted) mklabel gpt
+(parted) mkpart primary ext3 0 200MB
+(parted) mkpart primary linux-swap 200MB 2248MB
+(parted) mkpart primary ext3 2248MB 21.5GB
+(parted) set 1 boot on
+(parted) quit
+mkfs.ext3 /dev/sda1
+mkfs.ext3 /dev/sda3
+mkswap /dev/sda2
+tune2fs -c 0 -i 0 /dev/sda1
+tune2fs -c 0 -i 0 /dev/sda3
+</code></pre></li>
+
+<li><p>そのままでは Anaconda のエラーメッセージが出てインストール処理を先に進められないので、 Anaconda を下記の手順で上書きする</p>
+
+<pre><code class="bash">mkdir /mnt/anaconda
+mount -t tmpfs none /mnt/anaconda
+cd /mnt/anaconda
+tar -cpf - -C /mnt/runtime/usr/lib/anaconda . | tar -xpf -
+vi partitions.py # ここで 1082 行目の errors を warnings に書き換えて保存する
+mount -o bind /mnt/anaconda /mnt/runtime/usr/lib/anaconda
+</code></pre></li>
+
+<li><p>このまま Anaconda を起動すると <code>/sbin</code> が存在しているというエラーが出て起動できないため、下記の手順で空の <code>/sbin</code> を用意する</p>
+
+<pre><code class="bash">export PATH=$PATH:/sbin.bak
+mv /sbin /sbin.bak
+mkdir /sbin
+</code></pre></li>
+
+<li><p>Anaconda の起動準備が完了したので、適切なミラーサイトの URL を使って Anaconda を起動する</p>
+
+<pre><code class="bash">anaconda --dmraid --selinux -T -m &quot;http://ftp.iij.ad.jp/pub/linux/centos/5/os/x86_64/&quot;
+</code></pre></li>
+
+<li><p>インストール処理は、ディスクのパーティション設定以外、いつもの通りに進める。パーティション設定の画面では、すでに作成されているパーティションにマウントポイントを割り当てるにとどめ。パーティションの再フォーマットなどは行わない。 GPT では起動できないとの警告が出たら、そのまま OK を押して進める</p></li>
+
+<li><p>インストールが終わったら再起動を行うが、その前に、後の GRUB のインストール作業のために、 ISO イメージを CentOS 5 のものから CentOS 6 のものに差し替えておく</p></li>
+
+<li><p>再起動を行う。そのまま再起動ボタンを押しても、 Anaconda が終了するだけで再起動処理が行われないので、 <code>Ctrl+Alt+Delete</code> を入力するなどして再起動する</p></li>
+
+<li><p>CentOS 6 のディスクで起動してきたら、レスキューモードを選択して進める。言語選択、キーボード設定を行うが、ネットワーク設定は不要。既存 OS 選択画面では Skip を選択して進める</p></li>
+
+<li><p>シェルが立ち上がったら下記の手順で <code>/boot</code> パーティションをマウントし、必要な GRUB のファイルを上書きする</p>
+
+<pre><code class="bash">mkdir /boot
+mount /dev/sda1 /boot
+cp /usr/share/grub/x86_64-redhat/e2fs_stage1_5 /boot/grub/
+cp /usr/share/grub/x86_64-redhat/fat_stage1_5 /boot/grub/
+cp /usr/share/grub/x86_64-redhat/ffs_stage1_5 /boot/grub/
+cp /usr/share/grub/x86_64-redhat/iso9660_stage1_5 /boot/grub/
+cp /usr/share/grub/x86_64-redhat/jfs_stage1_5 /boot/grub/
+cp /usr/share/grub/x86_64-redhat/minix_stage1_5 /boot/grub/
+cp /usr/share/grub/x86_64-redhat/reiserfs_stage1_5 /boot/grub/
+cp /usr/share/grub/x86_64-redhat/stage1 /boot/grub/
+cp /usr/share/grub/x86_64-redhat/stage2 /boot/grub/
+cp /usr/share/grub/x86_64-redhat/ufs2_stage1_5 /boot/grub/
+cp /usr/share/grub/x86_64-redhat/vstafs_stage1_5 /boot/grub/
+cp /usr/share/grub/x86_64-redhat/xfs_stage1_5 /boot/grub/
+umount /boot
+</code></pre></li>
+
+<li><p>ファイルを上書きしたら、 MBR へ GRUB をインストールする</p>
+
+<pre><code class="bash">grub
+grub&gt; root (hd0,0)
+grub&gt; setup (hd0)
+grub&gt; quit
+</code></pre></li>
+
+<li><p>GRUB のインストールが完了したら、 ISO イメージを取り出し、再起動を行う</p></li>
+</ol>
+
+<p>以上の手順で、 GTP パーティションが有効な状態で、新規インストールした CentOS 5 が起動できた</p>
+
+</div>
+
+        <nav class="prev-next">
+          <ul>
+            <li><a href="/blog/2014/07/install-centos7-on-gpt-drive">Newer Post</a></li>
+            <li><a href="/blog/2014/07/install-centos6-on-gpt-drive">Older Post</a></li>
+          </ul>
+        </nav>
+      </div>
+    </div>
+
+    <label for="sidebar-checkbox" class="sidebar-toggle"></label>
+
+<script>
+  (function(document) {
+    var toggle = document.querySelector('.sidebar-toggle');
+    var sidebar = document.querySelector('#sidebar');
+    var checkbox = document.querySelector('#sidebar-checkbox');
+
+    document.addEventListener('click', function(e) {
+      var target = e.target;
+
+      if(!checkbox.checked ||
+         sidebar.contains(target) ||
+         (target === checkbox || target === toggle)) return;
+
+      checkbox.checked = false;
+    }, false);
+  })(document);
+</script>
+
+
+  </body>
+</html>

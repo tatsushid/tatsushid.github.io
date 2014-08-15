@@ -11,7 +11,7 @@
 
   <title>
     
-      Blogs &middot; tatsushid.github.io
+      wgetでの保存先ディレクトリを指定する &middot; tatsushid.github.io
     
   </title>
 
@@ -32,7 +32,7 @@
   <link rel="shortcut icon" href="/favicon.ico">
 
   
-  <link rel="alternate" type="application/rss+xml" title="RSS" href="http://tatsushid.github.io/blog/index.xml">
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="">
 </head>
 
 
@@ -53,7 +53,7 @@
 
       
       <li>
-        <a class="sidebar-nav-item active" href="/blog">Blog</a>
+        <a class="sidebar-nav-item" href="/blog">Blog</a>
         
       </li>
       
@@ -85,70 +85,37 @@
       </div>
 
       <div class="container content">
-        <h1>Blog posts</h1>
-        <ul class="related-posts">
-          
-            <li>
-  <h3>
-    <a href="/blog/2014/08/specify-wget-savedir">wgetでの保存先ディレクトリを指定する</a>
-      <small>
-        2014-08-11
-        <ul>
-          
-            <li><a href="/tags/cli">cli</a></li>
-          
-        </ul>
-      </small>
-  </h3>
-</li>
+        <div class="post">
+  <h1 class="post-title">
+    <a href="/blog/2014/08/specify-wget-savedir">
+      wgetでの保存先ディレクトリを指定する
+    </a>
+  </h1>
 
-          
-            <li>
-  <h3>
-    <a href="/blog/2014/07/install-centos7-on-gpt-drive">CentOS7をGPTパーティションで新規インストールする</a>
-      <small>
-        2014-07-25
-        <ul>
-          
-            <li><a href="/tags/centos">centos</a></li>
-          
-        </ul>
-      </small>
-  </h3>
-</li>
+  <div class="post-meta">
+    2014-08-11
+    <ul>
+    
+      <li><a href="/tags/cli">cli</a></li>
+    </span>
+    </ul>
+  </div>
 
-          
-            <li>
-  <h3>
-    <a href="/blog/2014/07/install-centos5-on-gpt-drive">CentOS5をGPTパーティションで新規インストールする</a>
-      <small>
-        2014-07-08
-        <ul>
-          
-            <li><a href="/tags/centos">centos</a></li>
-          
-        </ul>
-      </small>
-  </h3>
-</li>
+  <p>wget コマンドを使っていると、たまにカレントディレクトリではなくて他の場所にデータを保存したい時があるのだけれど、その方法をしばしば忘れるのでメモ。これをやりたい時は、 -P オプションを使えばよい。たとえば</p>
 
-          
-            <li>
-  <h3>
-    <a href="/blog/2014/07/install-centos6-on-gpt-drive">CentOS6をGPTパーティションで新規インストールする</a>
-      <small>
-        2014-07-07
-        <ul>
-          
-            <li><a href="/tags/centos">centos</a></li>
-          
-        </ul>
-      </small>
-  </h3>
-</li>
+<pre><code class="bash">wget -P path/to/dstdir http://localhost/path/to/srcfile.tar.gz
+</code></pre>
 
-          
-        </ul>
+<p>の様に実行すると、 <code>path/to/dstdir/srcfile.tar.gz</code> の様に保存される</p>
+
+</div>
+
+        <nav class="prev-next">
+          <ul>
+            <li> Newer Post </li>
+            <li><a href="/blog/2014/07/install-centos7-on-gpt-drive">Older Post</a></li>
+          </ul>
+        </nav>
       </div>
     </div>
 

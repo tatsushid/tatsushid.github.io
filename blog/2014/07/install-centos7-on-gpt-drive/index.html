@@ -11,7 +11,7 @@
 
   <title>
     
-      Blogs &middot; tatsushid.github.io
+      CentOS7をGPTパーティションで新規インストールする &middot; tatsushid.github.io
     
   </title>
 
@@ -32,7 +32,7 @@
   <link rel="shortcut icon" href="/favicon.ico">
 
   
-  <link rel="alternate" type="application/rss+xml" title="RSS" href="http://tatsushid.github.io/blog/index.xml">
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="">
 </head>
 
 
@@ -53,7 +53,7 @@
 
       
       <li>
-        <a class="sidebar-nav-item active" href="/blog">Blog</a>
+        <a class="sidebar-nav-item" href="/blog">Blog</a>
         
       </li>
       
@@ -85,70 +85,39 @@
       </div>
 
       <div class="container content">
-        <h1>Blog posts</h1>
-        <ul class="related-posts">
-          
-            <li>
-  <h3>
-    <a href="/blog/2014/08/specify-wget-savedir">wgetでの保存先ディレクトリを指定する</a>
-      <small>
-        2014-08-11
-        <ul>
-          
-            <li><a href="/tags/cli">cli</a></li>
-          
-        </ul>
-      </small>
-  </h3>
-</li>
+        <div class="post">
+  <h1 class="post-title">
+    <a href="/blog/2014/07/install-centos7-on-gpt-drive">
+      CentOS7をGPTパーティションで新規インストールする
+    </a>
+  </h1>
 
-          
-            <li>
-  <h3>
-    <a href="/blog/2014/07/install-centos7-on-gpt-drive">CentOS7をGPTパーティションで新規インストールする</a>
-      <small>
-        2014-07-25
-        <ul>
-          
-            <li><a href="/tags/centos">centos</a></li>
-          
-        </ul>
-      </small>
-  </h3>
-</li>
+  <div class="post-meta">
+    2014-07-25
+    <ul>
+    
+      <li><a href="/tags/centos">centos</a></li>
+    </span>
+    </ul>
+  </div>
 
-          
-            <li>
-  <h3>
-    <a href="/blog/2014/07/install-centos5-on-gpt-drive">CentOS5をGPTパーティションで新規インストールする</a>
-      <small>
-        2014-07-08
-        <ul>
-          
-            <li><a href="/tags/centos">centos</a></li>
-          
-        </ul>
-      </small>
-  </h3>
-</li>
+  <p>CentOS 7 を GPT パーティションでインストールするのは難しくない。 <a href="https://bugzilla.redhat.com/show_bug.cgi?id=1032428">Bug 1032428 - Need a 1MB &lsquo;biosboot&rsquo; type partition when install RHEL7 on a GPT disk with custom partition</a> によると、</p>
 
-          
-            <li>
-  <h3>
-    <a href="/blog/2014/07/install-centos6-on-gpt-drive">CentOS6をGPTパーティションで新規インストールする</a>
-      <small>
-        2014-07-07
-        <ul>
-          
-            <li><a href="/tags/centos">centos</a></li>
-          
-        </ul>
-      </small>
-  </h3>
-</li>
+<ul>
+<li>2TB 未満のディスクを使用すると自動的に MSDOS パーティションを使用</li>
+<li>2TB 以上のディスクを使用すると自動的に GPT パーティションを使用</li>
+</ul>
 
-          
-        </ul>
+<p>という形となっているため、通常は意識して選択する必要がない。また、 2TB 未満のディスクも GPT パーティションとしてインストールしたければ、インストール CD からインストーラーをブートする時のカーネルオプションに inst.gpt を指定しておくと、ディスク種別にかかわらず GTP パーティションが使われるようになる</p>
+
+</div>
+
+        <nav class="prev-next">
+          <ul>
+            <li><a href="/blog/2014/08/specify-wget-savedir">Newer Post</a></li>
+            <li><a href="/blog/2014/07/install-centos5-on-gpt-drive">Older Post</a></li>
+          </ul>
+        </nav>
       </div>
     </div>
 

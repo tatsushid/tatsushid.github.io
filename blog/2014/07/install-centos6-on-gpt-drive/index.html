@@ -11,7 +11,7 @@
 
   <title>
     
-      Blogs &middot; tatsushid.github.io
+      CentOS6をGPTパーティションで新規インストールする &middot; tatsushid.github.io
     
   </title>
 
@@ -32,7 +32,7 @@
   <link rel="shortcut icon" href="/favicon.ico">
 
   
-  <link rel="alternate" type="application/rss+xml" title="RSS" href="http://tatsushid.github.io/blog/index.xml">
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="">
 </head>
 
 
@@ -53,7 +53,7 @@
 
       
       <li>
-        <a class="sidebar-nav-item active" href="/blog">Blog</a>
+        <a class="sidebar-nav-item" href="/blog">Blog</a>
         
       </li>
       
@@ -85,70 +85,42 @@
       </div>
 
       <div class="container content">
-        <h1>Blog posts</h1>
-        <ul class="related-posts">
-          
-            <li>
-  <h3>
-    <a href="/blog/2014/08/specify-wget-savedir">wgetでの保存先ディレクトリを指定する</a>
-      <small>
-        2014-08-11
-        <ul>
-          
-            <li><a href="/tags/cli">cli</a></li>
-          
-        </ul>
-      </small>
-  </h3>
-</li>
+        <div class="post">
+  <h1 class="post-title">
+    <a href="/blog/2014/07/install-centos6-on-gpt-drive">
+      CentOS6をGPTパーティションで新規インストールする
+    </a>
+  </h1>
 
-          
-            <li>
-  <h3>
-    <a href="/blog/2014/07/install-centos7-on-gpt-drive">CentOS7をGPTパーティションで新規インストールする</a>
-      <small>
-        2014-07-25
-        <ul>
-          
-            <li><a href="/tags/centos">centos</a></li>
-          
-        </ul>
-      </small>
-  </h3>
-</li>
+  <div class="post-meta">
+    2014-07-07
+    <ul>
+    
+      <li><a href="/tags/centos">centos</a></li>
+    </span>
+    </ul>
+  </div>
 
-          
-            <li>
-  <h3>
-    <a href="/blog/2014/07/install-centos5-on-gpt-drive">CentOS5をGPTパーティションで新規インストールする</a>
-      <small>
-        2014-07-08
-        <ul>
-          
-            <li><a href="/tags/centos">centos</a></li>
-          
-        </ul>
-      </small>
-  </h3>
-</li>
+  <p>毎度毎度コマンドの打ち方を忘れてしまうのでメモ。 RHEL 6 互換のディストリビューションを新規インストールする際、 GPT パーティションを使いたい場合は、インストーラーで適当なところ（パーティション設定の直前辺り）まで進めたところで下記のようにコマンドを実行すると、自分でパーティションを切ることができる</p>
 
-          
-            <li>
-  <h3>
-    <a href="/blog/2014/07/install-centos6-on-gpt-drive">CentOS6をGPTパーティションで新規インストールする</a>
-      <small>
-        2014-07-07
-        <ul>
-          
-            <li><a href="/tags/centos">centos</a></li>
-          
-        </ul>
-      </small>
-  </h3>
-</li>
+<ul>
+<li><code>Alt + Ctrl + F2</code> でターミナルに切り替える</li>
+<li><code>parted /dev/sdx</code> （ sdx は実際のデバイス名を指定）を実行する</li>
+<li><code>mklabel gpt</code> と入力して実行</li>
+<li><code>quit</code> を入力して parted を抜ける</li>
+<li><code>Alt + F6</code> でターミナルを抜ける</li>
+</ul>
 
-          
-        </ul>
+<p>以上のように実行すると、ディスクデバイスに GPT パーティションが設定される。後は普通にパーティション設定を行ってインストールを進めていけば、 GPT パーティションのサーバができあがる</p>
+
+</div>
+
+        <nav class="prev-next">
+          <ul>
+            <li><a href="/blog/2014/07/install-centos5-on-gpt-drive">Newer Post</a></li>
+            <li> Older Post </li>
+          </ul>
+        </nav>
       </div>
     </div>
 
