@@ -7,7 +7,34 @@
     <language>ja-jp</language>
     
     
-    <updated>Mon, 11 Aug 2014 16:54:00 JST</updated>
+    <updated>Sat, 16 Aug 2014 14:00:00 JST</updated>
+    
+    <item>
+      <title>静的サイトジェネレーターを Hugo に切り替えた</title>
+      <link>http://tatsushid.github.io/blog/2014/08/change-site-generator-to-hugo</link>
+      <pubDate>Sat, 16 Aug 2014 14:00:00 JST</pubDate>
+      
+      <guid>http://tatsushid.github.io/blog/2014/08/change-site-generator-to-hugo</guid>
+      <description>&lt;p&gt;ここ半年から一年の間、ちょっとしたコマンドラインツールの開発にはずっと golang を使ってきてて、せっかくなのでサイトジェネレーターもこの際 golang 製に変えてみようということで、 &lt;a href=&#34;http://hugo.spf13.com/&#34;&gt;Hugo&lt;/a&gt; を使ってみることにした。今のところの使用感としては、&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;バイナリ拾ってくるだけなのでインストール簡単&lt;/li&gt;
+&lt;li&gt;サイト生成速度が速い！&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://jekyllrb.com/&#34;&gt;Jekyll&lt;/a&gt; と同様に Front Matter がある（各ページのメタデータを定義できるもの）&lt;/li&gt;
+&lt;li&gt;他のツールにもあるが、ローカルサーバでのプレビュー機能便利&lt;/li&gt;
+&lt;li&gt;他のツールほどメジャーではないせいか、既成のテンプレートが少ない (´；ω；｀)&lt;/li&gt;
+&lt;li&gt;Go 標準のテンプレートパッケージ使ってるためか、テンプレートでいろいろやろうとすると制約が厳しい&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;といったところ。 golang の特質はそのままのため、がんばって言語環境整備しなくても、 Windows とか他のプラットフォームでも同じように使えるのはいいところだと思う。コード量もそれほどではないので、自分で機能を追加するのもそれほど難しくない&lt;/p&gt;
+
+&lt;p&gt;一方でテンプレートは本当に選択肢が少なすぎるので、勉強も兼ねて、 &lt;a href=&#34;http://jekyllrb.com/&#34;&gt;Jekyll&lt;/a&gt; 用のテーマの &lt;a href=&#34;http://lanyon.getpoole.com/&#34;&gt;Lanyon&lt;/a&gt; を移植して、それにちょっとだけ手を加えたものを使うことにした。こちらは気が向いたら公開したい&lt;/p&gt;
+
+&lt;p&gt;このテンプレートを作っていてわかったのは、 golang 標準の text/template と派生の html/template のテンプレートパッケージでは、書式自体は分かりやすくていいものの、制御構文が少なかったり定義した変数のスコープの絡みとかでいろいろと制約があり、プログラム側に手を入れて補助関数を作らないと、単純なものでも機能実現できないものが多々あるなあというところ。この辺りは、ロジックはあくまでプログラム側で処理し、テンプレートはそれを表示するだけだ、という考え方でできているのだと思うが、ちょっとしたカスタマイズでプログラム自体に手を入れなければいけないのは、メンテナンスの面でちょっとつらい。柔軟性の高い補助関数とかが Hugo 本家に入るのを見ていくしかないのかな、という気もする&lt;/p&gt;
+
+&lt;p&gt;ともあれ、 Hugo 自体は必要十分な機能がよくまとまっていて、何よりサイト生成が早いこともあって、気軽に何度でもトライアンドエラーを繰り返して試せるので、個人的には気に入っている。しばらくいろいろ試してみたいと思う&lt;/p&gt;
+</description>
+    </item>
     
     <item>
       <title>wgetでの保存先ディレクトリを指定する</title>
