@@ -3,18 +3,65 @@
   <channel>
       <title>Blogs on tatsushid.github.io </title>
       <generator uri="https://hugo.spf13.com">Hugo</generator>
-    <link>http://tatsushid.github.io/blog/index.xml</link>
+    <link>http://tatsushid.github.io/blog/index.xml/</link>
     <language>ja-jp</language>
     
     
-    <updated>Sat, 16 Aug 2014 14:00:00 JST</updated>
+    <updated>Thu, 18 Sep 2014 22:10:41 JST</updated>
+    
+    <item>
+      <title>CentOSのyumミラーリストの調べ方</title>
+      <link>http://tatsushid.github.io/blog/2014/09/how-to-check-centos-mirrorlist/</link>
+      <pubDate>Thu, 18 Sep 2014 22:10:41 JST</pubDate>
+      
+      <guid>http://tatsushid.github.io/blog/2014/09/how-to-check-centos-mirrorlist/</guid>
+      <description>&lt;p&gt;ここ最近 CentOS の yum で updates からパッケージを持ってくる時の速度がやけに遅いので、 yum にはどんなミラーが返ってきてるのか調べてみた。 yum は 64bit 環境で特別設定を変えてなければ、通常 &lt;code&gt;http://mirrorlist.centos.org/?release=6&amp;amp;arch=x86_64&amp;amp;repo=os&lt;/code&gt; や &lt;code&gt;http://mirrorlist.centos.org/?release=6&amp;amp;arch=x86_64&amp;amp;repo=updates&lt;/code&gt; にアクセスしているので、この URL にブラウザでアクセスするか、&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;sh&#34;&gt;curl &#39;http://mirrorlist.centos.org/?release=6&amp;amp;arch=x86_64&amp;amp;repo=os&#39;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;のように &lt;code&gt;curl&lt;/code&gt; を使えば、ミラーの一覧が返る。 &lt;code&gt;release&lt;/code&gt; は CentOS のメジャーバージョン、 &lt;code&gt;arch&lt;/code&gt; は &lt;code&gt;i386&lt;/code&gt; や &lt;code&gt;x86_64&lt;/code&gt; などのアーキテクチャ、 &lt;code&gt;repo&lt;/code&gt; はリポジトリの種類をそれぞれ指定できる。さらに、 URL に &lt;code&gt;cc=jp&lt;/code&gt; や &lt;code&gt;ip=8.8.8.8&lt;/code&gt; などのクエリを追加すると、国コード別、 IP アドレス別のミラーリストを返してくれるらしい。たとえば、&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;sh&#34;&gt;curl &#39;http://mirrorlist.centos.org/?release=6&amp;amp;arch=x86_64&amp;amp;repo=os&amp;amp;cc=jp&#39; # 国コード別
+curl &#39;http://mirrorlist.centos.org/?release=6&amp;amp;arch=x86_64&amp;amp;repo=os&amp;amp;ip=8.8.8.8&#39; # IP アドレス別
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;などとすると、それぞれの結果が返る。なお、今日の時点 (2014-09-18) で os の方は&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;http://ftp.nara.wide.ad.jp/pub/Linux/centos/6.5/os/x86_64/
+http://ftp.tsukuba.wide.ad.jp/Linux/centos/6.5/os/x86_64/
+http://ftp.iij.ad.jp/pub/linux/centos/6.5/os/x86_64/
+http://ftp.jaist.ac.jp/pub/Linux/CentOS/6.5/os/x86_64/
+http://ftp.riken.jp/Linux/centos/6.5/os/x86_64/
+http://www.ftp.ne.jp/Linux/packages/CentOS/6.5/os/x86_64/
+http://mirror.fairway.ne.jp/centos/6.5/os/x86_64/
+http://mirror.vodien.com/centos/6.5/os/x86_64/
+http://mirror.nus.edu.sg/centos/6.5/os/x86_64/
+http://centos.mirror.secureax.com/6.5/os/x86_64/
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;のような結果が返ってくるが、 updates の方はなぜか&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;http://mirrors.hust.edu.cn/centos/6.5/updates/x86_64/
+http://mirrors.yun-idc.com/centos/6.5/updates/x86_64/
+http://centos.mirror.cdnetworks.com/6.5/updates/x86_64/
+http://ftp.yzu.edu.tw/Linux/CentOS/6.5/updates/x86_64/
+http://ftp.isu.edu.tw/pub/Linux/CentOS/6.5/updates/x86_64/
+http://mirror.awanti.com/centos/6.5/updates/x86_64/
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;のようなリストを返してきてて、国内ミラーを使ってくれてないのが速度が出てない理由なのかな、と&lt;/p&gt;
+
+&lt;p&gt;余談だけど、各国のミラーの状態は &lt;a href=&#34;http://mirror-status.centos.org/&#34;&gt;http://mirror-status.centos.org/&lt;/a&gt; で見れる&lt;/p&gt;
+</description>
+    </item>
     
     <item>
       <title>静的サイトジェネレーターを Hugo に切り替えた</title>
-      <link>http://tatsushid.github.io/blog/2014/08/change-site-generator-to-hugo</link>
+      <link>http://tatsushid.github.io/blog/2014/08/change-site-generator-to-hugo/</link>
       <pubDate>Sat, 16 Aug 2014 14:00:00 JST</pubDate>
       
-      <guid>http://tatsushid.github.io/blog/2014/08/change-site-generator-to-hugo</guid>
+      <guid>http://tatsushid.github.io/blog/2014/08/change-site-generator-to-hugo/</guid>
       <description>&lt;p&gt;ここ半年から一年の間、ちょっとしたコマンドラインツールの開発にはずっと golang を使ってきてて、せっかくなのでサイトジェネレーターもこの際 golang 製に変えてみようということで、 &lt;a href=&#34;http://hugo.spf13.com/&#34;&gt;Hugo&lt;/a&gt; を使ってみることにした。今のところの使用感としては、&lt;/p&gt;
 
 &lt;ul&gt;
@@ -38,10 +85,10 @@
     
     <item>
       <title>wgetでの保存先ディレクトリを指定する</title>
-      <link>http://tatsushid.github.io/blog/2014/08/specify-wget-savedir</link>
+      <link>http://tatsushid.github.io/blog/2014/08/specify-wget-savedir/</link>
       <pubDate>Mon, 11 Aug 2014 16:54:00 JST</pubDate>
       
-      <guid>http://tatsushid.github.io/blog/2014/08/specify-wget-savedir</guid>
+      <guid>http://tatsushid.github.io/blog/2014/08/specify-wget-savedir/</guid>
       <description>&lt;p&gt;wget コマンドを使っていると、たまにカレントディレクトリではなくて他の場所にデータを保存したい時があるのだけれど、その方法をしばしば忘れるのでメモ。これをやりたい時は、 -P オプションを使えばよい。たとえば&lt;/p&gt;
 
 &lt;pre&gt;&lt;code class=&#34;bash&#34;&gt;wget -P path/to/dstdir http://localhost/path/to/srcfile.tar.gz
@@ -53,10 +100,10 @@
     
     <item>
       <title>CentOS7をGPTパーティションで新規インストールする</title>
-      <link>http://tatsushid.github.io/blog/2014/07/install-centos7-on-gpt-drive</link>
+      <link>http://tatsushid.github.io/blog/2014/07/install-centos7-on-gpt-drive/</link>
       <pubDate>Fri, 25 Jul 2014 13:04:00 JST</pubDate>
       
-      <guid>http://tatsushid.github.io/blog/2014/07/install-centos7-on-gpt-drive</guid>
+      <guid>http://tatsushid.github.io/blog/2014/07/install-centos7-on-gpt-drive/</guid>
       <description>&lt;p&gt;CentOS 7 を GPT パーティションでインストールするのは難しくない。 &lt;a href=&#34;https://bugzilla.redhat.com/show_bug.cgi?id=1032428&#34;&gt;Bug 1032428 - Need a 1MB &amp;lsquo;biosboot&amp;rsquo; type partition when install RHEL7 on a GPT disk with custom partition&lt;/a&gt; によると、&lt;/p&gt;
 
 &lt;ul&gt;
@@ -70,10 +117,10 @@
     
     <item>
       <title>CentOS5をGPTパーティションで新規インストールする</title>
-      <link>http://tatsushid.github.io/blog/2014/07/install-centos5-on-gpt-drive</link>
+      <link>http://tatsushid.github.io/blog/2014/07/install-centos5-on-gpt-drive/</link>
       <pubDate>Tue, 08 Jul 2014 20:06:00 JST</pubDate>
       
-      <guid>http://tatsushid.github.io/blog/2014/07/install-centos5-on-gpt-drive</guid>
+      <guid>http://tatsushid.github.io/blog/2014/07/install-centos5-on-gpt-drive/</guid>
       <description>&lt;p&gt;CentOS 5 の新規インストール時に GTP パーティションを使いたい場合は、 CentOS 6 の様に一筋縄では行かない。今回は&lt;/p&gt;
 
 &lt;ul&gt;
@@ -170,10 +217,10 @@ grub&amp;gt; quit
     
     <item>
       <title>CentOS6をGPTパーティションで新規インストールする</title>
-      <link>http://tatsushid.github.io/blog/2014/07/install-centos6-on-gpt-drive</link>
+      <link>http://tatsushid.github.io/blog/2014/07/install-centos6-on-gpt-drive/</link>
       <pubDate>Mon, 07 Jul 2014 19:15:00 JST</pubDate>
       
-      <guid>http://tatsushid.github.io/blog/2014/07/install-centos6-on-gpt-drive</guid>
+      <guid>http://tatsushid.github.io/blog/2014/07/install-centos6-on-gpt-drive/</guid>
       <description>&lt;p&gt;毎度毎度コマンドの打ち方を忘れてしまうのでメモ。 RHEL 6 互換のディストリビューションを新規インストールする際、 GPT パーティションを使いたい場合は、インストーラーで適当なところ（パーティション設定の直前辺り）まで進めたところで下記のようにコマンドを実行すると、自分でパーティションを切ることができる&lt;/p&gt;
 
 &lt;ul&gt;

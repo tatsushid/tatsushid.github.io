@@ -32,7 +32,7 @@
   <link rel="shortcut icon" href="/favicon.ico">
 
   
-  <link rel="alternate" type="application/rss+xml" title="RSS" href="http://tatsushid.github.io/index.xml">
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="http://tatsushid.github.io/index.xml/">
 </head>
 
 
@@ -53,12 +53,12 @@
 
       
       <li>
-        <a class="sidebar-nav-item" href="/blog">Blog</a>
+        <a class="sidebar-nav-item" href="/blog/">Blog</a>
         
       </li>
       
       <li>
-        <a class="sidebar-nav-item" href="/tags">Tags</a>
+        <a class="sidebar-nav-item" href="/tags/">Tags</a>
         
       </li>
       
@@ -89,7 +89,65 @@
           
             <div class="post">
   <h1 class="post-title">
-    <a href="/blog/2014/08/change-site-generator-to-hugo">
+    <a href="/blog/2014/09/how-to-check-centos-mirrorlist/">
+      CentOSのyumミラーリストの調べ方
+    </a>
+  </h1>
+
+  <div class="post-meta">
+    2014-09-18
+    <ul>
+    
+      <li><a href="/tags/centos">centos</a></li>
+    </span>
+    </ul>
+  </div>
+
+  <p>ここ最近 CentOS の yum で updates からパッケージを持ってくる時の速度がやけに遅いので、 yum にはどんなミラーが返ってきてるのか調べてみた。 yum は 64bit 環境で特別設定を変えてなければ、通常 <code>http://mirrorlist.centos.org/?release=6&amp;arch=x86_64&amp;repo=os</code> や <code>http://mirrorlist.centos.org/?release=6&amp;arch=x86_64&amp;repo=updates</code> にアクセスしているので、この URL にブラウザでアクセスするか、</p>
+
+<pre><code class="sh">curl 'http://mirrorlist.centos.org/?release=6&amp;arch=x86_64&amp;repo=os'
+</code></pre>
+
+<p>のように <code>curl</code> を使えば、ミラーの一覧が返る。 <code>release</code> は CentOS のメジャーバージョン、 <code>arch</code> は <code>i386</code> や <code>x86_64</code> などのアーキテクチャ、 <code>repo</code> はリポジトリの種類をそれぞれ指定できる。さらに、 URL に <code>cc=jp</code> や <code>ip=8.8.8.8</code> などのクエリを追加すると、国コード別、 IP アドレス別のミラーリストを返してくれるらしい。たとえば、</p>
+
+<pre><code class="sh">curl 'http://mirrorlist.centos.org/?release=6&amp;arch=x86_64&amp;repo=os&amp;cc=jp' # 国コード別
+curl 'http://mirrorlist.centos.org/?release=6&amp;arch=x86_64&amp;repo=os&amp;ip=8.8.8.8' # IP アドレス別
+</code></pre>
+
+<p>などとすると、それぞれの結果が返る。なお、今日の時点 (2014-09-18) で os の方は</p>
+
+<pre><code>http://ftp.nara.wide.ad.jp/pub/Linux/centos/6.5/os/x86_64/
+http://ftp.tsukuba.wide.ad.jp/Linux/centos/6.5/os/x86_64/
+http://ftp.iij.ad.jp/pub/linux/centos/6.5/os/x86_64/
+http://ftp.jaist.ac.jp/pub/Linux/CentOS/6.5/os/x86_64/
+http://ftp.riken.jp/Linux/centos/6.5/os/x86_64/
+http://www.ftp.ne.jp/Linux/packages/CentOS/6.5/os/x86_64/
+http://mirror.fairway.ne.jp/centos/6.5/os/x86_64/
+http://mirror.vodien.com/centos/6.5/os/x86_64/
+http://mirror.nus.edu.sg/centos/6.5/os/x86_64/
+http://centos.mirror.secureax.com/6.5/os/x86_64/
+</code></pre>
+
+<p>のような結果が返ってくるが、 updates の方はなぜか</p>
+
+<pre><code>http://mirrors.hust.edu.cn/centos/6.5/updates/x86_64/
+http://mirrors.yun-idc.com/centos/6.5/updates/x86_64/
+http://centos.mirror.cdnetworks.com/6.5/updates/x86_64/
+http://ftp.yzu.edu.tw/Linux/CentOS/6.5/updates/x86_64/
+http://ftp.isu.edu.tw/pub/Linux/CentOS/6.5/updates/x86_64/
+http://mirror.awanti.com/centos/6.5/updates/x86_64/
+</code></pre>
+
+<p>のようなリストを返してきてて、国内ミラーを使ってくれてないのが速度が出てない理由なのかな、と</p>
+
+<p>余談だけど、各国のミラーの状態は <a href="http://mirror-status.centos.org/">http://mirror-status.centos.org/</a> で見れる</p>
+
+</div>
+
+          
+            <div class="post">
+  <h1 class="post-title">
+    <a href="/blog/2014/08/change-site-generator-to-hugo/">
       静的サイトジェネレーターを Hugo に切り替えた
     </a>
   </h1>
@@ -129,7 +187,7 @@
           
             <div class="post">
   <h1 class="post-title">
-    <a href="/blog/2014/08/specify-wget-savedir">
+    <a href="/blog/2014/08/specify-wget-savedir/">
       wgetでの保存先ディレクトリを指定する
     </a>
   </h1>
@@ -155,7 +213,7 @@
           
             <div class="post">
   <h1 class="post-title">
-    <a href="/blog/2014/07/install-centos7-on-gpt-drive">
+    <a href="/blog/2014/07/install-centos7-on-gpt-drive/">
       CentOS7をGPTパーティションで新規インストールする
     </a>
   </h1>
@@ -183,7 +241,7 @@
           
             <div class="post">
   <h1 class="post-title">
-    <a href="/blog/2014/07/install-centos5-on-gpt-drive">
+    <a href="/blog/2014/07/install-centos5-on-gpt-drive/">
       CentOS5をGPTパーティションで新規インストールする
     </a>
   </h1>
@@ -288,37 +346,6 @@ grub&gt; quit
 </ol>
 
 <p>以上の手順で、 GTP パーティションが有効な状態で、新規インストールした CentOS 5 が起動できた</p>
-
-</div>
-
-          
-            <div class="post">
-  <h1 class="post-title">
-    <a href="/blog/2014/07/install-centos6-on-gpt-drive">
-      CentOS6をGPTパーティションで新規インストールする
-    </a>
-  </h1>
-
-  <div class="post-meta">
-    2014-07-07
-    <ul>
-    
-      <li><a href="/tags/centos">centos</a></li>
-    </span>
-    </ul>
-  </div>
-
-  <p>毎度毎度コマンドの打ち方を忘れてしまうのでメモ。 RHEL 6 互換のディストリビューションを新規インストールする際、 GPT パーティションを使いたい場合は、インストーラーで適当なところ（パーティション設定の直前辺り）まで進めたところで下記のようにコマンドを実行すると、自分でパーティションを切ることができる</p>
-
-<ul>
-<li><code>Alt + Ctrl + F2</code> でターミナルに切り替える</li>
-<li><code>parted /dev/sdx</code> （ sdx は実際のデバイス名を指定）を実行する</li>
-<li><code>mklabel gpt</code> と入力して実行</li>
-<li><code>quit</code> を入力して parted を抜ける</li>
-<li><code>Alt + F6</code> でターミナルを抜ける</li>
-</ul>
-
-<p>以上のように実行すると、ディスクデバイスに GPT パーティションが設定される。後は普通にパーティション設定を行ってインストールを進めていけば、 GPT パーティションのサーバができあがる</p>
 
 </div>
 
