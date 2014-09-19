@@ -104,8 +104,7 @@
   <p>Go の <code>reflect</code> パッケージを使っていて、ときどき操作している変数型との比較のために <code>error</code> などのインターフェース型の <code>reflect.Type</code> がほしいことがあるのだけれど、これは <code>reflect.TypeOf((*error)(nil)).Elem()</code> のように書くことで得られる。つまり、</p>
 
 <ul>
-<li>ほしい型のポインタ型を宣言</li>
-<li>それを <code>nil</code> で初期化</li>
+<li><code>nil</code> をほしい型のポインタ型に変換</li>
 <li>それを <code>reflect.TypeOf</code> に渡してポインタ型の <code>reflect.Type</code> を取得し</li>
 <li><code>Elem()</code> でポインタをデリファレンスしてできる基本型の <code>reflect.Type</code> を得る</li>
 </ul>

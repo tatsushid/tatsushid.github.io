@@ -18,8 +18,7 @@
       <description>&lt;p&gt;Go の &lt;code&gt;reflect&lt;/code&gt; パッケージを使っていて、ときどき操作している変数型との比較のために &lt;code&gt;error&lt;/code&gt; などのインターフェース型の &lt;code&gt;reflect.Type&lt;/code&gt; がほしいことがあるのだけれど、これは &lt;code&gt;reflect.TypeOf((*error)(nil)).Elem()&lt;/code&gt; のように書くことで得られる。つまり、&lt;/p&gt;
 
 &lt;ul&gt;
-&lt;li&gt;ほしい型のポインタ型を宣言&lt;/li&gt;
-&lt;li&gt;それを &lt;code&gt;nil&lt;/code&gt; で初期化&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;nil&lt;/code&gt; をほしい型のポインタ型に変換&lt;/li&gt;
 &lt;li&gt;それを &lt;code&gt;reflect.TypeOf&lt;/code&gt; に渡してポインタ型の &lt;code&gt;reflect.Type&lt;/code&gt; を取得し&lt;/li&gt;
 &lt;li&gt;&lt;code&gt;Elem()&lt;/code&gt; でポインタをデリファレンスしてできる基本型の &lt;code&gt;reflect.Type&lt;/code&gt; を得る&lt;/li&gt;
 &lt;/ul&gt;
