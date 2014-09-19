@@ -7,7 +7,66 @@
     <language>ja-jp</language>
     
     
-    <updated>Sat, 16 Aug 2014 14:00:00 JST</updated>
+    <updated>Fri, 19 Sep 2014 21:46:21 JST</updated>
+    
+    <item>
+      <title>Go でインターフェース型の reflect.Type を取得する方法</title>
+      <link>http://tatsushid.github.io/blog/2014/09/how-to-get-reflect-type-of-interface-type-in-go/</link>
+      <pubDate>Fri, 19 Sep 2014 21:46:21 JST</pubDate>
+      
+      <guid>http://tatsushid.github.io/blog/2014/09/how-to-get-reflect-type-of-interface-type-in-go/</guid>
+      <description>&lt;p&gt;Go の &lt;code&gt;reflect&lt;/code&gt; パッケージを使っていて、ときどき操作している変数型との比較のために &lt;code&gt;error&lt;/code&gt; などのインターフェース型の &lt;code&gt;reflect.Type&lt;/code&gt; がほしいことがあるのだけれど、これは &lt;code&gt;reflect.TypeOf((*error)(nil)).Elem()&lt;/code&gt; のように書くことで得られる。つまり、&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;ほしい型のポインタ型を宣言&lt;/li&gt;
+&lt;li&gt;それを &lt;code&gt;nil&lt;/code&gt; で初期化&lt;/li&gt;
+&lt;li&gt;それを &lt;code&gt;reflect.TypeOf&lt;/code&gt; に渡してポインタ型の &lt;code&gt;reflect.Type&lt;/code&gt; を取得し&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;Elem()&lt;/code&gt; でポインタをデリファレンスしてできる基本型の &lt;code&gt;reflect.Type&lt;/code&gt; を得る&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;という流れ。 Go の公式パッケージではよく見かける書法。これを使うと、たとえば変数が &lt;code&gt;error&lt;/code&gt; インターフェースを満たすかどうかの判定は&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;go&#34;&gt;package main
+
+import (
+        &amp;quot;errors&amp;quot;
+        &amp;quot;fmt&amp;quot;
+        &amp;quot;reflect&amp;quot;
+)
+
+func main() {
+	err := errors.New(&amp;quot;A problem occurs&amp;quot;)
+	et := reflect.TypeOf(err)
+	if et.Implements(reflect.TypeOf((*error)(nil)).Elem()) {
+		fmt.Println(&amp;quot;This is an error type&amp;quot;)
+	} else {
+		fmt.Println(&amp;quot;This isn&#39;t an error type&amp;quot;)
+	}
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;のように書ける。もちろん、これはリフレクションを操作してる時の話で、普通は&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;go&#34;&gt;package main
+
+import (
+        &amp;quot;errors&amp;quot;
+        &amp;quot;fmt&amp;quot;
+)
+
+func main() {
+	err := errors.New(&amp;quot;A problem occurs&amp;quot;)
+	if _, ok := err.(error); ok {
+		fmt.Println(&amp;quot;This is an error type&amp;quot;)
+	} else {
+		fmt.Println(&amp;quot;This isn&#39;t an error type&amp;quot;)
+	}
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;とするのがよい&lt;/p&gt;
+</description>
+    </item>
     
     <item>
       <title>静的サイトジェネレーターを Hugo に切り替えた</title>
