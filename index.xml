@@ -7,7 +7,210 @@
     <language>ja-jp</language>
     
     
-    <updated>Fri, 19 Sep 2014 21:46:21 JST</updated>
+    <updated>Tue, 23 Sep 2014 06:42:55 JST</updated>
+    
+    <item>
+      <title>Go の構造体とポインタと omitempty の話</title>
+      <link>http://tatsushid.github.io/blog/2014/09/go-structure-pointer-and-omitempty/</link>
+      <pubDate>Tue, 23 Sep 2014 06:42:55 JST</pubDate>
+      
+      <guid>http://tatsushid.github.io/blog/2014/09/go-structure-pointer-and-omitempty/</guid>
+      <description>
+
+&lt;p&gt;（下記は go 1.3.1 での話で、異なるバージョンだと動作も違う可能性があるので注意）&lt;/p&gt;
+
+&lt;h2 id=&#34;toc_0&#34;&gt;結論&lt;/h2&gt;
+
+&lt;p&gt;Go で &lt;code&gt;encoding/xml&lt;/code&gt; を使って XML のエンコーディングを行っている時に、&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;ある特定のタグの子要素ないし属性が一つでもある場合は、そのタグを出力する&lt;/li&gt;
+&lt;li&gt;上記のいずれもない場合は、タグは出力しない&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;を実現したい場合は、単純に要素のポインタ型を使って &lt;code&gt;omitempty&lt;/code&gt; は使わないのが正解&lt;/p&gt;
+
+&lt;h2 id=&#34;toc_1&#34;&gt;詳細&lt;/h2&gt;
+
+&lt;p&gt;上記のケースを最初は単純に&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;go&#34;&gt;package main
+
+import (
+	&amp;quot;encoding/xml&amp;quot;
+	&amp;quot;fmt&amp;quot;
+	&amp;quot;log&amp;quot;
+)
+
+type Foo struct {
+	Str string
+}
+
+type Bar struct {
+	Foo Foo `xml:&amp;quot;,omitempty&amp;quot;`
+}
+
+func main() {
+	bar := Bar{} // Foo は空
+	b, err := xml.MarshalIndent(bar, &amp;quot;&amp;quot;, &amp;quot;  &amp;quot;)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	fmt.Println(string(b)) // &amp;lt;Bar&amp;gt;&amp;lt;/Bar&amp;gt; と出力されてほしい
+	// Output:
+	// &amp;lt;Bar&amp;gt;
+	//   &amp;lt;Foo&amp;gt;
+	//     &amp;lt;Str&amp;gt;&amp;lt;/Str&amp;gt;
+	//   &amp;lt;/Foo&amp;gt;
+	// &amp;lt;/Bar&amp;gt;
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;としてみたのだけど、うまくいかなかった。理由は &lt;a href=&#34;http://golang.org/pkg/encoding/xml/&#34;&gt;encoding/xml&lt;/a&gt; のドキュメントによると&lt;/p&gt;
+
+&lt;blockquote&gt;
+&lt;ul&gt;
+&lt;li&gt;a field with a tag including the &amp;ldquo;omitempty&amp;rdquo; option is omitted
+if the field value is empty. The empty values are false, 0, any
+nil pointer or interface value, and any array, slice, map, or
+string of length zero.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;ということで、空の構造体と比較してはくれないためのよう。ここで対象が &lt;code&gt;nil&lt;/code&gt; ポインタなら空と扱う、と書いてあるので、&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;go&#34;&gt;package main
+
+import (
+	&amp;quot;encoding/xml&amp;quot;
+	&amp;quot;fmt&amp;quot;
+	&amp;quot;log&amp;quot;
+)
+
+type Foo struct {
+	Str string
+}
+
+type Bar struct {
+	Foo *Foo `xml:&amp;quot;,omitempty&amp;quot;` // omitempty はあってもなくてもよい
+}
+
+func main() {
+	bar := Bar{} // Foo は nil
+	b, err := xml.MarshalIndent(bar, &amp;quot;&amp;quot;, &amp;quot;  &amp;quot;)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	fmt.Println(string(b)) // &amp;lt;Bar&amp;gt;&amp;lt;/Bar&amp;gt; と出力されてほしい
+	// Output:
+	// &amp;lt;Bar&amp;gt;&amp;lt;/Bar&amp;gt;
+
+	bar.Foo = new(Foo)
+	b, err := xml.MarshalIndent(bar, &amp;quot;&amp;quot;, &amp;quot;  &amp;quot;)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	fmt.Println(string(b))
+	// Output:
+	// &amp;lt;Bar&amp;gt;
+	//   &amp;lt;Foo&amp;gt;
+	//     &amp;lt;Str&amp;gt;&amp;lt;/Str&amp;gt;
+	//   &amp;lt;/Foo&amp;gt;
+	// &amp;lt;/Bar&amp;gt;
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;と、 &lt;code&gt;Foo&lt;/code&gt; のポインタを構造体に含めるようにしてみるとうまく動く。もちろん要素がある場合も問題なく動く。さらに、この場合は別に &lt;code&gt;omitempty&lt;/code&gt; なしでも意図通りの動作になる&lt;/p&gt;
+
+&lt;p&gt;ところが、たとえば構造体の要素が &lt;code&gt;int&lt;/code&gt; で、&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;int&lt;/code&gt; の要素が 0 である場合は、要素があるとみなして出力する（つまり &lt;code&gt;omitempty&lt;/code&gt; を無視する）&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;int&lt;/code&gt; の要素そのものが存在しない時は出力しない&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;の場合は、同じようにやっても期待通りにはならない。 &lt;code&gt;int&lt;/code&gt; が 0 の場合は &lt;code&gt;omitempty&lt;/code&gt; の対象として扱ってしまう&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;go&#34;&gt;package main
+
+import (
+	&amp;quot;encoding/xml&amp;quot;
+	&amp;quot;fmt&amp;quot;
+	&amp;quot;log&amp;quot;
+)
+
+type Foo struct {
+	Bar *int `xml:&amp;quot;,omitempty&amp;quot;`
+}
+
+func main() {
+	foo := Foo{}
+	b, err := xml.MarshalIndent(foo, &amp;quot;&amp;quot;, &amp;quot;  &amp;quot;)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	fmt.Println(string(b))
+	// Output:
+	// &amp;lt;Foo&amp;gt;&amp;lt;/Foo&amp;gt;
+
+	foo.Bar = new(int)
+	*(foo.Bar) = 0
+	b, err = xml.MarshalIndent(foo, &amp;quot;&amp;quot;, &amp;quot;  &amp;quot;)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	fmt.Println(string(b))
+	// Output:
+	// &amp;lt;Foo&amp;gt;&amp;lt;/Foo&amp;gt;
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;この場合は、要素の型をポインタ型にしつつ、素直に &lt;code&gt;omitempty&lt;/code&gt; を外すか、ポインタのポインタを使うと意図通りの結果が得られるようだ&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;go&#34;&gt;package main
+
+import (
+	&amp;quot;encoding/xml&amp;quot;
+	&amp;quot;fmt&amp;quot;
+	&amp;quot;log&amp;quot;
+)
+
+type Foo struct {
+	Bar *int
+	Baz **int `xml:&amp;quot;,omitempty&amp;quot;`
+}
+
+func main() {
+	foo := Foo{}
+	b, err := xml.MarshalIndent(foo, &amp;quot;&amp;quot;, &amp;quot;  &amp;quot;)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	fmt.Println(string(b))
+	// Output:
+	// &amp;lt;Foo&amp;gt;&amp;lt;/Foo&amp;gt;
+
+	foo.Bar = new(int)
+	*(foo.Bar) = 0
+	tmp := new(int)
+	*tmp = 0
+	foo.Baz = &amp;amp;tmp
+	b, err = xml.MarshalIndent(foo, &amp;quot;&amp;quot;, &amp;quot;  &amp;quot;)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	fmt.Println(string(b))
+	// Output:
+	// &amp;lt;Foo&amp;gt;
+	//   &amp;lt;Bar&amp;gt;0&amp;lt;/Bar&amp;gt;
+	//   &amp;lt;Baz&amp;gt;0&amp;lt;/Baz&amp;gt;
+	// &amp;lt;/Foo&amp;gt;
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;いろいろとややこしい&lt;/p&gt;
+</description>
+    </item>
     
     <item>
       <title>Go でインターフェース型の reflect.Type を取得する方法</title>

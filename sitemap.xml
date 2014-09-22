@@ -3,8 +3,13 @@
   
   <url>
     <loc>http://tatsushid.github.io/</loc>
-    <lastmod>2014-09-19T21:46:21+09:00</lastmod>
+    <lastmod>2014-09-23T06:42:55+09:00</lastmod>
     <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://tatsushid.github.io/blog/2014/09/go-structure-pointer-and-omitempty/</loc>
+    <lastmod>2014-09-23T06:42:55+09:00</lastmod>
   </url>
   
   <url>

@@ -89,6 +89,220 @@
           
             <div class="post">
   <h1 class="post-title">
+    <a href="/blog/2014/09/go-structure-pointer-and-omitempty/">
+      Go の構造体とポインタと omitempty の話
+    </a>
+  </h1>
+
+  <div class="post-meta">
+    2014-09-23
+    <ul>
+    
+      <li><a href="/tags/golang">golang</a></li>
+    </span>
+    </ul>
+  </div>
+
+  
+
+<p>（下記は go 1.3.1 での話で、異なるバージョンだと動作も違う可能性があるので注意）</p>
+
+<h2 id="toc_0">結論</h2>
+
+<p>Go で <code>encoding/xml</code> を使って XML のエンコーディングを行っている時に、</p>
+
+<ul>
+<li>ある特定のタグの子要素ないし属性が一つでもある場合は、そのタグを出力する</li>
+<li>上記のいずれもない場合は、タグは出力しない</li>
+</ul>
+
+<p>を実現したい場合は、単純に要素のポインタ型を使って <code>omitempty</code> は使わないのが正解</p>
+
+<h2 id="toc_1">詳細</h2>
+
+<p>上記のケースを最初は単純に</p>
+
+<pre><code class="go">package main
+
+import (
+	&quot;encoding/xml&quot;
+	&quot;fmt&quot;
+	&quot;log&quot;
+)
+
+type Foo struct {
+	Str string
+}
+
+type Bar struct {
+	Foo Foo `xml:&quot;,omitempty&quot;`
+}
+
+func main() {
+	bar := Bar{} // Foo は空
+	b, err := xml.MarshalIndent(bar, &quot;&quot;, &quot;  &quot;)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	fmt.Println(string(b)) // &lt;Bar&gt;&lt;/Bar&gt; と出力されてほしい
+	// Output:
+	// &lt;Bar&gt;
+	//   &lt;Foo&gt;
+	//     &lt;Str&gt;&lt;/Str&gt;
+	//   &lt;/Foo&gt;
+	// &lt;/Bar&gt;
+}
+</code></pre>
+
+<p>としてみたのだけど、うまくいかなかった。理由は <a href="http://golang.org/pkg/encoding/xml/">encoding/xml</a> のドキュメントによると</p>
+
+<blockquote>
+<ul>
+<li>a field with a tag including the &ldquo;omitempty&rdquo; option is omitted
+if the field value is empty. The empty values are false, 0, any
+nil pointer or interface value, and any array, slice, map, or
+string of length zero.</li>
+</ul>
+</blockquote>
+
+<p>ということで、空の構造体と比較してはくれないためのよう。ここで対象が <code>nil</code> ポインタなら空と扱う、と書いてあるので、</p>
+
+<pre><code class="go">package main
+
+import (
+	&quot;encoding/xml&quot;
+	&quot;fmt&quot;
+	&quot;log&quot;
+)
+
+type Foo struct {
+	Str string
+}
+
+type Bar struct {
+	Foo *Foo `xml:&quot;,omitempty&quot;` // omitempty はあってもなくてもよい
+}
+
+func main() {
+	bar := Bar{} // Foo は nil
+	b, err := xml.MarshalIndent(bar, &quot;&quot;, &quot;  &quot;)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	fmt.Println(string(b)) // &lt;Bar&gt;&lt;/Bar&gt; と出力されてほしい
+	// Output:
+	// &lt;Bar&gt;&lt;/Bar&gt;
+
+	bar.Foo = new(Foo)
+	b, err := xml.MarshalIndent(bar, &quot;&quot;, &quot;  &quot;)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	fmt.Println(string(b))
+	// Output:
+	// &lt;Bar&gt;
+	//   &lt;Foo&gt;
+	//     &lt;Str&gt;&lt;/Str&gt;
+	//   &lt;/Foo&gt;
+	// &lt;/Bar&gt;
+}
+</code></pre>
+
+<p>と、 <code>Foo</code> のポインタを構造体に含めるようにしてみるとうまく動く。もちろん要素がある場合も問題なく動く。さらに、この場合は別に <code>omitempty</code> なしでも意図通りの動作になる</p>
+
+<p>ところが、たとえば構造体の要素が <code>int</code> で、</p>
+
+<ul>
+<li><code>int</code> の要素が 0 である場合は、要素があるとみなして出力する（つまり <code>omitempty</code> を無視する）</li>
+<li><code>int</code> の要素そのものが存在しない時は出力しない</li>
+</ul>
+
+<p>の場合は、同じようにやっても期待通りにはならない。 <code>int</code> が 0 の場合は <code>omitempty</code> の対象として扱ってしまう</p>
+
+<pre><code class="go">package main
+
+import (
+	&quot;encoding/xml&quot;
+	&quot;fmt&quot;
+	&quot;log&quot;
+)
+
+type Foo struct {
+	Bar *int `xml:&quot;,omitempty&quot;`
+}
+
+func main() {
+	foo := Foo{}
+	b, err := xml.MarshalIndent(foo, &quot;&quot;, &quot;  &quot;)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	fmt.Println(string(b))
+	// Output:
+	// &lt;Foo&gt;&lt;/Foo&gt;
+
+	foo.Bar = new(int)
+	*(foo.Bar) = 0
+	b, err = xml.MarshalIndent(foo, &quot;&quot;, &quot;  &quot;)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	fmt.Println(string(b))
+	// Output:
+	// &lt;Foo&gt;&lt;/Foo&gt;
+}
+</code></pre>
+
+<p>この場合は、要素の型をポインタ型にしつつ、素直に <code>omitempty</code> を外すか、ポインタのポインタを使うと意図通りの結果が得られるようだ</p>
+
+<pre><code class="go">package main
+
+import (
+	&quot;encoding/xml&quot;
+	&quot;fmt&quot;
+	&quot;log&quot;
+)
+
+type Foo struct {
+	Bar *int
+	Baz **int `xml:&quot;,omitempty&quot;`
+}
+
+func main() {
+	foo := Foo{}
+	b, err := xml.MarshalIndent(foo, &quot;&quot;, &quot;  &quot;)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	fmt.Println(string(b))
+	// Output:
+	// &lt;Foo&gt;&lt;/Foo&gt;
+
+	foo.Bar = new(int)
+	*(foo.Bar) = 0
+	tmp := new(int)
+	*tmp = 0
+	foo.Baz = &amp;tmp
+	b, err = xml.MarshalIndent(foo, &quot;&quot;, &quot;  &quot;)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	fmt.Println(string(b))
+	// Output:
+	// &lt;Foo&gt;
+	//   &lt;Bar&gt;0&lt;/Bar&gt;
+	//   &lt;Baz&gt;0&lt;/Baz&gt;
+	// &lt;/Foo&gt;
+}
+</code></pre>
+
+<p>いろいろとややこしい</p>
+
+</div>
+
+          
+            <div class="post">
+  <h1 class="post-title">
     <a href="/blog/2014/09/how-to-get-reflect-type-of-interface-type-in-go/">
       Go でインターフェース型の reflect.Type を取得する方法
     </a>
@@ -276,34 +490,6 @@ http://mirror.awanti.com/centos/6.5/updates/x86_64/
 </code></pre>
 
 <p>の様に実行すると、 <code>path/to/dstdir/srcfile.tar.gz</code> の様に保存される</p>
-
-</div>
-
-          
-            <div class="post">
-  <h1 class="post-title">
-    <a href="/blog/2014/07/install-centos7-on-gpt-drive/">
-      CentOS7をGPTパーティションで新規インストールする
-    </a>
-  </h1>
-
-  <div class="post-meta">
-    2014-07-25
-    <ul>
-    
-      <li><a href="/tags/centos">centos</a></li>
-    </span>
-    </ul>
-  </div>
-
-  <p>CentOS 7 を GPT パーティションでインストールするのは難しくない。 <a href="https://bugzilla.redhat.com/show_bug.cgi?id=1032428">Bug 1032428 - Need a 1MB &lsquo;biosboot&rsquo; type partition when install RHEL7 on a GPT disk with custom partition</a> によると、</p>
-
-<ul>
-<li>2TB 未満のディスクを使用すると自動的に MSDOS パーティションを使用</li>
-<li>2TB 以上のディスクを使用すると自動的に GPT パーティションを使用</li>
-</ul>
-
-<p>という形となっているため、通常は意識して選択する必要がない。また、 2TB 未満のディスクも GPT パーティションとしてインストールしたければ、インストール CD からインストーラーをブートする時のカーネルオプションに inst.gpt を指定しておくと、ディスク種別にかかわらず GTP パーティションが使われるようになる</p>
 
 </div>
 

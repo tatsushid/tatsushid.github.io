@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+
+  <head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+      Go の構造体とポインタと omitempty の話 &middot; tatsushid.github.io
+    
+  </title>
+
+  
+  <link rel="stylesheet" href="/css/poole.css">
+  <link rel="stylesheet" href="/css/syntax.css">
+  <link rel="stylesheet" href="/css/lanyon.css">
+  <link rel="stylesheet" href="/css/overwrite.css">
+  <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=PT+Serif:400,400italic,700|PT+Sans:400">
+  <link rel="stylesheet" href="/css/styles/zenburn.css">
+
+  
+  <script src="/js/highlight.pack.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script>
+
+  
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/apple-touch-icon-precomposed.png">
+  <link rel="shortcut icon" href="/favicon.ico">
+
+  
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="">
+</head>
+
+
+  <body class="theme-base-0d layout-reverse sidebar-overlay">
+
+    
+<input type="checkbox" class="sidebar-checkbox" id="sidebar-checkbox">
+
+
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-item">
+    <p>   </p>
+  </div>
+
+  <nav class="sidebar-nav">
+    <ul>
+      <li><a class="sidebar-nav-item" href="/">Home</a></li>
+
+      
+      <li>
+        <a class="sidebar-nav-item" href="/blog/">Blog</a>
+        
+      </li>
+      
+      <li>
+        <a class="sidebar-nav-item" href="/tags/">Tags</a>
+        
+      </li>
+      
+
+    </ul>
+  </nav>
+
+  <div class="sidebar-item">
+    <p>
+       &copy; 2014. Tatsushi Demachi All rights reserved. 
+    </p>
+  </div>
+</div>
+
+
+    
+    <div class="wrap">
+      <div class="masthead">
+        <div class="container">
+          <h3 class="masthead-title">
+            <a href="/" title="Home">tatsushid.github.io</a>
+          </h3>
+        </div>
+      </div>
+
+      <div class="container content">
+        <div class="post">
+  <h1 class="post-title">
+    <a href="/blog/2014/09/go-structure-pointer-and-omitempty/">
+      Go の構造体とポインタと omitempty の話
+    </a>
+  </h1>
+
+  <div class="post-meta">
+    2014-09-23
+    <ul>
+    
+      <li><a href="/tags/golang">golang</a></li>
+    </span>
+    </ul>
+  </div>
+
+  
+
+<p>（下記は go 1.3.1 での話で、異なるバージョンだと動作も違う可能性があるので注意）</p>
+
+<h2 id="toc_0">結論</h2>
+
+<p>Go で <code>encoding/xml</code> を使って XML のエンコーディングを行っている時に、</p>
+
+<ul>
+<li>ある特定のタグの子要素ないし属性が一つでもある場合は、そのタグを出力する</li>
+<li>上記のいずれもない場合は、タグは出力しない</li>
+</ul>
+
+<p>を実現したい場合は、単純に要素のポインタ型を使って <code>omitempty</code> は使わないのが正解</p>
+
+<h2 id="toc_1">詳細</h2>
+
+<p>上記のケースを最初は単純に</p>
+
+<pre><code class="go">package main
+
+import (
+	&quot;encoding/xml&quot;
+	&quot;fmt&quot;
+	&quot;log&quot;
+)
+
+type Foo struct {
+	Str string
+}
+
+type Bar struct {
+	Foo Foo `xml:&quot;,omitempty&quot;`
+}
+
+func main() {
+	bar := Bar{} // Foo は空
+	b, err := xml.MarshalIndent(bar, &quot;&quot;, &quot;  &quot;)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	fmt.Println(string(b)) // &lt;Bar&gt;&lt;/Bar&gt; と出力されてほしい
+	// Output:
+	// &lt;Bar&gt;
+	//   &lt;Foo&gt;
+	//     &lt;Str&gt;&lt;/Str&gt;
+	//   &lt;/Foo&gt;
+	// &lt;/Bar&gt;
+}
+</code></pre>
+
+<p>としてみたのだけど、うまくいかなかった。理由は <a href="http://golang.org/pkg/encoding/xml/">encoding/xml</a> のドキュメントによると</p>
+
+<blockquote>
+<ul>
+<li>a field with a tag including the &ldquo;omitempty&rdquo; option is omitted
+if the field value is empty. The empty values are false, 0, any
+nil pointer or interface value, and any array, slice, map, or
+string of length zero.</li>
+</ul>
+</blockquote>
+
+<p>ということで、空の構造体と比較してはくれないためのよう。ここで対象が <code>nil</code> ポインタなら空と扱う、と書いてあるので、</p>
+
+<pre><code class="go">package main
+
+import (
+	&quot;encoding/xml&quot;
+	&quot;fmt&quot;
+	&quot;log&quot;
+)
+
+type Foo struct {
+	Str string
+}
+
+type Bar struct {
+	Foo *Foo `xml:&quot;,omitempty&quot;` // omitempty はあってもなくてもよい
+}
+
+func main() {
+	bar := Bar{} // Foo は nil
+	b, err := xml.MarshalIndent(bar, &quot;&quot;, &quot;  &quot;)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	fmt.Println(string(b)) // &lt;Bar&gt;&lt;/Bar&gt; と出力されてほしい
+	// Output:
+	// &lt;Bar&gt;&lt;/Bar&gt;
+
+	bar.Foo = new(Foo)
+	b, err := xml.MarshalIndent(bar, &quot;&quot;, &quot;  &quot;)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	fmt.Println(string(b))
+	// Output:
+	// &lt;Bar&gt;
+	//   &lt;Foo&gt;
+	//     &lt;Str&gt;&lt;/Str&gt;
+	//   &lt;/Foo&gt;
+	// &lt;/Bar&gt;
+}
+</code></pre>
+
+<p>と、 <code>Foo</code> のポインタを構造体に含めるようにしてみるとうまく動く。もちろん要素がある場合も問題なく動く。さらに、この場合は別に <code>omitempty</code> なしでも意図通りの動作になる</p>
+
+<p>ところが、たとえば構造体の要素が <code>int</code> で、</p>
+
+<ul>
+<li><code>int</code> の要素が 0 である場合は、要素があるとみなして出力する（つまり <code>omitempty</code> を無視する）</li>
+<li><code>int</code> の要素そのものが存在しない時は出力しない</li>
+</ul>
+
+<p>の場合は、同じようにやっても期待通りにはならない。 <code>int</code> が 0 の場合は <code>omitempty</code> の対象として扱ってしまう</p>
+
+<pre><code class="go">package main
+
+import (
+	&quot;encoding/xml&quot;
+	&quot;fmt&quot;
+	&quot;log&quot;
+)
+
+type Foo struct {
+	Bar *int `xml:&quot;,omitempty&quot;`
+}
+
+func main() {
+	foo := Foo{}
+	b, err := xml.MarshalIndent(foo, &quot;&quot;, &quot;  &quot;)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	fmt.Println(string(b))
+	// Output:
+	// &lt;Foo&gt;&lt;/Foo&gt;
+
+	foo.Bar = new(int)
+	*(foo.Bar) = 0
+	b, err = xml.MarshalIndent(foo, &quot;&quot;, &quot;  &quot;)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	fmt.Println(string(b))
+	// Output:
+	// &lt;Foo&gt;&lt;/Foo&gt;
+}
+</code></pre>
+
+<p>この場合は、要素の型をポインタ型にしつつ、素直に <code>omitempty</code> を外すか、ポインタのポインタを使うと意図通りの結果が得られるようだ</p>
+
+<pre><code class="go">package main
+
+import (
+	&quot;encoding/xml&quot;
+	&quot;fmt&quot;
+	&quot;log&quot;
+)
+
+type Foo struct {
+	Bar *int
+	Baz **int `xml:&quot;,omitempty&quot;`
+}
+
+func main() {
+	foo := Foo{}
+	b, err := xml.MarshalIndent(foo, &quot;&quot;, &quot;  &quot;)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	fmt.Println(string(b))
+	// Output:
+	// &lt;Foo&gt;&lt;/Foo&gt;
+
+	foo.Bar = new(int)
+	*(foo.Bar) = 0
+	tmp := new(int)
+	*tmp = 0
+	foo.Baz = &amp;tmp
+	b, err = xml.MarshalIndent(foo, &quot;&quot;, &quot;  &quot;)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	fmt.Println(string(b))
+	// Output:
+	// &lt;Foo&gt;
+	//   &lt;Bar&gt;0&lt;/Bar&gt;
+	//   &lt;Baz&gt;0&lt;/Baz&gt;
+	// &lt;/Foo&gt;
+}
+</code></pre>
+
+<p>いろいろとややこしい</p>
+
+</div>
+
+        <nav class="prev-next">
+          <ul>
+            <li> Newer Post </li>
+            <li><a href="/blog/2014/09/how-to-get-reflect-type-of-interface-type-in-go/">Older Post</a></li>
+          </ul>
+        </nav>
+      </div>
+    </div>
+
+    <label for="sidebar-checkbox" class="sidebar-toggle"></label>
+
+<script>
+  (function(document) {
+    var toggle = document.querySelector('.sidebar-toggle');
+    var sidebar = document.querySelector('#sidebar');
+    var checkbox = document.querySelector('#sidebar-checkbox');
+
+    document.addEventListener('click', function(e) {
+      var target = e.target;
+
+      if(!checkbox.checked ||
+         sidebar.contains(target) ||
+         (target === checkbox || target === toggle)) return;
+
+      checkbox.checked = false;
+    }, false);
+  })(document);
+</script>
+
+
+  </body>
+</html>
