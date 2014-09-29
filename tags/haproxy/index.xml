@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+      <title>Haproxy on tatsushid.github.io </title>
+      <generator uri="https://hugo.spf13.com">Hugo</generator>
+    <link>http://tatsushid.github.io/tags/haproxy/index.xml/</link>
+    <language>ja-jp</language>
+    
+    
+    <updated>Mon, 29 Sep 2014 22:11:18 JST</updated>
+    
+    <item>
+      <title>HAProxy でのソース IP アドレスアフィニティ設定方法</title>
+      <link>http://tatsushid.github.io/blog/2014/09/source-ip-address-affinty-configuration-in-haproxy/</link>
+      <pubDate>Mon, 29 Sep 2014 22:11:18 JST</pubDate>
+      
+      <guid>http://tatsushid.github.io/blog/2014/09/source-ip-address-affinty-configuration-in-haproxy/</guid>
+      <description>
+
+&lt;p&gt;HAProxy で、アクセス元のクライアントの IP アドレスを元に、分散先サーバを固定したい場合、 &lt;code&gt;backend&lt;/code&gt; または &lt;code&gt;listen&lt;/code&gt; セクションで次のように設定すればよい&lt;/p&gt;
+
+&lt;h2 id=&#34;toc_0&#34;&gt;frontend と backend を分けて設定してる場合&lt;/h2&gt;
+
+&lt;pre&gt;&lt;code&gt;frontend web-front
+	bind *:80
+	default_backend web-back
+
+backend web-back
+	balance source # Affinity setting
+	server s1 192.168.1.11:80 check
+	server s2 192.168.1.12:80 check
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;toc_1&#34;&gt;listen でまとめて設定している場合&lt;/h2&gt;
+
+&lt;pre&gt;&lt;code&gt;listen web
+	bind *:80
+	balance source # Affinity setting
+	server s1 192.168.1.11:80 check
+	server s2 192.168.1.12:80 check
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;簡単な設定の割にはドキュメントを探すのに結構苦労した&lt;/p&gt;
+
+&lt;h2 id=&#34;toc_2&#34;&gt;参考にしたページ&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;http://blog.haproxy.com/2012/03/29/load-balancing-affinity-persistence-sticky-sessions-what-you-need-to-know/&#34;&gt;load balancing, affinity, persistence, sticky sessions: what you need to know&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://cbonte.github.io/haproxy-dconv/configuration-1.5.html#4-balance&#34;&gt;HAProxy Configuration Manual&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>

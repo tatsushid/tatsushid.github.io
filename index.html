@@ -89,6 +89,59 @@
           
             <div class="post">
   <h1 class="post-title">
+    <a href="/blog/2014/09/source-ip-address-affinty-configuration-in-haproxy/">
+      HAProxy でのソース IP アドレスアフィニティ設定方法
+    </a>
+  </h1>
+
+  <div class="post-meta">
+    2014-09-29
+    <ul>
+    
+      <li><a href="/tags/haproxy">HAProxy</a></li>
+    </span>
+    </ul>
+  </div>
+
+  
+
+<p>HAProxy で、アクセス元のクライアントの IP アドレスを元に、分散先サーバを固定したい場合、 <code>backend</code> または <code>listen</code> セクションで次のように設定すればよい</p>
+
+<h2 id="toc_0">frontend と backend を分けて設定してる場合</h2>
+
+<pre><code>frontend web-front
+	bind *:80
+	default_backend web-back
+
+backend web-back
+	balance source # Affinity setting
+	server s1 192.168.1.11:80 check
+	server s2 192.168.1.12:80 check
+</code></pre>
+
+<h2 id="toc_1">listen でまとめて設定している場合</h2>
+
+<pre><code>listen web
+	bind *:80
+	balance source # Affinity setting
+	server s1 192.168.1.11:80 check
+	server s2 192.168.1.12:80 check
+</code></pre>
+
+<p>簡単な設定の割にはドキュメントを探すのに結構苦労した</p>
+
+<h2 id="toc_2">参考にしたページ</h2>
+
+<ul>
+<li><a href="http://blog.haproxy.com/2012/03/29/load-balancing-affinity-persistence-sticky-sessions-what-you-need-to-know/">load balancing, affinity, persistence, sticky sessions: what you need to know</a></li>
+<li><a href="http://cbonte.github.io/haproxy-dconv/configuration-1.5.html#4-balance">HAProxy Configuration Manual</a></li>
+</ul>
+
+</div>
+
+          
+            <div class="post">
+  <h1 class="post-title">
     <a href="/blog/2014/09/go-structure-pointer-and-omitempty/">
       Go の構造体とポインタと omitempty の話
     </a>
@@ -464,32 +517,6 @@ http://mirror.awanti.com/centos/6.5/updates/x86_64/
 <p>このテンプレートを作っていてわかったのは、 golang 標準の text/template と派生の html/template のテンプレートパッケージでは、書式自体は分かりやすくていいものの、制御構文が少なかったり定義した変数のスコープの絡みとかでいろいろと制約があり、プログラム側に手を入れて補助関数を作らないと、単純なものでも機能実現できないものが多々あるなあというところ。この辺りは、ロジックはあくまでプログラム側で処理し、テンプレートはそれを表示するだけだ、という考え方でできているのだと思うが、ちょっとしたカスタマイズでプログラム自体に手を入れなければいけないのは、メンテナンスの面でちょっとつらい。柔軟性の高い補助関数とかが Hugo 本家に入るのを見ていくしかないのかな、という気もする</p>
 
 <p>ともあれ、 Hugo 自体は必要十分な機能がよくまとまっていて、何よりサイト生成が早いこともあって、気軽に何度でもトライアンドエラーを繰り返して試せるので、個人的には気に入っている。しばらくいろいろ試してみたいと思う</p>
-
-</div>
-
-          
-            <div class="post">
-  <h1 class="post-title">
-    <a href="/blog/2014/08/specify-wget-savedir/">
-      wgetでの保存先ディレクトリを指定する
-    </a>
-  </h1>
-
-  <div class="post-meta">
-    2014-08-11
-    <ul>
-    
-      <li><a href="/tags/cli">cli</a></li>
-    </span>
-    </ul>
-  </div>
-
-  <p>wget コマンドを使っていると、たまにカレントディレクトリではなくて他の場所にデータを保存したい時があるのだけれど、その方法をしばしば忘れるのでメモ。これをやりたい時は、 -P オプションを使えばよい。たとえば</p>
-
-<pre><code class="bash">wget -P path/to/dstdir http://localhost/path/to/srcfile.tar.gz
-</code></pre>
-
-<p>の様に実行すると、 <code>path/to/dstdir/srcfile.tar.gz</code> の様に保存される</p>
 
 </div>
 

@@ -11,7 +11,7 @@
 
   <title>
     
-      Tags &middot; tatsushid.github.io
+      HAProxy でのソース IP アドレスアフィニティ設定方法 &middot; tatsushid.github.io
     
   </title>
 
@@ -32,7 +32,7 @@
   <link rel="shortcut icon" href="/favicon.ico">
 
   
-  <link rel="alternate" type="application/rss+xml" title="RSS" href="http://tatsushid.github.io/tags/index.xml/">
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="">
 </head>
 
 
@@ -58,7 +58,7 @@
       </li>
       
       <li>
-        <a class="sidebar-nav-item active" href="/tags/">Tags</a>
+        <a class="sidebar-nav-item" href="/tags/">Tags</a>
         
       </li>
       
@@ -85,40 +85,64 @@
       </div>
 
       <div class="container content">
-        <h1>Tags</h1>
-        <ul class="related-posts">
-          
-          <li>
-            <h3>
-              <a href="./centos">centos</a> (4)
-            </h3>
-          </li>
-          
-          <li>
-            <h3>
-              <a href="./cli">cli</a> (1)
-            </h3>
-          </li>
-          
-          <li>
-            <h3>
-              <a href="./golang">golang</a> (3)
-            </h3>
-          </li>
-          
-          <li>
-            <h3>
-              <a href="./haproxy">haproxy</a> (1)
-            </h3>
-          </li>
-          
-          <li>
-            <h3>
-              <a href="./hugo">hugo</a> (1)
-            </h3>
-          </li>
-          
-        </ul>
+        <div class="post">
+  <h1 class="post-title">
+    <a href="/blog/2014/09/source-ip-address-affinty-configuration-in-haproxy/">
+      HAProxy でのソース IP アドレスアフィニティ設定方法
+    </a>
+  </h1>
+
+  <div class="post-meta">
+    2014-09-29
+    <ul>
+    
+      <li><a href="/tags/haproxy">HAProxy</a></li>
+    </span>
+    </ul>
+  </div>
+
+  
+
+<p>HAProxy で、アクセス元のクライアントの IP アドレスを元に、分散先サーバを固定したい場合、 <code>backend</code> または <code>listen</code> セクションで次のように設定すればよい</p>
+
+<h2 id="toc_0">frontend と backend を分けて設定してる場合</h2>
+
+<pre><code>frontend web-front
+	bind *:80
+	default_backend web-back
+
+backend web-back
+	balance source # Affinity setting
+	server s1 192.168.1.11:80 check
+	server s2 192.168.1.12:80 check
+</code></pre>
+
+<h2 id="toc_1">listen でまとめて設定している場合</h2>
+
+<pre><code>listen web
+	bind *:80
+	balance source # Affinity setting
+	server s1 192.168.1.11:80 check
+	server s2 192.168.1.12:80 check
+</code></pre>
+
+<p>簡単な設定の割にはドキュメントを探すのに結構苦労した</p>
+
+<h2 id="toc_2">参考にしたページ</h2>
+
+<ul>
+<li><a href="http://blog.haproxy.com/2012/03/29/load-balancing-affinity-persistence-sticky-sessions-what-you-need-to-know/">load balancing, affinity, persistence, sticky sessions: what you need to know</a></li>
+<li><a href="http://cbonte.github.io/haproxy-dconv/configuration-1.5.html#4-balance">HAProxy Configuration Manual</a></li>
+</ul>
+
+</div>
+
+        <nav class="prev-next">
+          <ul>
+            <li> Newer Post </li>
+            <li><a href="/blog/2014/09/go-structure-pointer-and-omitempty/">Older Post</a></li>
+          </ul>
+        </nav>
       </div>
     </div>
 
