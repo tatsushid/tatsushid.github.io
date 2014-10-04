@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+
+  <head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+      CentOS 3 の Docker イメージを作ってみた &middot; tatsushid.github.io
+    
+  </title>
+
+  
+  <link rel="stylesheet" href="/css/poole.css">
+  <link rel="stylesheet" href="/css/syntax.css">
+  <link rel="stylesheet" href="/css/lanyon.css">
+  <link rel="stylesheet" href="/css/overwrite.css">
+  <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=PT+Serif:400,400italic,700|PT+Sans:400">
+  <link rel="stylesheet" href="/css/styles/zenburn.css">
+
+  
+  <script src="/js/highlight.pack.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script>
+
+  
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/apple-touch-icon-precomposed.png">
+  <link rel="shortcut icon" href="/favicon.ico">
+
+  
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="">
+</head>
+
+
+  <body class="theme-base-0d layout-reverse sidebar-overlay">
+
+    
+<input type="checkbox" class="sidebar-checkbox" id="sidebar-checkbox">
+
+
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-item">
+    <p>   </p>
+  </div>
+
+  <nav class="sidebar-nav">
+    <ul>
+      <li><a class="sidebar-nav-item" href="/">Home</a></li>
+
+      
+      <li>
+        <a class="sidebar-nav-item" href="/blog/">Blog</a>
+        
+      </li>
+      
+      <li>
+        <a class="sidebar-nav-item" href="/tags/">Tags</a>
+        
+      </li>
+      
+
+    </ul>
+  </nav>
+
+  <div class="sidebar-item">
+    <p>
+       &copy; 2014. Tatsushi Demachi All rights reserved. 
+    </p>
+  </div>
+</div>
+
+
+    
+    <div class="wrap">
+      <div class="masthead">
+        <div class="container">
+          <h3 class="masthead-title">
+            <a href="/" title="Home">tatsushid.github.io</a>
+          </h3>
+        </div>
+      </div>
+
+      <div class="container content">
+        <div class="post">
+  <h1 class="post-title">
+    <a href="/blog/2014/10/how-to-build-centos3-docker-image/">
+      CentOS 3 の Docker イメージを作ってみた
+    </a>
+  </h1>
+
+  <div class="post-meta">
+    2014-10-04
+    <ul>
+    
+      <li><a href="/tags/docker">Docker</a></li>
+    
+      <li><a href="/tags/centos">CentOS</a></li>
+    
+    </ul>
+  </div>
+
+  
+
+<p>先日の Bash 脆弱性騒ぎに関連して、ごく一部で残ってる RHEL3 系のマシンにも Bash のパッチを当てざるを得ない状況が発生したため、この際パッケージビルド用の Docker イメージも作っておくか、ということでやってみた</p>
+
+<h2 id="toc_0">必要なもの</h2>
+
+<ul>
+<li>CentOS 3 がインストールされているサーバないし仮想マシン</li>
+<li>Yum パッケージ</li>
+<li>CentOS 3 のパッケージが含まれているリポジトリへのアクセス</li>
+</ul>
+
+<p>CentOS 3 のマシンは楽にやるには必須だと思う。初めは CentOS 6 上でやってみたが、後述のスクリプト実行時に最新の CentOS 6 のパッケージを拾ってこようとするのをうまく回避できなかったので、結局 CentOS 3 上で作業を行った</p>
+
+<h2 id="toc_1">作成の流れ</h2>
+
+<p>といっても、ほとんどやることはなくて、だいたい以下に集約される</p>
+
+<ul>
+<li><code>yum.conf</code> を編集して CentOS 3 パッケージが含まれているリポジトリを参照するようにする</li>
+<li>Docker プロジェクトが提供している <a href="https://github.com/docker/docker/blob/master/contrib/mkimage-yum.sh">mkimage-yum.sh</a> を持ってきて、 CentOS 3 向けにカスタマイズする</li>
+<li>スクリプト実行して <code>os_image.tar.gz</code> を得る</li>
+<li>できた <code>os_image.tar.gz</code> を Docker に食わせてイメージ化する</li>
+</ul>
+
+<p>以下、個々の作業の説明</p>
+
+<h3 id="toc_2">yum.conf の編集</h3>
+
+<p>サーバ内に Yum が入っていなければ、まずはこれが必須なので入れておくのだが、 CentOS 3 はもうメンテされていないので、パッケージを拾ってこれるミラーサーバを <code>yum.conf</code> に設定しておかなければならない。普通は <code>http://vault.centos.org/</code> を設定しておけばいいと思うが、当たるミラーによってはかなり遅いことになるので、場合によっては速度の出るミラーサーバの IP アドレスを <code>dig</code> なりなんなりで調べて直接 IP アドレスを指定しておく必要があるかもしれない。具体的な変更は <code>yum.conf</code> 内にいくつかある</p>
+
+<pre><code>baseurl=http://mirror.centos.org/centos/$releasever/os/$basearch/
+</code></pre>
+
+<p>みたいな行を</p>
+
+<pre><code>baseurl=http://vault.centos.org/3.9/os/i386/
+</code></pre>
+
+<p>のように書き換えておくだけである</p>
+
+<h3 id="toc_3">mkimage-yum.sh のカスタマイズ</h3>
+
+<p>一番手間取ったのがここだったが、わかってしまえばなんということもない内容。書き換えたスクリプトはこんな感じ</p>
+
+<script src="https://gist.github.com/tatsushid/22d169ea1e91e8941773.js"></script>
+
+<p>はまったポイントは</p>
+
+<ul>
+<li>mktemp が古いためにオプションの扱いが違う。最初気付かずやって、それなりの量のシステムファイルを消してしまった…</li>
+<li>パッケージを検証する GPG KEY を Yum が勝手には拾ってきてくれないので、自分で先に対象ディレクトリに落としておく</li>
+<li>なぜか Docker にインポートした後 RPM DB が壊れているようだったので、 <code>yum clean</code> 後に <code>rpm --rebuilddb</code> を実行しておく</li>
+<li>ldconfig キャッシュは消してもいいが、できたイメージをすぐ使いたい時は、ライブラリが見つからなくていちいち再構築も面倒なので、残しておく</li>
+</ul>
+
+<p>といったところ</p>
+
+<h3 id="toc_4">スクリプトの実行</h3>
+
+<p>これはそのまんま、上記で作成しておいた <code>yum.conf</code> を <code>mkimage-yum.sh</code> に指定して実行するだけである。うまくいけば <code>os_image.tar.gz</code> がカレントディレクトリ内に作られる</p>
+
+<h3 id="toc_5">Docker でイメージ化</h3>
+
+<p>できた <code>os_image.tar.gz</code> を Docker が動いている環境に持ってきて、下記のようにコマンドを実行する</p>
+
+<pre><code class="bash">cat os_image.tar.gz | docker import - centos-3-i386
+</code></pre>
+
+<p><code>centos-3-i386</code> の部分はイメージ名になるので、好きなように設定すればよい。インポートに成功したら、</p>
+
+<pre><code class="bash">docker run -i -t centos-3-i386 /bin/bash
+</code></pre>
+
+<p>のようにして使い始めることができる</p>
+
+<h2 id="toc_6">まとめ</h2>
+
+<p>上記の流れでできたイメージを使って、無事パッチ済みの Bash の RPM の作成もできたので、日常の作業には十分な環境が作成できたと思う</p>
+
+<p>Docker のイメージを作ったのは初めてだったが、 OS が稼働するのに必要なファイル群を tar に固めて食わせるだけ、というのは手軽でいい。各種ディストリビューションごとにマイクロ環境を作れるようなツールがあったりするので、それを使えば気楽にイメージが作れるだろうな、と思う</p>
+
+</div>
+
+        <nav class="prev-next">
+          <ul>
+            <li> Newer Post </li>
+            <li><a href="/blog/2014/09/source-ip-address-affinty-configuration-in-haproxy/">Older Post</a></li>
+          </ul>
+        </nav>
+      </div>
+    </div>
+
+    <label for="sidebar-checkbox" class="sidebar-toggle"></label>
+
+<script>
+  (function(document) {
+    var toggle = document.querySelector('.sidebar-toggle');
+    var sidebar = document.querySelector('#sidebar');
+    var checkbox = document.querySelector('#sidebar-checkbox');
+
+    document.addEventListener('click', function(e) {
+      var target = e.target;
+
+      if(!checkbox.checked ||
+         sidebar.contains(target) ||
+         (target === checkbox || target === toggle)) return;
+
+      checkbox.checked = false;
+    }, false);
+  })(document);
+</script>
+
+
+  </body>
+</html>

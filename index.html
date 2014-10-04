@@ -89,6 +89,109 @@
           
             <div class="post">
   <h1 class="post-title">
+    <a href="/blog/2014/10/how-to-build-centos3-docker-image/">
+      CentOS 3 の Docker イメージを作ってみた
+    </a>
+  </h1>
+
+  <div class="post-meta">
+    2014-10-04
+    <ul>
+    
+      <li><a href="/tags/docker">Docker</a></li>
+    
+      <li><a href="/tags/centos">CentOS</a></li>
+    
+    </ul>
+  </div>
+
+  
+
+<p>先日の Bash 脆弱性騒ぎに関連して、ごく一部で残ってる RHEL3 系のマシンにも Bash のパッチを当てざるを得ない状況が発生したため、この際パッケージビルド用の Docker イメージも作っておくか、ということでやってみた</p>
+
+<h2 id="toc_0">必要なもの</h2>
+
+<ul>
+<li>CentOS 3 がインストールされているサーバないし仮想マシン</li>
+<li>Yum パッケージ</li>
+<li>CentOS 3 のパッケージが含まれているリポジトリへのアクセス</li>
+</ul>
+
+<p>CentOS 3 のマシンは楽にやるには必須だと思う。初めは CentOS 6 上でやってみたが、後述のスクリプト実行時に最新の CentOS 6 のパッケージを拾ってこようとするのをうまく回避できなかったので、結局 CentOS 3 上で作業を行った</p>
+
+<h2 id="toc_1">作成の流れ</h2>
+
+<p>といっても、ほとんどやることはなくて、だいたい以下に集約される</p>
+
+<ul>
+<li><code>yum.conf</code> を編集して CentOS 3 パッケージが含まれているリポジトリを参照するようにする</li>
+<li>Docker プロジェクトが提供している <a href="https://github.com/docker/docker/blob/master/contrib/mkimage-yum.sh">mkimage-yum.sh</a> を持ってきて、 CentOS 3 向けにカスタマイズする</li>
+<li>スクリプト実行して <code>os_image.tar.gz</code> を得る</li>
+<li>できた <code>os_image.tar.gz</code> を Docker に食わせてイメージ化する</li>
+</ul>
+
+<p>以下、個々の作業の説明</p>
+
+<h3 id="toc_2">yum.conf の編集</h3>
+
+<p>サーバ内に Yum が入っていなければ、まずはこれが必須なので入れておくのだが、 CentOS 3 はもうメンテされていないので、パッケージを拾ってこれるミラーサーバを <code>yum.conf</code> に設定しておかなければならない。普通は <code>http://vault.centos.org/</code> を設定しておけばいいと思うが、当たるミラーによってはかなり遅いことになるので、場合によっては速度の出るミラーサーバの IP アドレスを <code>dig</code> なりなんなりで調べて直接 IP アドレスを指定しておく必要があるかもしれない。具体的な変更は <code>yum.conf</code> 内にいくつかある</p>
+
+<pre><code>baseurl=http://mirror.centos.org/centos/$releasever/os/$basearch/
+</code></pre>
+
+<p>みたいな行を</p>
+
+<pre><code>baseurl=http://vault.centos.org/3.9/os/i386/
+</code></pre>
+
+<p>のように書き換えておくだけである</p>
+
+<h3 id="toc_3">mkimage-yum.sh のカスタマイズ</h3>
+
+<p>一番手間取ったのがここだったが、わかってしまえばなんということもない内容。書き換えたスクリプトはこんな感じ</p>
+
+<script src="https://gist.github.com/tatsushid/22d169ea1e91e8941773.js"></script>
+
+<p>はまったポイントは</p>
+
+<ul>
+<li>mktemp が古いためにオプションの扱いが違う。最初気付かずやって、それなりの量のシステムファイルを消してしまった…</li>
+<li>パッケージを検証する GPG KEY を Yum が勝手には拾ってきてくれないので、自分で先に対象ディレクトリに落としておく</li>
+<li>なぜか Docker にインポートした後 RPM DB が壊れているようだったので、 <code>yum clean</code> 後に <code>rpm --rebuilddb</code> を実行しておく</li>
+<li>ldconfig キャッシュは消してもいいが、できたイメージをすぐ使いたい時は、ライブラリが見つからなくていちいち再構築も面倒なので、残しておく</li>
+</ul>
+
+<p>といったところ</p>
+
+<h3 id="toc_4">スクリプトの実行</h3>
+
+<p>これはそのまんま、上記で作成しておいた <code>yum.conf</code> を <code>mkimage-yum.sh</code> に指定して実行するだけである。うまくいけば <code>os_image.tar.gz</code> がカレントディレクトリ内に作られる</p>
+
+<h3 id="toc_5">Docker でイメージ化</h3>
+
+<p>できた <code>os_image.tar.gz</code> を Docker が動いている環境に持ってきて、下記のようにコマンドを実行する</p>
+
+<pre><code class="bash">cat os_image.tar.gz | docker import - centos-3-i386
+</code></pre>
+
+<p><code>centos-3-i386</code> の部分はイメージ名になるので、好きなように設定すればよい。インポートに成功したら、</p>
+
+<pre><code class="bash">docker run -i -t centos-3-i386 /bin/bash
+</code></pre>
+
+<p>のようにして使い始めることができる</p>
+
+<h2 id="toc_6">まとめ</h2>
+
+<p>上記の流れでできたイメージを使って、無事パッチ済みの Bash の RPM の作成もできたので、日常の作業には十分な環境が作成できたと思う</p>
+
+<p>Docker のイメージを作ったのは初めてだったが、 OS が稼働するのに必要なファイル群を tar に固めて食わせるだけ、というのは手軽でいい。各種ディストリビューションごとにマイクロ環境を作れるようなツールがあったりするので、それを使えば気楽にイメージが作れるだろうな、と思う</p>
+
+</div>
+
+          
+            <div class="post">
+  <h1 class="post-title">
     <a href="/blog/2014/09/source-ip-address-affinty-configuration-in-haproxy/">
       HAProxy でのソース IP アドレスアフィニティ設定方法
     </a>
@@ -99,7 +202,7 @@
     <ul>
     
       <li><a href="/tags/haproxy">HAProxy</a></li>
-    </span>
+    
     </ul>
   </div>
 
@@ -152,7 +255,7 @@ backend web-back
     <ul>
     
       <li><a href="/tags/golang">golang</a></li>
-    </span>
+    
     </ul>
   </div>
 
@@ -366,7 +469,7 @@ func main() {
     <ul>
     
       <li><a href="/tags/golang">golang</a></li>
-    </span>
+    
     </ul>
   </div>
 
@@ -435,7 +538,7 @@ func main() {
     <ul>
     
       <li><a href="/tags/centos">centos</a></li>
-    </span>
+    
     </ul>
   </div>
 
@@ -477,46 +580,6 @@ http://mirror.awanti.com/centos/6.5/updates/x86_64/
 <p>のようなリストを返してきてて、国内ミラーを使ってくれてないのが速度が出てない理由なのかな、と</p>
 
 <p>余談だけど、各国のミラーの状態は <a href="http://mirror-status.centos.org/">http://mirror-status.centos.org/</a> で見れる</p>
-
-</div>
-
-          
-            <div class="post">
-  <h1 class="post-title">
-    <a href="/blog/2014/08/change-site-generator-to-hugo/">
-      静的サイトジェネレーターを Hugo に切り替えた
-    </a>
-  </h1>
-
-  <div class="post-meta">
-    2014-08-16
-    <ul>
-    
-      <li><a href="/tags/hugo">Hugo</a></li>
-    
-      <li><a href="/tags/golang">golang</a></li>
-    </span>
-    </ul>
-  </div>
-
-  <p>ここ半年から一年の間、ちょっとしたコマンドラインツールの開発にはずっと golang を使ってきてて、せっかくなのでサイトジェネレーターもこの際 golang 製に変えてみようということで、 <a href="http://hugo.spf13.com/">Hugo</a> を使ってみることにした。今のところの使用感としては、</p>
-
-<ul>
-<li>バイナリ拾ってくるだけなのでインストール簡単</li>
-<li>サイト生成速度が速い！</li>
-<li><a href="http://jekyllrb.com/">Jekyll</a> と同様に Front Matter がある（各ページのメタデータを定義できるもの）</li>
-<li>他のツールにもあるが、ローカルサーバでのプレビュー機能便利</li>
-<li>他のツールほどメジャーではないせいか、既成のテンプレートが少ない (´；ω；｀)</li>
-<li>Go 標準のテンプレートパッケージ使ってるためか、テンプレートでいろいろやろうとすると制約が厳しい</li>
-</ul>
-
-<p>といったところ。 golang の特質はそのままのため、がんばって言語環境整備しなくても、 Windows とか他のプラットフォームでも同じように使えるのはいいところだと思う。コード量もそれほどではないので、自分で機能を追加するのもそれほど難しくない</p>
-
-<p>一方でテンプレートは本当に選択肢が少なすぎるので、勉強も兼ねて、 <a href="http://jekyllrb.com/">Jekyll</a> 用のテーマの <a href="http://lanyon.getpoole.com/">Lanyon</a> を移植して、それにちょっとだけ手を加えたものを使うことにした。こちらは気が向いたら公開したい</p>
-
-<p>このテンプレートを作っていてわかったのは、 golang 標準の text/template と派生の html/template のテンプレートパッケージでは、書式自体は分かりやすくていいものの、制御構文が少なかったり定義した変数のスコープの絡みとかでいろいろと制約があり、プログラム側に手を入れて補助関数を作らないと、単純なものでも機能実現できないものが多々あるなあというところ。この辺りは、ロジックはあくまでプログラム側で処理し、テンプレートはそれを表示するだけだ、という考え方でできているのだと思うが、ちょっとしたカスタマイズでプログラム自体に手を入れなければいけないのは、メンテナンスの面でちょっとつらい。柔軟性の高い補助関数とかが Hugo 本家に入るのを見ていくしかないのかな、という気もする</p>
-
-<p>ともあれ、 Hugo 自体は必要十分な機能がよくまとまっていて、何よりサイト生成が早いこともあって、気軽に何度でもトライアンドエラーを繰り返して試せるので、個人的には気に入っている。しばらくいろいろ試してみたいと思う</p>
 
 </div>
 

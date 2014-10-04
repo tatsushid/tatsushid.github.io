@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+      <title>Docker on tatsushid.github.io </title>
+      <generator uri="https://gohugo.io">Hugo</generator>
+    <link>http://tatsushid.github.io/tags/docker/index.xml/</link>
+    <language>ja-jp</language>
+    
+    
+    <updated>Sat, 04 Oct 2014 14:34:47 JST</updated>
+    
+    <item>
+      <title>CentOS 3 の Docker イメージを作ってみた</title>
+      <link>http://tatsushid.github.io/blog/2014/10/how-to-build-centos3-docker-image/</link>
+      <pubDate>Sat, 04 Oct 2014 14:34:47 JST</pubDate>
+      
+      <guid>http://tatsushid.github.io/blog/2014/10/how-to-build-centos3-docker-image/</guid>
+      <description>
+
+&lt;p&gt;先日の Bash 脆弱性騒ぎに関連して、ごく一部で残ってる RHEL3 系のマシンにも Bash のパッチを当てざるを得ない状況が発生したため、この際パッケージビルド用の Docker イメージも作っておくか、ということでやってみた&lt;/p&gt;
+
+&lt;h2 id=&#34;toc_0&#34;&gt;必要なもの&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;CentOS 3 がインストールされているサーバないし仮想マシン&lt;/li&gt;
+&lt;li&gt;Yum パッケージ&lt;/li&gt;
+&lt;li&gt;CentOS 3 のパッケージが含まれているリポジトリへのアクセス&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;CentOS 3 のマシンは楽にやるには必須だと思う。初めは CentOS 6 上でやってみたが、後述のスクリプト実行時に最新の CentOS 6 のパッケージを拾ってこようとするのをうまく回避できなかったので、結局 CentOS 3 上で作業を行った&lt;/p&gt;
+
+&lt;h2 id=&#34;toc_1&#34;&gt;作成の流れ&lt;/h2&gt;
+
+&lt;p&gt;といっても、ほとんどやることはなくて、だいたい以下に集約される&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;yum.conf&lt;/code&gt; を編集して CentOS 3 パッケージが含まれているリポジトリを参照するようにする&lt;/li&gt;
+&lt;li&gt;Docker プロジェクトが提供している &lt;a href=&#34;https://github.com/docker/docker/blob/master/contrib/mkimage-yum.sh&#34;&gt;mkimage-yum.sh&lt;/a&gt; を持ってきて、 CentOS 3 向けにカスタマイズする&lt;/li&gt;
+&lt;li&gt;スクリプト実行して &lt;code&gt;os_image.tar.gz&lt;/code&gt; を得る&lt;/li&gt;
+&lt;li&gt;できた &lt;code&gt;os_image.tar.gz&lt;/code&gt; を Docker に食わせてイメージ化する&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;以下、個々の作業の説明&lt;/p&gt;
+
+&lt;h3 id=&#34;toc_2&#34;&gt;yum.conf の編集&lt;/h3&gt;
+
+&lt;p&gt;サーバ内に Yum が入っていなければ、まずはこれが必須なので入れておくのだが、 CentOS 3 はもうメンテされていないので、パッケージを拾ってこれるミラーサーバを &lt;code&gt;yum.conf&lt;/code&gt; に設定しておかなければならない。普通は &lt;code&gt;http://vault.centos.org/&lt;/code&gt; を設定しておけばいいと思うが、当たるミラーによってはかなり遅いことになるので、場合によっては速度の出るミラーサーバの IP アドレスを &lt;code&gt;dig&lt;/code&gt; なりなんなりで調べて直接 IP アドレスを指定しておく必要があるかもしれない。具体的な変更は &lt;code&gt;yum.conf&lt;/code&gt; 内にいくつかある&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;baseurl=http://mirror.centos.org/centos/$releasever/os/$basearch/
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;みたいな行を&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;baseurl=http://vault.centos.org/3.9/os/i386/
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;のように書き換えておくだけである&lt;/p&gt;
+
+&lt;h3 id=&#34;toc_3&#34;&gt;mkimage-yum.sh のカスタマイズ&lt;/h3&gt;
+
+&lt;p&gt;一番手間取ったのがここだったが、わかってしまえばなんということもない内容。書き換えたスクリプトはこんな感じ&lt;/p&gt;
+
+&lt;script src=&#34;https://gist.github.com/tatsushid/22d169ea1e91e8941773.js&#34;&gt;&lt;/script&gt;
+
+&lt;p&gt;はまったポイントは&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;mktemp が古いためにオプションの扱いが違う。最初気付かずやって、それなりの量のシステムファイルを消してしまった…&lt;/li&gt;
+&lt;li&gt;パッケージを検証する GPG KEY を Yum が勝手には拾ってきてくれないので、自分で先に対象ディレクトリに落としておく&lt;/li&gt;
+&lt;li&gt;なぜか Docker にインポートした後 RPM DB が壊れているようだったので、 &lt;code&gt;yum clean&lt;/code&gt; 後に &lt;code&gt;rpm --rebuilddb&lt;/code&gt; を実行しておく&lt;/li&gt;
+&lt;li&gt;ldconfig キャッシュは消してもいいが、できたイメージをすぐ使いたい時は、ライブラリが見つからなくていちいち再構築も面倒なので、残しておく&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;といったところ&lt;/p&gt;
+
+&lt;h3 id=&#34;toc_4&#34;&gt;スクリプトの実行&lt;/h3&gt;
+
+&lt;p&gt;これはそのまんま、上記で作成しておいた &lt;code&gt;yum.conf&lt;/code&gt; を &lt;code&gt;mkimage-yum.sh&lt;/code&gt; に指定して実行するだけである。うまくいけば &lt;code&gt;os_image.tar.gz&lt;/code&gt; がカレントディレクトリ内に作られる&lt;/p&gt;
+
+&lt;h3 id=&#34;toc_5&#34;&gt;Docker でイメージ化&lt;/h3&gt;
+
+&lt;p&gt;できた &lt;code&gt;os_image.tar.gz&lt;/code&gt; を Docker が動いている環境に持ってきて、下記のようにコマンドを実行する&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;bash&#34;&gt;cat os_image.tar.gz | docker import - centos-3-i386
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;code&gt;centos-3-i386&lt;/code&gt; の部分はイメージ名になるので、好きなように設定すればよい。インポートに成功したら、&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;bash&#34;&gt;docker run -i -t centos-3-i386 /bin/bash
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;のようにして使い始めることができる&lt;/p&gt;
+
+&lt;h2 id=&#34;toc_6&#34;&gt;まとめ&lt;/h2&gt;
+
+&lt;p&gt;上記の流れでできたイメージを使って、無事パッチ済みの Bash の RPM の作成もできたので、日常の作業には十分な環境が作成できたと思う&lt;/p&gt;
+
+&lt;p&gt;Docker のイメージを作ったのは初めてだったが、 OS が稼働するのに必要なファイル群を tar に固めて食わせるだけ、というのは手軽でいい。各種ディストリビューションごとにマイクロ環境を作れるようなツールがあったりするので、それを使えば気楽にイメージが作れるだろうな、と思う&lt;/p&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>
