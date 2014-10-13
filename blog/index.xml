@@ -7,7 +7,47 @@
     <language>ja-jp</language>
     
     
-    <updated>Sat, 04 Oct 2014 14:34:47 JST</updated>
+    <updated>Mon, 13 Oct 2014 13:59:29 JST</updated>
+    
+    <item>
+      <title>Go の Vim プラグインを vim-go に切り替えた</title>
+      <link>http://tatsushid.github.io/blog/2014/10/switch-from-official-go-vim-plugin-to-vim-go/</link>
+      <pubDate>Mon, 13 Oct 2014 13:59:29 JST</pubDate>
+      
+      <guid>http://tatsushid.github.io/blog/2014/10/switch-from-official-go-vim-plugin-to-vim-go/</guid>
+      <description>&lt;p&gt;Vim で Go のコードを書いていて、エディタ内からお手軽にカバレッジ取れたらいいなと思って調べていたら、オフィシャルの Go の Vim プラグインではなく &lt;a href=&#34;https://github.com/fatih/vim-go&#34;&gt;vim-go&lt;/a&gt; を使えばできそうだということがわかったので、切り替えることにした&lt;/p&gt;
+
+&lt;p&gt;まずは&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;vim&#34;&gt;&amp;quot; Set golang vim scripts
+exe &#39;set runtimepath+=&#39;.substitute(system(&#39;brew --prefix go&#39;), &#39;\n&#39;, &#39;&#39;, &#39;g&#39;).&#39;/libexec/misc/vim&#39;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;として読み込んでいたオフィシャルプラグインを外して、自分の環境ではプラグイン管理に &lt;a href=&#34;https://github.com/Shougo/neobundle.vim&#34;&gt;NeoBundle&lt;/a&gt; を使っているので&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;vim&#34;&gt;NeoBundleLazy &#39;fatih/vim-go&#39;, {
+       \ &#39;depends&#39; : &#39;majutsushi/tagbar&#39;,
+       \ &#39;autoload&#39; : {
+       \   &#39;filetypes&#39; : &#39;go&#39;,
+       \   &#39;commands&#39; : [&#39;GoInstallBinaries&#39;, &#39;GoUpdateBinaries&#39;],
+       \ }}
+
+&amp;quot; vim-go &amp;quot;{{{
+let bundle = neobundle#get(&#39;vim-go&#39;)
+function! bundle.hooks.on_source(bundle)
+       let g:go_fmt_autosave = 0
+       let g:go_fmt_fail_silently = 1
+endfunction
+&amp;quot;}}}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;のように設定してみた。 &lt;a href=&#34;http://majutsushi.github.io/tagbar/&#34;&gt;Tagbar&lt;/a&gt; を使っている場合は &lt;code&gt;depends&lt;/code&gt; に一緒に読み込む設定を書いておくことで、 &lt;a href=&#34;https://github.com/jstemmer/gotags&#34;&gt;gotags&lt;/a&gt; を使ったアウトライン表示ができる。また、当初の目的だったカバレッジ取得は、 &lt;code&gt;:GoCoverage&lt;/code&gt; を実行すれば自動的にウェブブラウザが開いて結果を表示してくれるようになっている&lt;/p&gt;
+
+&lt;p&gt;他にも支援プログラムを使った各種機能が盛りだくさんで、仮にそれらに必要なソフトウェアがインストールされていない場合は &lt;code&gt;:GoInstallBinaries&lt;/code&gt; を実行すれば、内部的に &lt;code&gt;go get&lt;/code&gt; して必要なパッケージを拾ってきてインストールしてくれる。それらの一括更新も &lt;code&gt;:GoUpdateBinaries&lt;/code&gt; で実行できて便利&lt;/p&gt;
+
+&lt;p&gt;これでちょっとばかり Go を書く環境がリッチになったので、しばらく使い込んでみたい&lt;/p&gt;
+</description>
+    </item>
     
     <item>
       <title>CentOS 3 の Docker イメージを作ってみた</title>

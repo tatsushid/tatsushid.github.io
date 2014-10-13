@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+
+  <head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+      Go の Vim プラグインを vim-go に切り替えた &middot; tatsushid.github.io
+    
+  </title>
+
+  
+  <link rel="stylesheet" href="/css/poole.css">
+  <link rel="stylesheet" href="/css/syntax.css">
+  <link rel="stylesheet" href="/css/lanyon.css">
+  <link rel="stylesheet" href="/css/overwrite.css">
+  <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=PT+Serif:400,400italic,700|PT+Sans:400">
+  <link rel="stylesheet" href="/css/styles/zenburn.css">
+
+  
+  <script src="/js/highlight.pack.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script>
+
+  
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/apple-touch-icon-precomposed.png">
+  <link rel="shortcut icon" href="/favicon.ico">
+
+  
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="">
+</head>
+
+
+  <body class="theme-base-0d layout-reverse sidebar-overlay">
+
+    
+<input type="checkbox" class="sidebar-checkbox" id="sidebar-checkbox">
+
+
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-item">
+    <p>   </p>
+  </div>
+
+  <nav class="sidebar-nav">
+    <ul>
+      <li><a class="sidebar-nav-item" href="/">Home</a></li>
+
+      
+      <li>
+        <a class="sidebar-nav-item" href="/blog/">Blog</a>
+        
+      </li>
+      
+      <li>
+        <a class="sidebar-nav-item" href="/tags/">Tags</a>
+        
+      </li>
+      
+
+    </ul>
+  </nav>
+
+  <div class="sidebar-item">
+    <p>
+       &copy; 2014. Tatsushi Demachi All rights reserved. 
+    </p>
+  </div>
+</div>
+
+
+    
+    <div class="wrap">
+      <div class="masthead">
+        <div class="container">
+          <h3 class="masthead-title">
+            <a href="/" title="Home">tatsushid.github.io</a>
+          </h3>
+        </div>
+      </div>
+
+      <div class="container content">
+        <div class="post">
+  <h1 class="post-title">
+    <a href="/blog/2014/10/switch-from-official-go-vim-plugin-to-vim-go/">
+      Go の Vim プラグインを vim-go に切り替えた
+    </a>
+  </h1>
+
+  <div class="post-meta">
+    2014-10-13
+    <ul>
+    
+      <li><a href="/tags/golang">golang</a></li>
+    
+      <li><a href="/tags/vim">Vim</a></li>
+    
+    </ul>
+  </div>
+
+  <p>Vim で Go のコードを書いていて、エディタ内からお手軽にカバレッジ取れたらいいなと思って調べていたら、オフィシャルの Go の Vim プラグインではなく <a href="https://github.com/fatih/vim-go">vim-go</a> を使えばできそうだということがわかったので、切り替えることにした</p>
+
+<p>まずは</p>
+
+<pre><code class="vim">&quot; Set golang vim scripts
+exe 'set runtimepath+='.substitute(system('brew --prefix go'), '\n', '', 'g').'/libexec/misc/vim'
+</code></pre>
+
+<p>として読み込んでいたオフィシャルプラグインを外して、自分の環境ではプラグイン管理に <a href="https://github.com/Shougo/neobundle.vim">NeoBundle</a> を使っているので</p>
+
+<pre><code class="vim">NeoBundleLazy 'fatih/vim-go', {
+       \ 'depends' : 'majutsushi/tagbar',
+       \ 'autoload' : {
+       \   'filetypes' : 'go',
+       \   'commands' : ['GoInstallBinaries', 'GoUpdateBinaries'],
+       \ }}
+
+&quot; vim-go &quot;{{{
+let bundle = neobundle#get('vim-go')
+function! bundle.hooks.on_source(bundle)
+       let g:go_fmt_autosave = 0
+       let g:go_fmt_fail_silently = 1
+endfunction
+&quot;}}}
+</code></pre>
+
+<p>のように設定してみた。 <a href="http://majutsushi.github.io/tagbar/">Tagbar</a> を使っている場合は <code>depends</code> に一緒に読み込む設定を書いておくことで、 <a href="https://github.com/jstemmer/gotags">gotags</a> を使ったアウトライン表示ができる。また、当初の目的だったカバレッジ取得は、 <code>:GoCoverage</code> を実行すれば自動的にウェブブラウザが開いて結果を表示してくれるようになっている</p>
+
+<p>他にも支援プログラムを使った各種機能が盛りだくさんで、仮にそれらに必要なソフトウェアがインストールされていない場合は <code>:GoInstallBinaries</code> を実行すれば、内部的に <code>go get</code> して必要なパッケージを拾ってきてインストールしてくれる。それらの一括更新も <code>:GoUpdateBinaries</code> で実行できて便利</p>
+
+<p>これでちょっとばかり Go を書く環境がリッチになったので、しばらく使い込んでみたい</p>
+
+</div>
+
+        <nav class="prev-next">
+          <ul>
+            <li> Newer Post </li>
+            <li><a href="/blog/2014/10/how-to-build-centos3-docker-image/">Older Post</a></li>
+          </ul>
+        </nav>
+      </div>
+    </div>
+
+    <label for="sidebar-checkbox" class="sidebar-toggle"></label>
+
+<script>
+  (function(document) {
+    var toggle = document.querySelector('.sidebar-toggle');
+    var sidebar = document.querySelector('#sidebar');
+    var checkbox = document.querySelector('#sidebar-checkbox');
+
+    document.addEventListener('click', function(e) {
+      var target = e.target;
+
+      if(!checkbox.checked ||
+         sidebar.contains(target) ||
+         (target === checkbox || target === toggle)) return;
+
+      checkbox.checked = false;
+    }, false);
+  })(document);
+</script>
+
+
+  </body>
+</html>
