@@ -3,8 +3,13 @@
   
   <url>
     <loc>http://tatsushid.github.io/</loc>
-    <lastmod>2014-10-13T13:59:29+09:00</lastmod>
+    <lastmod>2014-10-16T00:10:40+09:00</lastmod>
     <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://tatsushid.github.io/blog/2014/10/time-piece-problem-at-parsing-date-header-in-a-mail/</loc>
+    <lastmod>2014-10-16T00:10:40+09:00</lastmod>
   </url>
   
   <url>
