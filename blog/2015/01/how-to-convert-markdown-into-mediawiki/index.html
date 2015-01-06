@@ -11,7 +11,7 @@
 
   <title>
     
-      CentOS6をGPTパーティションで新規インストールする &middot; tatsushid.github.io
+      Pandoc を使って Markdown を Mediawiki に変換する方法 &middot; tatsushid.github.io
     
   </title>
 
@@ -87,31 +87,40 @@
       <div class="container content">
         <div class="post">
   <h1 class="post-title">
-    <a href="/blog/2014/07/install-centos6-on-gpt-drive/">
-      CentOS6をGPTパーティションで新規インストールする
+    <a href="/blog/2015/01/how-to-convert-markdown-into-mediawiki/">
+      Pandoc を使って Markdown を Mediawiki に変換する方法
     </a>
   </h1>
 
   <div class="post-meta">
-    2014-07-07
+    2015-01-05
     <ul>
     
-      <li><a href="/tags/centos">CentOS</a></li>
+      <li><a href="/tags/pandoc">Pandoc</a></li>
+    
+      <li><a href="/tags/markdown">Markdown</a></li>
+    
+      <li><a href="/tags/mediawiki">Mediawiki</a></li>
     
     </ul>
   </div>
 
-  <p>毎度毎度コマンドの打ち方を忘れてしまうのでメモ。 RHEL 6 互換のディストリビューションを新規インストールする際、 GPT パーティションを使いたい場合は、インストーラーで適当なところ（パーティション設定の直前辺り）まで進めたところで下記のようにコマンドを実行すると、自分でパーティションを切ることができる</p>
+  <p>あまり頻度の高くない作業だけど、ちょいちょい必要になりそうなため、忘れないようにメモ。 Markdown で書いたドキュメントは、 <a href="http://johnmacfarlane.net/pandoc/">Pandoc</a> を使うと Mediawiki の書式に変換できる。たとえば</p>
 
-<ul>
-<li><code>Alt + Ctrl + F2</code> でターミナルに切り替える</li>
-<li><code>parted /dev/sdx</code> （ sdx は実際のデバイス名を指定）を実行する</li>
-<li><code>mklabel gpt</code> と入力して実行</li>
-<li><code>quit</code> を入力して parted を抜ける</li>
-<li><code>Alt + F6</code> でターミナルを抜ける</li>
-</ul>
+<pre><code class="language-sh">pandoc -f markdown -t mediawiki -o sample.mediawiki sample.md
+</code></pre>
 
-<p>以上のように実行すると、ディスクデバイスに GPT パーティションが設定される。後は普通にパーティション設定を行ってインストールを進めていけば、 GPT パーティションのサーバができあがる</p>
+<p>のようにコマンドを実行すると、 <code>sample.md</code> を <code>sample.mediawiki</code> のファイルへ形式変換して出力してくれる。変換後の書式などはおおむね問題ないが、意図通りじゃない部分もところどころ見られるので、中身はチェックした方がよい。 MacOS X を使っているのなら、変換後のファイルの中身を</p>
+
+<pre><code class="language-sh">cat sample.mediawiki | pbcopy
+</code></pre>
+
+<p>としてクリップボードに取り込んでしまえるので、 Wiki の入力フォームに張りつけることも簡単にできる。もちろん逆の変換も</p>
+
+<pre><code class="language-sh">pandoc -f mediawiki -t markdown -o sample.md sample.mediawiki
+</code></pre>
+
+<p>のようにできる</p>
 
 </div>
 
@@ -130,20 +139,6 @@
       
         
         
-          <li>
-            <a href="/blog/2014/10/how-to-build-centos3-docker-image/">CentOS 3 の Docker イメージを作ってみた</a>
-            <small>
-              2014-10-04
-              <ul>
-                
-                  <li><a href="/tags/docker">Docker</a></li>
-                
-                  <li><a href="/tags/centos">CentOS</a></li>
-                
-              </ul>
-            </small>
-          </li>
-        
       
         
         
@@ -156,18 +151,6 @@
       
         
         
-          <li>
-            <a href="/blog/2014/09/how-to-check-centos-mirrorlist/">CentOSのyumミラーリストの調べ方</a>
-            <small>
-              2014-09-18
-              <ul>
-                
-                  <li><a href="/tags/centos">CentOS</a></li>
-                
-              </ul>
-            </small>
-          </li>
-        
       
         
         
@@ -177,32 +160,8 @@
       
         
         
-          <li>
-            <a href="/blog/2014/07/install-centos7-on-gpt-drive/">CentOS7をGPTパーティションで新規インストールする</a>
-            <small>
-              2014-07-25
-              <ul>
-                
-                  <li><a href="/tags/centos">CentOS</a></li>
-                
-              </ul>
-            </small>
-          </li>
-        
       
         
-        
-          <li>
-            <a href="/blog/2014/07/install-centos5-on-gpt-drive/">CentOS5をGPTパーティションで新規インストールする</a>
-            <small>
-              2014-07-08
-              <ul>
-                
-                  <li><a href="/tags/centos">CentOS</a></li>
-                
-              </ul>
-            </small>
-          </li>
         
       
         
@@ -216,8 +175,8 @@
 
         <nav class="prev-next">
           <ul>
-            <li><a href="/blog/2014/07/install-centos5-on-gpt-drive/">Newer Post</a></li>
-            <li><a href="/blog/archives/">Older Post</a></li>
+            <li> Newer Post </li>
+            <li><a href="/blog/2014/10/time-piece-problem-at-parsing-date-header-in-a-mail/">Older Post</a></li>
           </ul>
         </nav>
       </div>

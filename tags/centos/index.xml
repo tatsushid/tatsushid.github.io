@@ -1,13 +1,15 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-      <title>Centos on tatsushid.github.io </title>
-      <generator uri="https://gohugo.io">Hugo</generator>
-    <link>http://tatsushid.github.io/tags/centos/index.xml/</link>
+    <title>Centos on tatsushid.github.io</title>
+    <link>http://tatsushid.github.io/tags/centos/</link>
+    <description>Recent content in Centos on tatsushid.github.io</description>
+    <generator>Hugo -- gohugo.io</generator>
     <language>ja-jp</language>
     
     
-    <updated>Sat, 04 Oct 2014 14:34:47 JST</updated>
+    <lastBuildDate>Sat, 04 Oct 2014 14:34:47 JST</lastBuildDate>
+    <atom:link href="http://tatsushid.github.io/tags/centos/index.xml" rel="self" type="application/rss+xml" />
     
     <item>
       <title>CentOS 3 の Docker イメージを作ってみた</title>
@@ -19,7 +21,7 @@
 
 &lt;p&gt;先日の Bash 脆弱性騒ぎに関連して、ごく一部で残ってる RHEL3 系のマシンにも Bash のパッチを当てざるを得ない状況が発生したため、この際パッケージビルド用の Docker イメージも作っておくか、ということでやってみた&lt;/p&gt;
 
-&lt;h2 id=&#34;toc_0&#34;&gt;必要なもの&lt;/h2&gt;
+&lt;h2 id=&#34;必要なもの:0f9548c31060b9cf09120147eb98969b&#34;&gt;必要なもの&lt;/h2&gt;
 
 &lt;ul&gt;
 &lt;li&gt;CentOS 3 がインストールされているサーバないし仮想マシン&lt;/li&gt;
@@ -29,7 +31,7 @@
 
 &lt;p&gt;CentOS 3 のマシンは楽にやるには必須だと思う。初めは CentOS 6 上でやってみたが、後述のスクリプト実行時に最新の CentOS 6 のパッケージを拾ってこようとするのをうまく回避できなかったので、結局 CentOS 3 上で作業を行った&lt;/p&gt;
 
-&lt;h2 id=&#34;toc_1&#34;&gt;作成の流れ&lt;/h2&gt;
+&lt;h2 id=&#34;作成の流れ:0f9548c31060b9cf09120147eb98969b&#34;&gt;作成の流れ&lt;/h2&gt;
 
 &lt;p&gt;といっても、ほとんどやることはなくて、だいたい以下に集約される&lt;/p&gt;
 
@@ -42,7 +44,7 @@
 
 &lt;p&gt;以下、個々の作業の説明&lt;/p&gt;
 
-&lt;h3 id=&#34;toc_2&#34;&gt;yum.conf の編集&lt;/h3&gt;
+&lt;h3 id=&#34;yum-conf-の編集:0f9548c31060b9cf09120147eb98969b&#34;&gt;yum.conf の編集&lt;/h3&gt;
 
 &lt;p&gt;サーバ内に Yum が入っていなければ、まずはこれが必須なので入れておくのだが、 CentOS 3 はもうメンテされていないので、パッケージを拾ってこれるミラーサーバを &lt;code&gt;yum.conf&lt;/code&gt; に設定しておかなければならない。普通は &lt;code&gt;http://vault.centos.org/&lt;/code&gt; を設定しておけばいいと思うが、当たるミラーによってはかなり遅いことになるので、場合によっては速度の出るミラーサーバの IP アドレスを &lt;code&gt;dig&lt;/code&gt; なりなんなりで調べて直接 IP アドレスを指定しておく必要があるかもしれない。具体的な変更は &lt;code&gt;yum.conf&lt;/code&gt; 内にいくつかある&lt;/p&gt;
 
@@ -56,7 +58,7 @@
 
 &lt;p&gt;のように書き換えておくだけである&lt;/p&gt;
 
-&lt;h3 id=&#34;toc_3&#34;&gt;mkimage-yum.sh のカスタマイズ&lt;/h3&gt;
+&lt;h3 id=&#34;mkimage-yum-sh-のカスタマイズ:0f9548c31060b9cf09120147eb98969b&#34;&gt;mkimage-yum.sh のカスタマイズ&lt;/h3&gt;
 
 &lt;p&gt;一番手間取ったのがここだったが、わかってしまえばなんということもない内容。書き換えたスクリプトはこんな感じ&lt;/p&gt;
 
@@ -73,25 +75,25 @@
 
 &lt;p&gt;といったところ&lt;/p&gt;
 
-&lt;h3 id=&#34;toc_4&#34;&gt;スクリプトの実行&lt;/h3&gt;
+&lt;h3 id=&#34;スクリプトの実行:0f9548c31060b9cf09120147eb98969b&#34;&gt;スクリプトの実行&lt;/h3&gt;
 
 &lt;p&gt;これはそのまんま、上記で作成しておいた &lt;code&gt;yum.conf&lt;/code&gt; を &lt;code&gt;mkimage-yum.sh&lt;/code&gt; に指定して実行するだけである。うまくいけば &lt;code&gt;os_image.tar.gz&lt;/code&gt; がカレントディレクトリ内に作られる&lt;/p&gt;
 
-&lt;h3 id=&#34;toc_5&#34;&gt;Docker でイメージ化&lt;/h3&gt;
+&lt;h3 id=&#34;docker-でイメージ化:0f9548c31060b9cf09120147eb98969b&#34;&gt;Docker でイメージ化&lt;/h3&gt;
 
 &lt;p&gt;できた &lt;code&gt;os_image.tar.gz&lt;/code&gt; を Docker が動いている環境に持ってきて、下記のようにコマンドを実行する&lt;/p&gt;
 
-&lt;pre&gt;&lt;code class=&#34;bash&#34;&gt;cat os_image.tar.gz | docker import - centos-3-i386
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;cat os_image.tar.gz | docker import - centos-3-i386
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;&lt;code&gt;centos-3-i386&lt;/code&gt; の部分はイメージ名になるので、好きなように設定すればよい。インポートに成功したら、&lt;/p&gt;
 
-&lt;pre&gt;&lt;code class=&#34;bash&#34;&gt;docker run -i -t centos-3-i386 /bin/bash
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;docker run -i -t centos-3-i386 /bin/bash
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;のようにして使い始めることができる&lt;/p&gt;
 
-&lt;h2 id=&#34;toc_6&#34;&gt;まとめ&lt;/h2&gt;
+&lt;h2 id=&#34;まとめ:0f9548c31060b9cf09120147eb98969b&#34;&gt;まとめ&lt;/h2&gt;
 
 &lt;p&gt;上記の流れでできたイメージを使って、無事パッチ済みの Bash の RPM の作成もできたので、日常の作業には十分な環境が作成できたと思う&lt;/p&gt;
 
@@ -107,12 +109,12 @@
       <guid>http://tatsushid.github.io/blog/2014/09/how-to-check-centos-mirrorlist/</guid>
       <description>&lt;p&gt;ここ最近 CentOS の yum で updates からパッケージを持ってくる時の速度がやけに遅いので、 yum にはどんなミラーが返ってきてるのか調べてみた。 yum は 64bit 環境で特別設定を変えてなければ、通常 &lt;code&gt;http://mirrorlist.centos.org/?release=6&amp;amp;arch=x86_64&amp;amp;repo=os&lt;/code&gt; や &lt;code&gt;http://mirrorlist.centos.org/?release=6&amp;amp;arch=x86_64&amp;amp;repo=updates&lt;/code&gt; にアクセスしているので、この URL にブラウザでアクセスするか、&lt;/p&gt;
 
-&lt;pre&gt;&lt;code class=&#34;sh&#34;&gt;curl &#39;http://mirrorlist.centos.org/?release=6&amp;amp;arch=x86_64&amp;amp;repo=os&#39;
+&lt;pre&gt;&lt;code class=&#34;language-sh&#34;&gt;curl &#39;http://mirrorlist.centos.org/?release=6&amp;amp;arch=x86_64&amp;amp;repo=os&#39;
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;のように &lt;code&gt;curl&lt;/code&gt; を使えば、ミラーの一覧が返る。 &lt;code&gt;release&lt;/code&gt; は CentOS のメジャーバージョン、 &lt;code&gt;arch&lt;/code&gt; は &lt;code&gt;i386&lt;/code&gt; や &lt;code&gt;x86_64&lt;/code&gt; などのアーキテクチャ、 &lt;code&gt;repo&lt;/code&gt; はリポジトリの種類をそれぞれ指定できる。さらに、 URL に &lt;code&gt;cc=jp&lt;/code&gt; や &lt;code&gt;ip=8.8.8.8&lt;/code&gt; などのクエリを追加すると、国コード別、 IP アドレス別のミラーリストを返してくれるらしい。たとえば、&lt;/p&gt;
 
-&lt;pre&gt;&lt;code class=&#34;sh&#34;&gt;curl &#39;http://mirrorlist.centos.org/?release=6&amp;amp;arch=x86_64&amp;amp;repo=os&amp;amp;cc=jp&#39; # 国コード別
+&lt;pre&gt;&lt;code class=&#34;language-sh&#34;&gt;curl &#39;http://mirrorlist.centos.org/?release=6&amp;amp;arch=x86_64&amp;amp;repo=os&amp;amp;cc=jp&#39; # 国コード別
 curl &#39;http://mirrorlist.centos.org/?release=6&amp;amp;arch=x86_64&amp;amp;repo=os&amp;amp;ip=8.8.8.8&#39; # IP アドレス別
 &lt;/code&gt;&lt;/pre&gt;
 
@@ -185,7 +187,7 @@ http://mirror.awanti.com/centos/6.5/updates/x86_64/
 
 &lt;li&gt;&lt;p&gt;レスキューモードのシェルが立ち上がるので、下記のようにコマンドを実行してディスクのパーティションを切る&lt;/p&gt;
 
-&lt;pre&gt;&lt;code class=&#34;bash&#34;&gt;parted /dev/sda
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;parted /dev/sda
 (parted) mklabel gpt
 (parted) mkpart primary ext3 0 200MB
 (parted) mkpart primary linux-swap 200MB 2248MB
@@ -201,7 +203,7 @@ tune2fs -c 0 -i 0 /dev/sda3
 
 &lt;li&gt;&lt;p&gt;そのままでは Anaconda のエラーメッセージが出てインストール処理を先に進められないので、 Anaconda を下記の手順で上書きする&lt;/p&gt;
 
-&lt;pre&gt;&lt;code class=&#34;bash&#34;&gt;mkdir /mnt/anaconda
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;mkdir /mnt/anaconda
 mount -t tmpfs none /mnt/anaconda
 cd /mnt/anaconda
 tar -cpf - -C /mnt/runtime/usr/lib/anaconda . | tar -xpf -
@@ -211,14 +213,14 @@ mount -o bind /mnt/anaconda /mnt/runtime/usr/lib/anaconda
 
 &lt;li&gt;&lt;p&gt;このまま Anaconda を起動すると &lt;code&gt;/sbin&lt;/code&gt; が存在しているというエラーが出て起動できないため、下記の手順で空の &lt;code&gt;/sbin&lt;/code&gt; を用意する&lt;/p&gt;
 
-&lt;pre&gt;&lt;code class=&#34;bash&#34;&gt;export PATH=$PATH:/sbin.bak
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;export PATH=$PATH:/sbin.bak
 mv /sbin /sbin.bak
 mkdir /sbin
 &lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
 
 &lt;li&gt;&lt;p&gt;Anaconda の起動準備が完了したので、適切なミラーサイトの URL を使って Anaconda を起動する&lt;/p&gt;
 
-&lt;pre&gt;&lt;code class=&#34;bash&#34;&gt;anaconda --dmraid --selinux -T -m &amp;quot;http://ftp.iij.ad.jp/pub/linux/centos/5/os/x86_64/&amp;quot;
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;anaconda --dmraid --selinux -T -m &amp;quot;http://ftp.iij.ad.jp/pub/linux/centos/5/os/x86_64/&amp;quot;
 &lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
 
 &lt;li&gt;&lt;p&gt;インストール処理は、ディスクのパーティション設定以外、いつもの通りに進める。パーティション設定の画面では、すでに作成されているパーティションにマウントポイントを割り当てるにとどめ。パーティションの再フォーマットなどは行わない。 GPT では起動できないとの警告が出たら、そのまま OK を押して進める&lt;/p&gt;&lt;/li&gt;
@@ -231,7 +233,7 @@ mkdir /sbin
 
 &lt;li&gt;&lt;p&gt;シェルが立ち上がったら下記の手順で &lt;code&gt;/boot&lt;/code&gt; パーティションをマウントし、必要な GRUB のファイルを上書きする&lt;/p&gt;
 
-&lt;pre&gt;&lt;code class=&#34;bash&#34;&gt;mkdir /boot
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;mkdir /boot
 mount /dev/sda1 /boot
 cp /usr/share/grub/x86_64-redhat/e2fs_stage1_5 /boot/grub/
 cp /usr/share/grub/x86_64-redhat/fat_stage1_5 /boot/grub/
@@ -250,7 +252,7 @@ umount /boot
 
 &lt;li&gt;&lt;p&gt;ファイルを上書きしたら、 MBR へ GRUB をインストールする&lt;/p&gt;
 
-&lt;pre&gt;&lt;code class=&#34;bash&#34;&gt;grub
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;grub
 grub&amp;gt; root (hd0,0)
 grub&amp;gt; setup (hd0)
 grub&amp;gt; quit

@@ -1,13 +1,15 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-      <title>Vim on tatsushid.github.io </title>
-      <generator uri="https://gohugo.io">Hugo</generator>
-    <link>http://tatsushid.github.io/tags/vim/index.xml/</link>
+    <title>Vim on tatsushid.github.io</title>
+    <link>http://tatsushid.github.io/tags/vim/</link>
+    <description>Recent content in Vim on tatsushid.github.io</description>
+    <generator>Hugo -- gohugo.io</generator>
     <language>ja-jp</language>
     
     
-    <updated>Mon, 13 Oct 2014 13:59:29 JST</updated>
+    <lastBuildDate>Mon, 13 Oct 2014 13:59:29 JST</lastBuildDate>
+    <atom:link href="http://tatsushid.github.io/tags/vim/index.xml" rel="self" type="application/rss+xml" />
     
     <item>
       <title>Go の Vim プラグインを vim-go に切り替えた</title>
@@ -19,13 +21,13 @@
 
 &lt;p&gt;まずは&lt;/p&gt;
 
-&lt;pre&gt;&lt;code class=&#34;vim&#34;&gt;&amp;quot; Set golang vim scripts
+&lt;pre&gt;&lt;code class=&#34;language-vim&#34;&gt;&amp;quot; Set golang vim scripts
 exe &#39;set runtimepath+=&#39;.substitute(system(&#39;brew --prefix go&#39;), &#39;\n&#39;, &#39;&#39;, &#39;g&#39;).&#39;/libexec/misc/vim&#39;
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;として読み込んでいたオフィシャルプラグインを外して、自分の環境ではプラグイン管理に &lt;a href=&#34;https://github.com/Shougo/neobundle.vim&#34;&gt;NeoBundle&lt;/a&gt; を使っているので&lt;/p&gt;
 
-&lt;pre&gt;&lt;code class=&#34;vim&#34;&gt;NeoBundleLazy &#39;fatih/vim-go&#39;, {
+&lt;pre&gt;&lt;code class=&#34;language-vim&#34;&gt;NeoBundleLazy &#39;fatih/vim-go&#39;, {
        \ &#39;depends&#39; : &#39;majutsushi/tagbar&#39;,
        \ &#39;autoload&#39; : {
        \   &#39;filetypes&#39; : &#39;go&#39;,

@@ -1,13 +1,15 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-      <title>Hugo on tatsushid.github.io </title>
-      <generator uri="https://gohugo.io">Hugo</generator>
-    <link>http://tatsushid.github.io/tags/hugo/index.xml/</link>
+    <title>Hugo on tatsushid.github.io</title>
+    <link>http://tatsushid.github.io/tags/hugo/</link>
+    <description>Recent content in Hugo on tatsushid.github.io</description>
+    <generator>Hugo -- gohugo.io</generator>
     <language>ja-jp</language>
     
     
-    <updated>Sat, 16 Aug 2014 14:00:00 JST</updated>
+    <lastBuildDate>Sat, 16 Aug 2014 14:00:00 JST</lastBuildDate>
+    <atom:link href="http://tatsushid.github.io/tags/hugo/index.xml" rel="self" type="application/rss+xml" />
     
     <item>
       <title>静的サイトジェネレーターを Hugo に切り替えた</title>

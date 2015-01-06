@@ -1,13 +1,15 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-      <title>Perl on tatsushid.github.io </title>
-      <generator uri="https://gohugo.io">Hugo</generator>
-    <link>http://tatsushid.github.io/tags/perl/index.xml/</link>
+    <title>Perl on tatsushid.github.io</title>
+    <link>http://tatsushid.github.io/tags/perl/</link>
+    <description>Recent content in Perl on tatsushid.github.io</description>
+    <generator>Hugo -- gohugo.io</generator>
     <language>ja-jp</language>
     
     
-    <updated>Thu, 16 Oct 2014 00:10:40 JST</updated>
+    <lastBuildDate>Thu, 16 Oct 2014 00:10:40 JST</lastBuildDate>
+    <atom:link href="http://tatsushid.github.io/tags/perl/index.xml" rel="self" type="application/rss+xml" />
     
     <item>
       <title>メールの Date ヘッダを Time::Piece でパースしようとしてはまった話</title>
@@ -19,7 +21,7 @@
 
 &lt;p&gt;メールに含まれている Date ヘッダを Perl の Time::Piece でパースしようとしたところ、タイムゾーンがうまく扱えなくてはまった。たとえば、&lt;/p&gt;
 
-&lt;pre&gt;&lt;code class=&#34;perl&#34;&gt;#!/usr/bin/env perl
+&lt;pre&gt;&lt;code class=&#34;language-perl&#34;&gt;#!/usr/bin/env perl
 
 use strict;
 use warnings;
@@ -44,11 +46,11 @@ print $t-&amp;gt;strftime($format), &amp;quot;\n&amp;quot;;
 
 &lt;p&gt;など多々まとめがあるが、一応自分でも Time::Piece のコードを読んで確認したことと、とりあえずの回避策をメモしておきたい。なお、検証は Perl 5.18.2 と現時点での Time::Piece 最新版である 1.29 を使って行っている&lt;/p&gt;
 
-&lt;h2 id=&#34;toc_0&#34;&gt;回避策&lt;/h2&gt;
+&lt;h2 id=&#34;回避策:f982ae70135bfa8403b8ce10daa2a9de&#34;&gt;回避策&lt;/h2&gt;
 
 &lt;p&gt;検証部分が長いので、まず回避策を先に書いてしまうが、結論としては先ほどのコードを&lt;/p&gt;
 
-&lt;pre&gt;&lt;code class=&#34;perl&#34;&gt;#!/usr/bin/env perl
+&lt;pre&gt;&lt;code class=&#34;language-perl&#34;&gt;#!/usr/bin/env perl
 
 use strict;
 use warnings;
@@ -66,13 +68,13 @@ print $t-&amp;gt;strftime($format), &amp;quot;\n&amp;quot;;
 
 &lt;p&gt;のように書き換えればよい、と言うことになる。パースした結果の &lt;code&gt;epoch&lt;/code&gt; を取り出して &lt;code&gt;localhost&lt;/code&gt; （ Time::Piece でオーバーライドされてる）に渡せば、内部的には自身のタイムゾーンの値としてうまく扱ってくれる。以下はその理由&lt;/p&gt;
 
-&lt;h2 id=&#34;toc_1&#34;&gt;検証&lt;/h2&gt;
+&lt;h2 id=&#34;検証:f982ae70135bfa8403b8ce10daa2a9de&#34;&gt;検証&lt;/h2&gt;
 
-&lt;h3 id=&#34;toc_2&#34;&gt;strptime の %z で何をやっているか&lt;/h3&gt;
+&lt;h3 id=&#34;strptime-の-z-で何をやっているか:f982ae70135bfa8403b8ce10daa2a9de&#34;&gt;strptime の %z で何をやっているか&lt;/h3&gt;
 
 &lt;p&gt;関連記事を読むと、 &lt;code&gt;%z&lt;/code&gt; を使ってる時に問題が出るケースが多く、かつ、この例でも使ってるので、まずはそこを調べてみる。 &lt;code&gt;Piece.xs&lt;/code&gt; によると、 &lt;code&gt;strptime&lt;/code&gt; の内部実装 &lt;code&gt;_strptime&lt;/code&gt; は&lt;/p&gt;
 
-&lt;pre&gt;&lt;code class=&#34;xs&#34;&gt;void
+&lt;pre&gt;&lt;code class=&#34;language-xs&#34;&gt;void
 _strptime ( string, format )
         char * string
         char * format
@@ -100,7 +102,7 @@ _strptime ( string, format )
 
 &lt;p&gt;となっていて、 &lt;code&gt;gmtime&lt;/code&gt; として初期化されている。さらにここで呼んでいる &lt;code&gt;_strptime&lt;/code&gt; の中では、 &lt;code&gt;%z&lt;/code&gt; の処理は&lt;/p&gt;
 
-&lt;pre&gt;&lt;code class=&#34;c&#34;&gt;case &#39;z&#39;:
+&lt;pre&gt;&lt;code class=&#34;language-c&#34;&gt;case &#39;z&#39;:
         {
         int sign = 1;
 
@@ -132,11 +134,11 @@ _strptime ( string, format )
 
 &lt;p&gt;となっていて、つまり &lt;code&gt;+0900&lt;/code&gt; の部分を時と分に分解して元の時と分の値を調整した後、 &lt;code&gt;GMT&lt;/code&gt; として扱うようフラグを立てている。従って内部的には &lt;code&gt;GMT&lt;/code&gt; で正しく計算された値が入っていることになる&lt;/p&gt;
 
-&lt;h3 id=&#34;toc_3&#34;&gt;strftime は何をやっているか&lt;/h3&gt;
+&lt;h3 id=&#34;strftime-は何をやっているか:f982ae70135bfa8403b8ce10daa2a9de&#34;&gt;strftime は何をやっているか&lt;/h3&gt;
 
 &lt;p&gt;では、出力を生成している &lt;code&gt;strftime&lt;/code&gt; で何をやっているかというと、 &lt;code&gt;Piece.pm&lt;/code&gt; では&lt;/p&gt;
 
-&lt;pre&gt;&lt;code class=&#34;perl&#34;&gt;sub strftime {
+&lt;pre&gt;&lt;code class=&#34;language-perl&#34;&gt;sub strftime {
     my $time = shift;
     my $tzname = $time-&amp;gt;[c_islocal] ? &#39;%Z&#39; : &#39;UTC&#39;;
     my $format = @_ ? shift(@_) : &amp;quot;%a, %d %b %Y %H:%M:%S $tzname&amp;quot;;
@@ -154,7 +156,7 @@ _strptime ( string, format )
 
 &lt;p&gt;となっていて、この場合、 &lt;code&gt;strptime&lt;/code&gt; で &lt;code&gt;GMT&lt;/code&gt; として生成されたものを &lt;code&gt;_strftime($format, CORE::gmtime($time-&amp;gt;epoch))&lt;/code&gt; という形で渡すことになる。 &lt;code&gt;_strptime&lt;/code&gt; は &lt;code&gt;Piece.xs&lt;/code&gt; で定義されていて、&lt;/p&gt;
 
-&lt;pre&gt;&lt;code class=&#34;xs&#34;&gt;void
+&lt;pre&gt;&lt;code class=&#34;language-xs&#34;&gt;void
 _strftime(fmt, sec, min, hour, mday, mon, year, wday = -1, yday = -1, isdst = -1)
     char *        fmt
     int        sec
@@ -188,7 +190,7 @@ _strftime(fmt, sec, min, hour, mday, mon, year, wday = -1, yday = -1, isdst = -1
 
 &lt;p&gt;となっているが、どうやら &lt;code&gt;my_init_tm&lt;/code&gt; （この関数は Perl 5.8.0 以降では Perl 本体の &lt;code&gt;util.c&lt;/code&gt; に定義されている &lt;code&gt;init_tm&lt;/code&gt; のエイリアスになっている）でローカルタイムとして定義した後、 C 標準関数の &lt;code&gt;strftime&lt;/code&gt; を呼び出しており、そこで &lt;code&gt;%z&lt;/code&gt; は実行環境のタイムゾーンである &lt;code&gt;+0900&lt;/code&gt; を返してくることになる。つまり、 &lt;code&gt;GMT&lt;/code&gt; の時刻 + 実行環境のタイムゾーンが生成されていて、これがおかしな表示の理由ということになる。&lt;/p&gt;
 
-&lt;h3 id=&#34;toc_4&#34;&gt;gmtime を localtime に変換する&lt;/h3&gt;
+&lt;h3 id=&#34;gmtime-を-localtime-に変換する:f982ae70135bfa8403b8ce10daa2a9de&#34;&gt;gmtime を localtime に変換する&lt;/h3&gt;
 
 &lt;p&gt;ここまでの結果からズレを直すには&lt;/p&gt;
 
@@ -201,14 +203,14 @@ _strftime(fmt, sec, min, hour, mday, mon, year, wday = -1, yday = -1, isdst = -1
 
 &lt;p&gt;まず、単純に&lt;/p&gt;
 
-&lt;pre&gt;&lt;code class=&#34;perl&#34;&gt;my $format = &#39;%a, %e %b %Y %T %z&#39;;
+&lt;pre&gt;&lt;code class=&#34;language-perl&#34;&gt;my $format = &#39;%a, %e %b %Y %T %z&#39;;
 my $datetime = &amp;quot;Tue, 14 Oct 2014 18:23:53 +0900&amp;quot;;
 my $t = localtime(Time::Piece-&amp;gt;strptime($datetime, $format));
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;としてみたが、これはうまくいかなかった。 &lt;code&gt;Piece.pm&lt;/code&gt; を見ると&lt;/p&gt;
 
-&lt;pre&gt;&lt;code class=&#34;perl&#34;&gt;sub localtime {
+&lt;pre&gt;&lt;code class=&#34;language-perl&#34;&gt;sub localtime {
     unshift @_, __PACKAGE__ unless eval { $_[0]-&amp;gt;isa(&#39;Time::Piece&#39;) };
     my $class = shift;
     my $time  = shift;
@@ -236,14 +238,14 @@ sub _mktime {
 
 &lt;p&gt;となっていて、 &lt;code&gt;$time&lt;/code&gt; が Time::Piece オブジェクトの場合、 &lt;code&gt;$islocal&lt;/code&gt; フラグを立てて単に中身をコピーしてるだけ、ということなので、これだと時刻のズレはそのままフラグが立ってしまうという結果になる。これを回避するためには、&lt;/p&gt;
 
-&lt;pre&gt;&lt;code class=&#34;perl&#34;&gt;my $format = &#39;%a, %e %b %Y %T %z&#39;;
+&lt;pre&gt;&lt;code class=&#34;language-perl&#34;&gt;my $format = &#39;%a, %e %b %Y %T %z&#39;;
 my $datetime = &amp;quot;Tue, 14 Oct 2014 18:23:53 +0900&amp;quot;;
 my $t = localtime(Time::Piece-&amp;gt;strptime($datetime, $format)-&amp;gt;epoch);
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;としてエポックタイムを渡すようにし、 &lt;code&gt;_mktime&lt;/code&gt; の &lt;code&gt;CORE::localtime($time)&lt;/code&gt; を通るようにしてやればよい。結果、前述の回避策、ということになる&lt;/p&gt;
 
-&lt;h2 id=&#34;toc_5&#34;&gt;まとめ&lt;/h2&gt;
+&lt;h2 id=&#34;まとめ:f982ae70135bfa8403b8ce10daa2a9de&#34;&gt;まとめ&lt;/h2&gt;
 
 &lt;p&gt;一つ一つ Time::Piece のコードを読んでいった結果、なんとか当初の目的は達成できた。が、標準モジュールとして入っている割には Time::Piece は細かな挙動が読めなくて使うのが難しいなとは感じた&lt;/p&gt;
 </description>

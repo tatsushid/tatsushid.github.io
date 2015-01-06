@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Mediawiki on tatsushid.github.io</title>
+    <link>http://tatsushid.github.io/tags/mediawiki/</link>
+    <description>Recent content in Mediawiki on tatsushid.github.io</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>ja-jp</language>
+    
+    
+    <lastBuildDate>Mon, 05 Jan 2015 20:53:48 JST</lastBuildDate>
+    <atom:link href="http://tatsushid.github.io/tags/mediawiki/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>Pandoc を使って Markdown を Mediawiki に変換する方法</title>
+      <link>http://tatsushid.github.io/blog/2015/01/how-to-convert-markdown-into-mediawiki/</link>
+      <pubDate>Mon, 05 Jan 2015 20:53:48 JST</pubDate>
+      
+      <guid>http://tatsushid.github.io/blog/2015/01/how-to-convert-markdown-into-mediawiki/</guid>
+      <description>&lt;p&gt;あまり頻度の高くない作業だけど、ちょいちょい必要になりそうなため、忘れないようにメモ。 Markdown で書いたドキュメントは、 &lt;a href=&#34;http://johnmacfarlane.net/pandoc/&#34;&gt;Pandoc&lt;/a&gt; を使うと Mediawiki の書式に変換できる。たとえば&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-sh&#34;&gt;pandoc -f markdown -t mediawiki -o sample.mediawiki sample.md
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;のようにコマンドを実行すると、 &lt;code&gt;sample.md&lt;/code&gt; を &lt;code&gt;sample.mediawiki&lt;/code&gt; のファイルへ形式変換して出力してくれる。変換後の書式などはおおむね問題ないが、意図通りじゃない部分もところどころ見られるので、中身はチェックした方がよい。 MacOS X を使っているのなら、変換後のファイルの中身を&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-sh&#34;&gt;cat sample.mediawiki | pbcopy
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;としてクリップボードに取り込んでしまえるので、 Wiki の入力フォームに張りつけることも簡単にできる。もちろん逆の変換も&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-sh&#34;&gt;pandoc -f mediawiki -t markdown -o sample.md sample.mediawiki
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;のようにできる&lt;/p&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>

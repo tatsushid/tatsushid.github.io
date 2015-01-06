@@ -53,12 +53,12 @@
 
       
       <li>
-        <a class="sidebar-nav-item" href="/blog/">Blog</a>
+        <a class="sidebar-nav-item" href="http://tatsushid.github.io/blog/">Blog</a>
         
       </li>
       
       <li>
-        <a class="sidebar-nav-item" href="/tags/">Tags</a>
+        <a class="sidebar-nav-item" href="http://tatsushid.github.io/tags/">Tags</a>
         
       </li>
       
@@ -107,7 +107,7 @@
 
 <p>先日の Bash 脆弱性騒ぎに関連して、ごく一部で残ってる RHEL3 系のマシンにも Bash のパッチを当てざるを得ない状況が発生したため、この際パッケージビルド用の Docker イメージも作っておくか、ということでやってみた</p>
 
-<h2 id="toc_0">必要なもの</h2>
+<h2 id="必要なもの:0f9548c31060b9cf09120147eb98969b">必要なもの</h2>
 
 <ul>
 <li>CentOS 3 がインストールされているサーバないし仮想マシン</li>
@@ -117,7 +117,7 @@
 
 <p>CentOS 3 のマシンは楽にやるには必須だと思う。初めは CentOS 6 上でやってみたが、後述のスクリプト実行時に最新の CentOS 6 のパッケージを拾ってこようとするのをうまく回避できなかったので、結局 CentOS 3 上で作業を行った</p>
 
-<h2 id="toc_1">作成の流れ</h2>
+<h2 id="作成の流れ:0f9548c31060b9cf09120147eb98969b">作成の流れ</h2>
 
 <p>といっても、ほとんどやることはなくて、だいたい以下に集約される</p>
 
@@ -130,7 +130,7 @@
 
 <p>以下、個々の作業の説明</p>
 
-<h3 id="toc_2">yum.conf の編集</h3>
+<h3 id="yum-conf-の編集:0f9548c31060b9cf09120147eb98969b">yum.conf の編集</h3>
 
 <p>サーバ内に Yum が入っていなければ、まずはこれが必須なので入れておくのだが、 CentOS 3 はもうメンテされていないので、パッケージを拾ってこれるミラーサーバを <code>yum.conf</code> に設定しておかなければならない。普通は <code>http://vault.centos.org/</code> を設定しておけばいいと思うが、当たるミラーによってはかなり遅いことになるので、場合によっては速度の出るミラーサーバの IP アドレスを <code>dig</code> なりなんなりで調べて直接 IP アドレスを指定しておく必要があるかもしれない。具体的な変更は <code>yum.conf</code> 内にいくつかある</p>
 
@@ -144,7 +144,7 @@
 
 <p>のように書き換えておくだけである</p>
 
-<h3 id="toc_3">mkimage-yum.sh のカスタマイズ</h3>
+<h3 id="mkimage-yum-sh-のカスタマイズ:0f9548c31060b9cf09120147eb98969b">mkimage-yum.sh のカスタマイズ</h3>
 
 <p>一番手間取ったのがここだったが、わかってしまえばなんということもない内容。書き換えたスクリプトはこんな感じ</p>
 
@@ -161,31 +161,128 @@
 
 <p>といったところ</p>
 
-<h3 id="toc_4">スクリプトの実行</h3>
+<h3 id="スクリプトの実行:0f9548c31060b9cf09120147eb98969b">スクリプトの実行</h3>
 
 <p>これはそのまんま、上記で作成しておいた <code>yum.conf</code> を <code>mkimage-yum.sh</code> に指定して実行するだけである。うまくいけば <code>os_image.tar.gz</code> がカレントディレクトリ内に作られる</p>
 
-<h3 id="toc_5">Docker でイメージ化</h3>
+<h3 id="docker-でイメージ化:0f9548c31060b9cf09120147eb98969b">Docker でイメージ化</h3>
 
 <p>できた <code>os_image.tar.gz</code> を Docker が動いている環境に持ってきて、下記のようにコマンドを実行する</p>
 
-<pre><code class="bash">cat os_image.tar.gz | docker import - centos-3-i386
+<pre><code class="language-bash">cat os_image.tar.gz | docker import - centos-3-i386
 </code></pre>
 
 <p><code>centos-3-i386</code> の部分はイメージ名になるので、好きなように設定すればよい。インポートに成功したら、</p>
 
-<pre><code class="bash">docker run -i -t centos-3-i386 /bin/bash
+<pre><code class="language-bash">docker run -i -t centos-3-i386 /bin/bash
 </code></pre>
 
 <p>のようにして使い始めることができる</p>
 
-<h2 id="toc_6">まとめ</h2>
+<h2 id="まとめ:0f9548c31060b9cf09120147eb98969b">まとめ</h2>
 
 <p>上記の流れでできたイメージを使って、無事パッチ済みの Bash の RPM の作成もできたので、日常の作業には十分な環境が作成できたと思う</p>
 
 <p>Docker のイメージを作ったのは初めてだったが、 OS が稼働するのに必要なファイル群を tar に固めて食わせるだけ、というのは手軽でいい。各種ディストリビューションごとにマイクロ環境を作れるようなツールがあったりするので、それを使えば気楽にイメージが作れるだろうな、と思う</p>
 
 </div>
+
+        <nav>
+  <h2>Related posts</h2>
+    <ul class="related-posts">
+      
+        
+        
+      
+        
+        
+      
+        
+        
+      
+        
+        
+      
+        
+        
+      
+        
+        
+      
+        
+        
+      
+        
+        
+          <li>
+            <a href="/blog/2014/09/how-to-check-centos-mirrorlist/">CentOSのyumミラーリストの調べ方</a>
+            <small>
+              2014-09-18
+              <ul>
+                
+                  <li><a href="/tags/centos">CentOS</a></li>
+                
+              </ul>
+            </small>
+          </li>
+        
+      
+        
+        
+      
+        
+        
+      
+        
+        
+          <li>
+            <a href="/blog/2014/07/install-centos7-on-gpt-drive/">CentOS7をGPTパーティションで新規インストールする</a>
+            <small>
+              2014-07-25
+              <ul>
+                
+                  <li><a href="/tags/centos">CentOS</a></li>
+                
+              </ul>
+            </small>
+          </li>
+        
+      
+        
+        
+          <li>
+            <a href="/blog/2014/07/install-centos5-on-gpt-drive/">CentOS5をGPTパーティションで新規インストールする</a>
+            <small>
+              2014-07-08
+              <ul>
+                
+                  <li><a href="/tags/centos">CentOS</a></li>
+                
+              </ul>
+            </small>
+          </li>
+        
+      
+        
+        
+          <li>
+            <a href="/blog/2014/07/install-centos6-on-gpt-drive/">CentOS6をGPTパーティションで新規インストールする</a>
+            <small>
+              2014-07-07
+              <ul>
+                
+                  <li><a href="/tags/centos">CentOS</a></li>
+                
+              </ul>
+            </small>
+          </li>
+        
+      
+        
+        
+      
+    </ul>
+</nav>
 
         <nav class="prev-next">
           <ul>

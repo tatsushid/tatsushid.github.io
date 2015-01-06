@@ -53,12 +53,12 @@
 
       
       <li>
-        <a class="sidebar-nav-item" href="/blog/">Blog</a>
+        <a class="sidebar-nav-item" href="http://tatsushid.github.io/blog/">Blog</a>
         
       </li>
       
       <li>
-        <a class="sidebar-nav-item" href="/tags/">Tags</a>
+        <a class="sidebar-nav-item" href="http://tatsushid.github.io/tags/">Tags</a>
         
       </li>
       
@@ -103,12 +103,12 @@
 
   <p>ここ最近 CentOS の yum で updates からパッケージを持ってくる時の速度がやけに遅いので、 yum にはどんなミラーが返ってきてるのか調べてみた。 yum は 64bit 環境で特別設定を変えてなければ、通常 <code>http://mirrorlist.centos.org/?release=6&amp;arch=x86_64&amp;repo=os</code> や <code>http://mirrorlist.centos.org/?release=6&amp;arch=x86_64&amp;repo=updates</code> にアクセスしているので、この URL にブラウザでアクセスするか、</p>
 
-<pre><code class="sh">curl 'http://mirrorlist.centos.org/?release=6&amp;arch=x86_64&amp;repo=os'
+<pre><code class="language-sh">curl 'http://mirrorlist.centos.org/?release=6&amp;arch=x86_64&amp;repo=os'
 </code></pre>
 
 <p>のように <code>curl</code> を使えば、ミラーの一覧が返る。 <code>release</code> は CentOS のメジャーバージョン、 <code>arch</code> は <code>i386</code> や <code>x86_64</code> などのアーキテクチャ、 <code>repo</code> はリポジトリの種類をそれぞれ指定できる。さらに、 URL に <code>cc=jp</code> や <code>ip=8.8.8.8</code> などのクエリを追加すると、国コード別、 IP アドレス別のミラーリストを返してくれるらしい。たとえば、</p>
 
-<pre><code class="sh">curl 'http://mirrorlist.centos.org/?release=6&amp;arch=x86_64&amp;repo=os&amp;cc=jp' # 国コード別
+<pre><code class="language-sh">curl 'http://mirrorlist.centos.org/?release=6&amp;arch=x86_64&amp;repo=os&amp;cc=jp' # 国コード別
 curl 'http://mirrorlist.centos.org/?release=6&amp;arch=x86_64&amp;repo=os&amp;ip=8.8.8.8' # IP アドレス別
 </code></pre>
 
@@ -141,6 +141,105 @@ http://mirror.awanti.com/centos/6.5/updates/x86_64/
 <p>余談だけど、各国のミラーの状態は <a href="http://mirror-status.centos.org/">http://mirror-status.centos.org/</a> で見れる</p>
 
 </div>
+
+        <nav>
+  <h2>Related posts</h2>
+    <ul class="related-posts">
+      
+        
+        
+      
+        
+        
+      
+        
+        
+      
+        
+        
+          <li>
+            <a href="/blog/2014/10/how-to-build-centos3-docker-image/">CentOS 3 の Docker イメージを作ってみた</a>
+            <small>
+              2014-10-04
+              <ul>
+                
+                  <li><a href="/tags/docker">Docker</a></li>
+                
+                  <li><a href="/tags/centos">CentOS</a></li>
+                
+              </ul>
+            </small>
+          </li>
+        
+      
+        
+        
+      
+        
+        
+      
+        
+        
+      
+        
+        
+      
+        
+        
+      
+        
+        
+      
+        
+        
+          <li>
+            <a href="/blog/2014/07/install-centos7-on-gpt-drive/">CentOS7をGPTパーティションで新規インストールする</a>
+            <small>
+              2014-07-25
+              <ul>
+                
+                  <li><a href="/tags/centos">CentOS</a></li>
+                
+              </ul>
+            </small>
+          </li>
+        
+      
+        
+        
+          <li>
+            <a href="/blog/2014/07/install-centos5-on-gpt-drive/">CentOS5をGPTパーティションで新規インストールする</a>
+            <small>
+              2014-07-08
+              <ul>
+                
+                  <li><a href="/tags/centos">CentOS</a></li>
+                
+              </ul>
+            </small>
+          </li>
+        
+      
+        
+        
+          <li>
+            <a href="/blog/2014/07/install-centos6-on-gpt-drive/">CentOS6をGPTパーティションで新規インストールする</a>
+            <small>
+              2014-07-07
+              <ul>
+                
+                  <li><a href="/tags/centos">CentOS</a></li>
+                
+              </ul>
+            </small>
+          </li>
+        
+      
+        
+        
+      
+    </ul>
+</nav>
 
         <nav class="prev-next">
           <ul>

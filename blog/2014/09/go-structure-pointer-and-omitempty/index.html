@@ -53,12 +53,12 @@
 
       
       <li>
-        <a class="sidebar-nav-item" href="/blog/">Blog</a>
+        <a class="sidebar-nav-item" href="http://tatsushid.github.io/blog/">Blog</a>
         
       </li>
       
       <li>
-        <a class="sidebar-nav-item" href="/tags/">Tags</a>
+        <a class="sidebar-nav-item" href="http://tatsushid.github.io/tags/">Tags</a>
         
       </li>
       
@@ -105,7 +105,7 @@
 
 <p>（下記は go 1.3.1 での話で、異なるバージョンだと動作も違う可能性があるので注意）</p>
 
-<h2 id="toc_0">結論</h2>
+<h2 id="結論:5bfb78d2fd527d70f781ba5f5e936dd8">結論</h2>
 
 <p>Go で <code>encoding/xml</code> を使って XML のエンコーディングを行っている時に、</p>
 
@@ -116,11 +116,11 @@
 
 <p>を実現したい場合は、単純に要素のポインタ型を使って <code>omitempty</code> は使わないのが正解</p>
 
-<h2 id="toc_1">詳細</h2>
+<h2 id="詳細:5bfb78d2fd527d70f781ba5f5e936dd8">詳細</h2>
 
 <p>上記のケースを最初は単純に</p>
 
-<pre><code class="go">package main
+<pre><code class="language-go">package main
 
 import (
 	&quot;encoding/xml&quot;
@@ -165,7 +165,7 @@ string of length zero.</li>
 
 <p>ということで、空の構造体と比較してはくれないためのよう。ここで対象が <code>nil</code> ポインタなら空と扱う、と書いてあるので、</p>
 
-<pre><code class="go">package main
+<pre><code class="language-go">package main
 
 import (
 	&quot;encoding/xml&quot;
@@ -217,7 +217,7 @@ func main() {
 
 <p>の場合は、同じようにやっても期待通りにはならない。 <code>int</code> が 0 の場合は <code>omitempty</code> の対象として扱ってしまう</p>
 
-<pre><code class="go">package main
+<pre><code class="language-go">package main
 
 import (
 	&quot;encoding/xml&quot;
@@ -253,7 +253,7 @@ func main() {
 
 <p>この場合は、要素の型をポインタ型にしつつ、素直に <code>omitempty</code> を外すか、ポインタのポインタを使うと意図通りの結果が得られるようだ</p>
 
-<pre><code class="go">package main
+<pre><code class="language-go">package main
 
 import (
 	&quot;encoding/xml&quot;
@@ -297,6 +297,95 @@ func main() {
 <p>いろいろとややこしい</p>
 
 </div>
+
+        <nav>
+  <h2>Related posts</h2>
+    <ul class="related-posts">
+      
+        
+        
+      
+        
+        
+      
+        
+        
+          <li>
+            <a href="/blog/2014/10/switch-from-official-go-vim-plugin-to-vim-go/">Go の Vim プラグインを vim-go に切り替えた</a>
+            <small>
+              2014-10-13
+              <ul>
+                
+                  <li><a href="/tags/golang">Golang</a></li>
+                
+                  <li><a href="/tags/vim">Vim</a></li>
+                
+              </ul>
+            </small>
+          </li>
+        
+      
+        
+        
+      
+        
+        
+      
+        
+        
+      
+        
+        
+          <li>
+            <a href="/blog/2014/09/how-to-get-reflect-type-of-interface-type-in-go/">Go でインターフェース型の reflect.Type を取得する方法</a>
+            <small>
+              2014-09-19
+              <ul>
+                
+                  <li><a href="/tags/golang">Golang</a></li>
+                
+              </ul>
+            </small>
+          </li>
+        
+      
+        
+        
+      
+        
+        
+          <li>
+            <a href="/blog/2014/08/change-site-generator-to-hugo/">静的サイトジェネレーターを Hugo に切り替えた</a>
+            <small>
+              2014-08-16
+              <ul>
+                
+                  <li><a href="/tags/hugo">Hugo</a></li>
+                
+                  <li><a href="/tags/golang">Golang</a></li>
+                
+              </ul>
+            </small>
+          </li>
+        
+      
+        
+        
+      
+        
+        
+      
+        
+        
+      
+        
+        
+      
+        
+        
+      
+    </ul>
+</nav>
 
         <nav class="prev-next">
           <ul>

@@ -1,13 +1,15 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-      <title>Golang on tatsushid.github.io </title>
-      <generator uri="https://gohugo.io">Hugo</generator>
-    <link>http://tatsushid.github.io/tags/golang/index.xml/</link>
+    <title>Golang on tatsushid.github.io</title>
+    <link>http://tatsushid.github.io/tags/golang/</link>
+    <description>Recent content in Golang on tatsushid.github.io</description>
+    <generator>Hugo -- gohugo.io</generator>
     <language>ja-jp</language>
     
     
-    <updated>Mon, 13 Oct 2014 13:59:29 JST</updated>
+    <lastBuildDate>Mon, 13 Oct 2014 13:59:29 JST</lastBuildDate>
+    <atom:link href="http://tatsushid.github.io/tags/golang/index.xml" rel="self" type="application/rss+xml" />
     
     <item>
       <title>Go の Vim プラグインを vim-go に切り替えた</title>
@@ -19,13 +21,13 @@
 
 &lt;p&gt;まずは&lt;/p&gt;
 
-&lt;pre&gt;&lt;code class=&#34;vim&#34;&gt;&amp;quot; Set golang vim scripts
+&lt;pre&gt;&lt;code class=&#34;language-vim&#34;&gt;&amp;quot; Set golang vim scripts
 exe &#39;set runtimepath+=&#39;.substitute(system(&#39;brew --prefix go&#39;), &#39;\n&#39;, &#39;&#39;, &#39;g&#39;).&#39;/libexec/misc/vim&#39;
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;として読み込んでいたオフィシャルプラグインを外して、自分の環境ではプラグイン管理に &lt;a href=&#34;https://github.com/Shougo/neobundle.vim&#34;&gt;NeoBundle&lt;/a&gt; を使っているので&lt;/p&gt;
 
-&lt;pre&gt;&lt;code class=&#34;vim&#34;&gt;NeoBundleLazy &#39;fatih/vim-go&#39;, {
+&lt;pre&gt;&lt;code class=&#34;language-vim&#34;&gt;NeoBundleLazy &#39;fatih/vim-go&#39;, {
        \ &#39;depends&#39; : &#39;majutsushi/tagbar&#39;,
        \ &#39;autoload&#39; : {
        \   &#39;filetypes&#39; : &#39;go&#39;,
@@ -59,7 +61,7 @@ endfunction
 
 &lt;p&gt;（下記は go 1.3.1 での話で、異なるバージョンだと動作も違う可能性があるので注意）&lt;/p&gt;
 
-&lt;h2 id=&#34;toc_0&#34;&gt;結論&lt;/h2&gt;
+&lt;h2 id=&#34;結論:5bfb78d2fd527d70f781ba5f5e936dd8&#34;&gt;結論&lt;/h2&gt;
 
 &lt;p&gt;Go で &lt;code&gt;encoding/xml&lt;/code&gt; を使って XML のエンコーディングを行っている時に、&lt;/p&gt;
 
@@ -70,11 +72,11 @@ endfunction
 
 &lt;p&gt;を実現したい場合は、単純に要素のポインタ型を使って &lt;code&gt;omitempty&lt;/code&gt; は使わないのが正解&lt;/p&gt;
 
-&lt;h2 id=&#34;toc_1&#34;&gt;詳細&lt;/h2&gt;
+&lt;h2 id=&#34;詳細:5bfb78d2fd527d70f781ba5f5e936dd8&#34;&gt;詳細&lt;/h2&gt;
 
 &lt;p&gt;上記のケースを最初は単純に&lt;/p&gt;
 
-&lt;pre&gt;&lt;code class=&#34;go&#34;&gt;package main
+&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;package main
 
 import (
 	&amp;quot;encoding/xml&amp;quot;
@@ -119,7 +121,7 @@ string of length zero.&lt;/li&gt;
 
 &lt;p&gt;ということで、空の構造体と比較してはくれないためのよう。ここで対象が &lt;code&gt;nil&lt;/code&gt; ポインタなら空と扱う、と書いてあるので、&lt;/p&gt;
 
-&lt;pre&gt;&lt;code class=&#34;go&#34;&gt;package main
+&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;package main
 
 import (
 	&amp;quot;encoding/xml&amp;quot;
@@ -171,7 +173,7 @@ func main() {
 
 &lt;p&gt;の場合は、同じようにやっても期待通りにはならない。 &lt;code&gt;int&lt;/code&gt; が 0 の場合は &lt;code&gt;omitempty&lt;/code&gt; の対象として扱ってしまう&lt;/p&gt;
 
-&lt;pre&gt;&lt;code class=&#34;go&#34;&gt;package main
+&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;package main
 
 import (
 	&amp;quot;encoding/xml&amp;quot;
@@ -207,7 +209,7 @@ func main() {
 
 &lt;p&gt;この場合は、要素の型をポインタ型にしつつ、素直に &lt;code&gt;omitempty&lt;/code&gt; を外すか、ポインタのポインタを使うと意図通りの結果が得られるようだ&lt;/p&gt;
 
-&lt;pre&gt;&lt;code class=&#34;go&#34;&gt;package main
+&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;package main
 
 import (
 	&amp;quot;encoding/xml&amp;quot;
@@ -268,7 +270,7 @@ func main() {
 
 &lt;p&gt;という流れ。 Go の公式パッケージではよく見かける書法。これを使うと、たとえば変数が &lt;code&gt;error&lt;/code&gt; インターフェースを満たすかどうかの判定は&lt;/p&gt;
 
-&lt;pre&gt;&lt;code class=&#34;go&#34;&gt;package main
+&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;package main
 
 import (
         &amp;quot;errors&amp;quot;
@@ -289,7 +291,7 @@ func main() {
 
 &lt;p&gt;のように書ける。もちろん、これはリフレクションを操作してる時の話で、普通は&lt;/p&gt;
 
-&lt;pre&gt;&lt;code class=&#34;go&#34;&gt;package main
+&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;package main
 
 import (
         &amp;quot;errors&amp;quot;
