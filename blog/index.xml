@@ -821,7 +821,7 @@ http://mirror.awanti.com/centos/6.5/updates/x86_64/
       <pubDate>Tue, 08 Jul 2014 20:06:00 JST</pubDate>
       
       <guid>http://tatsushid.github.io/blog/2014/07/install-centos5-on-gpt-drive/</guid>
-      <description>&lt;p&gt;CentOS 5 の新規インストール時に GTP パーティションを使いたい場合は、 CentOS 6 の様に一筋縄では行かない。今回は&lt;/p&gt;
+      <description>&lt;p&gt;CentOS 5 の新規インストール時に GPT パーティションを使いたい場合は、 CentOS 6 の様に一筋縄では行かない。今回は&lt;/p&gt;
 
 &lt;ul&gt;
 &lt;li&gt;&lt;a href=&#34;http://blog.endpoint.com/2013/11/installing-centos-5-on-3tb-drive.html&#34;&gt;Installing CentOS 5 on a 3 TB Drive&lt;/a&gt;&lt;/li&gt;
