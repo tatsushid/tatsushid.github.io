@@ -911,7 +911,7 @@ grub&amp;gt; quit
 &lt;li&gt;&lt;p&gt;GRUB のインストールが完了したら、 ISO イメージを取り出し、再起動を行う&lt;/p&gt;&lt;/li&gt;
 &lt;/ol&gt;
 
-&lt;p&gt;以上の手順で、 GTP パーティションが有効な状態で、新規インストールした CentOS 5 が起動できた&lt;/p&gt;
+&lt;p&gt;以上の手順で、 GPT パーティションが有効な状態で、新規インストールした CentOS 5 が起動できた&lt;/p&gt;
 </description>
     </item>
     
