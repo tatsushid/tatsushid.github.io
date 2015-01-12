@@ -17,7 +17,7 @@
       <pubDate>Mon, 12 Jan 2015 10:39:52 JST</pubDate>
       
       <guid>http://tatsushid.github.io/blog/2015/01/run-libreboard-on-docker/</guid>
-      <description>&lt;p&gt;昨日「 &lt;a href=&#34;http://www.ryuzee.com/contents/blog/7032&#34;&gt;オープンソースのTrelloクローン Libreboard | Ryuzee.com&lt;/a&gt; 」の記事を読んで、面白そうだと思ったので Docker で動かしてみた。一手間かかったけど動かすことはできたので、以下その手順。 Docker はインストールされてることを前提&lt;/p&gt;
+      <description>&lt;p&gt;昨日「 &lt;a href=&#34;http://www.ryuzee.com/contents/blog/7032&#34;&gt;オープンソースのTrelloクローン Libreboard | Ryuzee.com&lt;/a&gt; 」の記事を読んで面白そうだと思ったので、 Docker で動かしてみた。一手間かかったけど動かすことはできたので、以下その手順。 Docker はインストールされてることを前提&lt;/p&gt;
 
 &lt;ol&gt;
 &lt;li&gt;&lt;p&gt;&lt;a href=&#34;https://github.com/libreboard/libreboard&#34;&gt;Libreboard&lt;/a&gt; のリポジトリをクローンして手元に落としてくる&lt;/p&gt;
