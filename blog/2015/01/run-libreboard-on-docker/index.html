@@ -11,7 +11,7 @@
 
   <title>
     
-      Go でインターフェース型の reflect.Type を取得する方法 &middot; tatsushid.github.io
+      Docker で Libreboard 動かしてみた &middot; tatsushid.github.io
     
   </title>
 
@@ -87,69 +87,60 @@
       <div class="container content">
         <div class="post">
   <h1 class="post-title">
-    <a href="/blog/2014/09/how-to-get-reflect-type-of-interface-type-in-go/">
-      Go でインターフェース型の reflect.Type を取得する方法
+    <a href="/blog/2015/01/run-libreboard-on-docker/">
+      Docker で Libreboard 動かしてみた
     </a>
   </h1>
 
   <div class="post-meta">
-    2014-09-19
+    2015-01-12
     <ul>
     
-      <li><a href="/tags/golang">Golang</a></li>
+      <li><a href="/tags/docker">Docker</a></li>
+    
+      <li><a href="/tags/libreboard">Libreboard</a></li>
     
     </ul>
   </div>
 
-  <p>Go の <code>reflect</code> パッケージを使っていて、ときどき操作している変数型との比較のために <code>error</code> などのインターフェース型の <code>reflect.Type</code> がほしいことがあるのだけれど、これは <code>reflect.TypeOf((*error)(nil)).Elem()</code> のように書くことで得られる。つまり、</p>
+  <p>昨日「 <a href="http://www.ryuzee.com/contents/blog/7032">オープンソースのTrelloクローン Libreboard | Ryuzee.com</a> 」の記事を読んで、面白そうだと思ったので Docker で動かしてみた。一手間かかったけど動かすことはできたので、以下その手順。 Docker はインストールされてることを前提</p>
 
-<ul>
-<li><code>nil</code> をほしい型のポインタ型に変換</li>
-<li>それを <code>reflect.TypeOf</code> に渡してポインタ型の <code>reflect.Type</code> を取得し</li>
-<li><code>Elem()</code> でポインタをデリファレンスしてできる基本型の <code>reflect.Type</code> を得る</li>
-</ul>
+<ol>
+<li><p><a href="https://github.com/libreboard/libreboard">Libreboard</a> のリポジトリをクローンして手元に落としてくる</p>
 
-<p>という流れ。 Go の公式パッケージではよく見かける書法。これを使うと、たとえば変数が <code>error</code> インターフェースを満たすかどうかの判定は</p>
+<pre><code>git clone https://github.com/libreboard/libreboard.git
+</code></pre></li>
 
-<pre><code class="language-go">package main
+<li><p>落としてきた Libreboard のディレクトリに移動し Docker イメージを作成する</p>
 
-import (
-        &quot;errors&quot;
-        &quot;fmt&quot;
-        &quot;reflect&quot;
-)
+<pre><code>cd libreboard
+docker build -t libreboard .
+</code></pre></li>
 
-func main() {
-	err := errors.New(&quot;A problem occurs&quot;)
-	et := reflect.TypeOf(err)
-	if et.Implements(reflect.TypeOf((*error)(nil)).Elem()) {
-		fmt.Println(&quot;This is an error type&quot;)
-	} else {
-		fmt.Println(&quot;This isn't an error type&quot;)
-	}
-}
+<li><p>Libreboard は MongoDB をデータ保存に使用しているので、 MongoDB の Docker イメージも用意して起動しておく</p>
+
+<pre><code>docker pull mongo
+docker run --name mymongo -d mongo
 </code></pre>
 
-<p>のように書ける。もちろん、これはリフレクションを操作してる時の話で、普通は</p>
+<p>環境によっては起動時に <code>numactl: This system does not support NUMA policy</code> といわれて起動できないことがあるので、その場合は</p>
 
-<pre><code class="language-go">package main
-
-import (
-        &quot;errors&quot;
-        &quot;fmt&quot;
-)
-
-func main() {
-	err := errors.New(&quot;A problem occurs&quot;)
-	if _, ok := err.(error); ok {
-		fmt.Println(&quot;This is an error type&quot;)
-	} else {
-		fmt.Println(&quot;This isn't an error type&quot;)
-	}
-}
+<pre><code>docker run --name mymongo --entrypoint=mongod -d mongo
 </code></pre>
 
-<p>とするのがよい</p>
+<p>という形で直接 MongoDB を起動するとよい（参考： <a href="http://stackoverflow.com/questions/27882091/docker-mongo-exits-on-run">mongodb - Docker: Mongo exits on run - Stack Overflow</a> ）</p></li>
+
+<li><p>あらかじめ作成しておいた Libreboard の Docker イメージを使ってコンテナを起動する</p>
+
+<pre><code>docker run -dit --link mymongo:mongo -e ROOT_URL=&quot;http://example.com&quot; -p 5555:8080 libreboard sh -c 'export MONGO_URL=mongodb://$MONGO_PORT_27017_TCP_ADDR:$MONGO_PORT_27017_TCP_PORT/libreboard; /meteor-run.sh'
+</code></pre>
+
+<p>docker の <code>--link</code> オプションを使うと、起動したコンテナ内に link で接続した先のコンテナから環境変数が渡されてくるので、それを使って <code>MONGO_URL</code> 環境変数を定義する。 Docker の <code>-e</code> オプションだとコンテナ内部の変数は展開できなさそうだったため、コマンド実行時に定義している。 <code>ROOT_URL</code> はとりあえず適当なものに。</p></li>
+</ol>
+
+<p>上記の手順後、 Docker サーバの 5555 ポートにウェブブラウザでアクセスすると、めでたくログイン画面が表示された</p>
+
+<p>Libreboard 自体は確かにまだまだ機能不足な点が否めないが、使い勝手はよさそうだったので今後が楽しみである</p>
 
 </div>
 
@@ -168,15 +159,18 @@ func main() {
       
         
         
+      
+        
+        
           <li>
-            <a href="/blog/2014/10/switch-from-official-go-vim-plugin-to-vim-go/">Go の Vim プラグインを vim-go に切り替えた</a>
+            <a href="/blog/2014/10/how-to-build-centos3-docker-image/">CentOS 3 の Docker イメージを作ってみた</a>
             <small>
-              2014-10-13
+              2014-10-04
               <ul>
                 
-                  <li><a href="/tags/golang">Golang</a></li>
+                  <li><a href="/tags/docker">Docker</a></li>
                 
-                  <li><a href="/tags/vim">Vim</a></li>
+                  <li><a href="/tags/centos">CentOS</a></li>
                 
               </ul>
             </small>
@@ -191,40 +185,11 @@ func main() {
       
         
         
-          <li>
-            <a href="/blog/2014/09/go-structure-pointer-and-omitempty/">Go の構造体とポインタと omitempty の話</a>
-            <small>
-              2014-09-23
-              <ul>
-                
-                  <li><a href="/tags/golang">Golang</a></li>
-                
-              </ul>
-            </small>
-          </li>
-        
       
         
         
       
         
-        
-      
-        
-        
-          <li>
-            <a href="/blog/2014/08/change-site-generator-to-hugo/">静的サイトジェネレーターを Hugo に切り替えた</a>
-            <small>
-              2014-08-16
-              <ul>
-                
-                  <li><a href="/tags/hugo">Hugo</a></li>
-                
-                  <li><a href="/tags/golang">Golang</a></li>
-                
-              </ul>
-            </small>
-          </li>
         
       
         
@@ -247,8 +212,8 @@ func main() {
 
         <nav class="prev-next">
           <ul>
-            <li><a href="/blog/2014/09/go-structure-pointer-and-omitempty/">Newer Post</a></li>
-            <li><a href="/blog/2014/09/how-to-check-centos-mirrorlist/">Older Post</a></li>
+            <li> Newer Post </li>
+            <li><a href="/blog/2015/01/how-to-convert-markdown-into-mediawiki/">Older Post</a></li>
           </ul>
         </nav>
       </div>
