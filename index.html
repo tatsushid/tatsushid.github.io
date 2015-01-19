@@ -95,6 +95,84 @@
           
             <div class="post">
   <h1 class="post-title">
+    <a href="/blog/2015/01/managing-libreboard-containers-by-fig/">
+      Fig で Libreboard 環境を構築してみた
+    </a>
+  </h1>
+
+  <div class="post-meta">
+    2015-01-18
+    <ul>
+    
+      <li><a href="/tags/docker">Docker</a></li>
+    
+      <li><a href="/tags/fig">Fig</a></li>
+    
+      <li><a href="/tags/libreboard">Libreboard</a></li>
+    
+    </ul>
+  </div>
+
+  <p><a href="/blog/2015/01/run-libreboard-on-docker/">前回</a> は Docker 上で Libreboard を動かしてみたが、今のところ Libreboard の開発は非常に活発で、更新を Docker コンテナに反映させるたびに長々としたコマンドを叩くのが不便に感じてきたため、 <a href="http://www.fig.sh/">Fig</a> を使って必要なコマンドなどをあらかじめ定義しておき、 <code>fig build</code> や <code>fig up</code> で楽に更新適用ができるようにしてみた。以下はその手順</p>
+
+<ol>
+<li>Fig をインストール。今回は手元のサーバが Gentoo だったので emerge で入れてしまったが、 <a href="http://www.fig.sh/install.html">Installing Fig</a> を見る限り、他の環境でも簡単に導入できると思う</li>
+
+<li><p>Fig の作業ディレクトリを適当に作成して移動する</p>
+
+<pre><code>mkdir fig_libreboard
+cd fig_libreboard
+</code></pre></li>
+
+<li><p><code>fig.yml</code> を作成する。今回は下記のようにしてみた</p>
+
+<pre><code class="language-yaml">libreboard:
+  build: ../libreboard
+  links:
+    - mongo
+  ports:
+    - &quot;5555:8080&quot;
+  environment:
+    ROOT_URL: &quot;http://libreboard.example.com&quot;
+  command: &quot;sh -c 'export MONGO_URL=mongodb://$MONGO_PORT_27017_TCP_ADDR:$MONGO_PORT_27017_TCP_PORT/libreboard; /meteor-run.sh'&quot;
+data:
+  image: busybox
+  volumes:
+    - /data/db
+backup:
+  image: busybox
+  volumes_from:
+    - data
+mongo:
+  image: mongo
+  volumes_from:
+    - data
+  entrypoint: mongod
+</code></pre>
+
+<p><code>libreboard</code>, <code>data</code>, <code>backup</code>, <code>mongo</code> の 4 台構成になっている。それぞれの役割は、</p>
+
+<ul>
+<li><code>libreboard</code> はアプリケーションを稼働させるコンテナ。先ほど作った <code>fig_libreboard</code> と同一階層の <code>libreboard</code> ディレクトリにある Dockerfile を読み込んで Docker イメージを構築し、それを実行する。データストアとなる MongoDB コンテナとリンクして、起動時に環境変数経由で接続を行っている。</li>
+<li><code>data</code> は <a href="https://docs.docker.com/userguide/dockervolumes/">Managing data in containers - Docker Documentation</a> で言うところのデータボリュームコンテナで、 MongoDB のデータを保持するためだけに使われている。</li>
+<li><code>mongo</code> は実際に MongoDB が稼働するコンテナ。 <code>data</code> のボリュームに接続してデータをそこに保存している。</li>
+<li><code>backup</code> は、 <code>data</code> からは <code>/data/db</code> の中身が見えなかったため、確認作業などのために便宜上作成しておいたコンテナ。これがあると気軽に <code>fig run --rm backup ls -al /data/db</code> などと打って中身を確認したり、 tar でのバックアップ作業がやりやすくなる。が、特別稼働そのものには関係ないので、なくてもかまわない</li>
+</ul>
+
+<p>といったところ。起動コマンドやポートの設定は <a href="/blog/2015/01/run-libreboard-on-docker/">前回</a> のものを引き継ぐ形で指定している</p></li>
+
+<li><p>上記設定ができたら、 <code>fig up</code> を実行してコンテナ群を起動する。初回は <code>libreboard</code> コンテナ用のイメージのビルドが実行されるので、少しばかり時間がかかる。無事に起動してウェブブラウザで 5555 番ポートにアクセスしてログイン画面が出れば成功。バックグラウンドでの起動に切り替えたい場合は、いったん <code>Ctrl-c</code> を入力してコンテナ群を停止し、改めて <code>fig up -d</code> で起動すればよい。</p></li>
+
+<li><p>Libreboard の更新があった場合は <code>fig build</code> を実行して Docker イメージを再作成する。イメージ作成に成功したら <code>fig up -d</code> を実行して環境を再起動すればよい</p></li>
+</ol>
+
+<p>Fig を使うと、このような感じで一度 <code>fig.yml</code> を書くだけで、機能ごとに分割した複数のコンテナを保持しつつ、日常の操作は簡単な <code>fig</code> コマンドを実行するだけで済むようになる。今回の Libreboard に限らず、 Fig を使うことでホスト側の環境にあれこれ手を入れずとも気軽にウェブアプリケーションの実行環境を用意できるので、単一ホスト内で実行させたいウェブアプリケーションの管理には非常に優れていると思う</p>
+
+</div>
+
+          
+            <div class="post">
+  <h1 class="post-title">
     <a href="/blog/2015/01/run-libreboard-on-docker/">
       Docker で Libreboard 動かしてみた
     </a>
@@ -493,109 +571,6 @@ endfunction
 <p>他にも支援プログラムを使った各種機能が盛りだくさんで、仮にそれらに必要なソフトウェアがインストールされていない場合は <code>:GoInstallBinaries</code> を実行すれば、内部的に <code>go get</code> して必要なパッケージを拾ってきてインストールしてくれる。それらの一括更新も <code>:GoUpdateBinaries</code> で実行できて便利</p>
 
 <p>これでちょっとばかり Go を書く環境がリッチになったので、しばらく使い込んでみたい</p>
-
-</div>
-
-          
-            <div class="post">
-  <h1 class="post-title">
-    <a href="/blog/2014/10/how-to-build-centos3-docker-image/">
-      CentOS 3 の Docker イメージを作ってみた
-    </a>
-  </h1>
-
-  <div class="post-meta">
-    2014-10-04
-    <ul>
-    
-      <li><a href="/tags/docker">Docker</a></li>
-    
-      <li><a href="/tags/centos">CentOS</a></li>
-    
-    </ul>
-  </div>
-
-  
-
-<p>先日の Bash 脆弱性騒ぎに関連して、ごく一部で残ってる RHEL3 系のマシンにも Bash のパッチを当てざるを得ない状況が発生したため、この際パッケージビルド用の Docker イメージも作っておくか、ということでやってみた</p>
-
-<h2 id="必要なもの:0f9548c31060b9cf09120147eb98969b">必要なもの</h2>
-
-<ul>
-<li>CentOS 3 がインストールされているサーバないし仮想マシン</li>
-<li>Yum パッケージ</li>
-<li>CentOS 3 のパッケージが含まれているリポジトリへのアクセス</li>
-</ul>
-
-<p>CentOS 3 のマシンは楽にやるには必須だと思う。初めは CentOS 6 上でやってみたが、後述のスクリプト実行時に最新の CentOS 6 のパッケージを拾ってこようとするのをうまく回避できなかったので、結局 CentOS 3 上で作業を行った</p>
-
-<h2 id="作成の流れ:0f9548c31060b9cf09120147eb98969b">作成の流れ</h2>
-
-<p>といっても、ほとんどやることはなくて、だいたい以下に集約される</p>
-
-<ul>
-<li><code>yum.conf</code> を編集して CentOS 3 パッケージが含まれているリポジトリを参照するようにする</li>
-<li>Docker プロジェクトが提供している <a href="https://github.com/docker/docker/blob/master/contrib/mkimage-yum.sh">mkimage-yum.sh</a> を持ってきて、 CentOS 3 向けにカスタマイズする</li>
-<li>スクリプト実行して <code>os_image.tar.gz</code> を得る</li>
-<li>できた <code>os_image.tar.gz</code> を Docker に食わせてイメージ化する</li>
-</ul>
-
-<p>以下、個々の作業の説明</p>
-
-<h3 id="yum-conf-の編集:0f9548c31060b9cf09120147eb98969b">yum.conf の編集</h3>
-
-<p>サーバ内に Yum が入っていなければ、まずはこれが必須なので入れておくのだが、 CentOS 3 はもうメンテされていないので、パッケージを拾ってこれるミラーサーバを <code>yum.conf</code> に設定しておかなければならない。普通は <code>http://vault.centos.org/</code> を設定しておけばいいと思うが、当たるミラーによってはかなり遅いことになるので、場合によっては速度の出るミラーサーバの IP アドレスを <code>dig</code> なりなんなりで調べて直接 IP アドレスを指定しておく必要があるかもしれない。具体的な変更は <code>yum.conf</code> 内にいくつかある</p>
-
-<pre><code>baseurl=http://mirror.centos.org/centos/$releasever/os/$basearch/
-</code></pre>
-
-<p>みたいな行を</p>
-
-<pre><code>baseurl=http://vault.centos.org/3.9/os/i386/
-</code></pre>
-
-<p>のように書き換えておくだけである</p>
-
-<h3 id="mkimage-yum-sh-のカスタマイズ:0f9548c31060b9cf09120147eb98969b">mkimage-yum.sh のカスタマイズ</h3>
-
-<p>一番手間取ったのがここだったが、わかってしまえばなんということもない内容。書き換えたスクリプトはこんな感じ</p>
-
-<script src="https://gist.github.com/tatsushid/22d169ea1e91e8941773.js"></script>
-
-<p>はまったポイントは</p>
-
-<ul>
-<li>mktemp が古いためにオプションの扱いが違う。最初気付かずやって、それなりの量のシステムファイルを消してしまった…</li>
-<li>パッケージを検証する GPG KEY を Yum が勝手には拾ってきてくれないので、自分で先に対象ディレクトリに落としておく</li>
-<li>なぜか Docker にインポートした後 RPM DB が壊れているようだったので、 <code>yum clean</code> 後に <code>rpm --rebuilddb</code> を実行しておく</li>
-<li>ldconfig キャッシュは消してもいいが、できたイメージをすぐ使いたい時は、ライブラリが見つからなくていちいち再構築も面倒なので、残しておく</li>
-</ul>
-
-<p>といったところ</p>
-
-<h3 id="スクリプトの実行:0f9548c31060b9cf09120147eb98969b">スクリプトの実行</h3>
-
-<p>これはそのまんま、上記で作成しておいた <code>yum.conf</code> を <code>mkimage-yum.sh</code> に指定して実行するだけである。うまくいけば <code>os_image.tar.gz</code> がカレントディレクトリ内に作られる</p>
-
-<h3 id="docker-でイメージ化:0f9548c31060b9cf09120147eb98969b">Docker でイメージ化</h3>
-
-<p>できた <code>os_image.tar.gz</code> を Docker が動いている環境に持ってきて、下記のようにコマンドを実行する</p>
-
-<pre><code class="language-bash">cat os_image.tar.gz | docker import - centos-3-i386
-</code></pre>
-
-<p><code>centos-3-i386</code> の部分はイメージ名になるので、好きなように設定すればよい。インポートに成功したら、</p>
-
-<pre><code class="language-bash">docker run -i -t centos-3-i386 /bin/bash
-</code></pre>
-
-<p>のようにして使い始めることができる</p>
-
-<h2 id="まとめ:0f9548c31060b9cf09120147eb98969b">まとめ</h2>
-
-<p>上記の流れでできたイメージを使って、無事パッチ済みの Bash の RPM の作成もできたので、日常の作業には十分な環境が作成できたと思う</p>
-
-<p>Docker のイメージを作ったのは初めてだったが、 OS が稼働するのに必要なファイル群を tar に固めて食わせるだけ、というのは手軽でいい。各種ディストリビューションごとにマイクロ環境を作れるようなツールがあったりするので、それを使えば気楽にイメージが作れるだろうな、と思う</p>
 
 </div>
 

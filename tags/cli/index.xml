@@ -8,13 +8,14 @@
     <language>ja-jp</language>
     
     
-    <lastBuildDate>Mon, 11 Aug 2014 16:54:00 JST</lastBuildDate>
+    
+    <lastBuildDate>Mon, 11 Aug 2014 16:54:00 &#43;0900</lastBuildDate>
     <atom:link href="http://tatsushid.github.io/tags/cli/index.xml" rel="self" type="application/rss+xml" />
     
     <item>
       <title>wgetでの保存先ディレクトリを指定する</title>
       <link>http://tatsushid.github.io/blog/2014/08/specify-wget-savedir/</link>
-      <pubDate>Mon, 11 Aug 2014 16:54:00 JST</pubDate>
+      <pubDate>Mon, 11 Aug 2014 16:54:00 &#43;0900</pubDate>
       
       <guid>http://tatsushid.github.io/blog/2014/08/specify-wget-savedir/</guid>
       <description>&lt;p&gt;wget コマンドを使っていると、たまにカレントディレクトリではなくて他の場所にデータを保存したい時があるのだけれど、その方法をしばしば忘れるのでメモ。これをやりたい時は、 -P オプションを使えばよい。たとえば&lt;/p&gt;

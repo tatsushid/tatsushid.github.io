@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Libreboard on tatsushid.github.io</title>
-    <link>http://tatsushid.github.io/tags/libreboard/</link>
-    <description>Recent content in Libreboard on tatsushid.github.io</description>
+    <title>Fig on tatsushid.github.io</title>
+    <link>http://tatsushid.github.io/tags/fig/</link>
+    <description>Recent content in Fig on tatsushid.github.io</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>ja-jp</language>
     
     
     
     <lastBuildDate>Sun, 18 Jan 2015 23:21:58 &#43;0900</lastBuildDate>
-    <atom:link href="http://tatsushid.github.io/tags/libreboard/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="http://tatsushid.github.io/tags/fig/index.xml" rel="self" type="application/rss+xml" />
     
     <item>
       <title>Fig で Libreboard 環境を構築してみた</title>
@@ -72,53 +72,6 @@ mongo:
 &lt;/ol&gt;
 
 &lt;p&gt;Fig を使うと、このような感じで一度 &lt;code&gt;fig.yml&lt;/code&gt; を書くだけで、機能ごとに分割した複数のコンテナを保持しつつ、日常の操作は簡単な &lt;code&gt;fig&lt;/code&gt; コマンドを実行するだけで済むようになる。今回の Libreboard に限らず、 Fig を使うことでホスト側の環境にあれこれ手を入れずとも気軽にウェブアプリケーションの実行環境を用意できるので、単一ホスト内で実行させたいウェブアプリケーションの管理には非常に優れていると思う&lt;/p&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>Docker で Libreboard 動かしてみた</title>
-      <link>http://tatsushid.github.io/blog/2015/01/run-libreboard-on-docker/</link>
-      <pubDate>Mon, 12 Jan 2015 10:39:52 &#43;0900</pubDate>
-      
-      <guid>http://tatsushid.github.io/blog/2015/01/run-libreboard-on-docker/</guid>
-      <description>&lt;p&gt;昨日「 &lt;a href=&#34;http://www.ryuzee.com/contents/blog/7032&#34;&gt;オープンソースのTrelloクローン Libreboard | Ryuzee.com&lt;/a&gt; 」の記事を読んで面白そうだと思ったので、 Docker で動かしてみた。一手間かかったけど動かすことはできたので、以下その手順。 Docker はインストールされてることを前提&lt;/p&gt;
-
-&lt;ol&gt;
-&lt;li&gt;&lt;p&gt;&lt;a href=&#34;https://github.com/libreboard/libreboard&#34;&gt;Libreboard&lt;/a&gt; のリポジトリをクローンして手元に落としてくる&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;git clone https://github.com/libreboard/libreboard.git
-&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
-
-&lt;li&gt;&lt;p&gt;落としてきた Libreboard のディレクトリに移動し Docker イメージを作成する&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;cd libreboard
-docker build -t libreboard .
-&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
-
-&lt;li&gt;&lt;p&gt;Libreboard は MongoDB をデータ保存に使用しているので、 MongoDB の Docker イメージも用意して起動しておく&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;docker pull mongo
-docker run --name mymongo -d mongo
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;環境によっては起動時に &lt;code&gt;numactl: This system does not support NUMA policy&lt;/code&gt; といわれて起動できないことがあるので、その場合は&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;docker run --name mymongo --entrypoint=mongod -d mongo
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;という形で直接 MongoDB を起動するとよい（参考： &lt;a href=&#34;http://stackoverflow.com/questions/27882091/docker-mongo-exits-on-run&#34;&gt;mongodb - Docker: Mongo exits on run - Stack Overflow&lt;/a&gt; ）&lt;/p&gt;&lt;/li&gt;
-
-&lt;li&gt;&lt;p&gt;あらかじめ作成しておいた Libreboard の Docker イメージを使ってコンテナを起動する&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;docker run -dit --link mymongo:mongo -e ROOT_URL=&amp;quot;http://example.com&amp;quot; -p 5555:8080 libreboard sh -c &#39;export MONGO_URL=mongodb://$MONGO_PORT_27017_TCP_ADDR:$MONGO_PORT_27017_TCP_PORT/libreboard; /meteor-run.sh&#39;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;docker の &lt;code&gt;--link&lt;/code&gt; オプションを使うと、起動したコンテナ内に link で接続した先のコンテナから環境変数が渡されてくるので、それを使って &lt;code&gt;MONGO_URL&lt;/code&gt; 環境変数を定義する。 Docker の &lt;code&gt;-e&lt;/code&gt; オプションだとコンテナ内部の変数は展開できなさそうだったため、コマンド実行時に定義している。 &lt;code&gt;ROOT_URL&lt;/code&gt; はとりあえず適当なものに。&lt;/p&gt;&lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;p&gt;上記の手順後、 Docker サーバの 5555 ポートにウェブブラウザでアクセスすると、めでたくログイン画面が表示された&lt;/p&gt;
-
-&lt;p&gt;Libreboard 自体は確かにまだまだ機能不足な点が否めないが、使い勝手はよさそうだったので今後が楽しみである&lt;/p&gt;
 </description>
     </item>
     

@@ -8,13 +8,14 @@
     <language>ja-jp</language>
     
     
-    <lastBuildDate>Mon, 13 Oct 2014 13:59:29 JST</lastBuildDate>
+    
+    <lastBuildDate>Mon, 13 Oct 2014 13:59:29 &#43;0900</lastBuildDate>
     <atom:link href="http://tatsushid.github.io/tags/vim/index.xml" rel="self" type="application/rss+xml" />
     
     <item>
       <title>Go の Vim プラグインを vim-go に切り替えた</title>
       <link>http://tatsushid.github.io/blog/2014/10/switch-from-official-go-vim-plugin-to-vim-go/</link>
-      <pubDate>Mon, 13 Oct 2014 13:59:29 JST</pubDate>
+      <pubDate>Mon, 13 Oct 2014 13:59:29 &#43;0900</pubDate>
       
       <guid>http://tatsushid.github.io/blog/2014/10/switch-from-official-go-vim-plugin-to-vim-go/</guid>
       <description>&lt;p&gt;Vim で Go のコードを書いていて、エディタ内からお手軽にカバレッジ取れたらいいなと思って調べていたら、オフィシャルの Go の Vim プラグインではなく &lt;a href=&#34;https://github.com/fatih/vim-go&#34;&gt;vim-go&lt;/a&gt; を使えばできそうだということがわかったので、切り替えることにした&lt;/p&gt;

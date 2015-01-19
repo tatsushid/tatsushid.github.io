@@ -8,13 +8,14 @@
     <language>ja-jp</language>
     
     
-    <lastBuildDate>Mon, 05 Jan 2015 20:53:48 JST</lastBuildDate>
+    
+    <lastBuildDate>Mon, 05 Jan 2015 20:53:48 &#43;0900</lastBuildDate>
     <atom:link href="http://tatsushid.github.io/tags/mediawiki/index.xml" rel="self" type="application/rss+xml" />
     
     <item>
       <title>Pandoc を使って Markdown を Mediawiki に変換する方法</title>
       <link>http://tatsushid.github.io/blog/2015/01/how-to-convert-markdown-into-mediawiki/</link>
-      <pubDate>Mon, 05 Jan 2015 20:53:48 JST</pubDate>
+      <pubDate>Mon, 05 Jan 2015 20:53:48 &#43;0900</pubDate>
       
       <guid>http://tatsushid.github.io/blog/2015/01/how-to-convert-markdown-into-mediawiki/</guid>
       <description>&lt;p&gt;あまり頻度の高くない作業だけど、ちょいちょい必要になりそうなため、忘れないようにメモ。 Markdown で書いたドキュメントは、 &lt;a href=&#34;http://johnmacfarlane.net/pandoc/&#34;&gt;Pandoc&lt;/a&gt; を使うと Mediawiki の書式に変換できる。たとえば&lt;/p&gt;

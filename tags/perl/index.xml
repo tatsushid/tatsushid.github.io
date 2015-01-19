@@ -8,13 +8,14 @@
     <language>ja-jp</language>
     
     
-    <lastBuildDate>Thu, 16 Oct 2014 00:10:40 JST</lastBuildDate>
+    
+    <lastBuildDate>Thu, 16 Oct 2014 00:10:40 &#43;0900</lastBuildDate>
     <atom:link href="http://tatsushid.github.io/tags/perl/index.xml" rel="self" type="application/rss+xml" />
     
     <item>
       <title>メールの Date ヘッダを Time::Piece でパースしようとしてはまった話</title>
       <link>http://tatsushid.github.io/blog/2014/10/time-piece-problem-at-parsing-date-header-in-a-mail/</link>
-      <pubDate>Thu, 16 Oct 2014 00:10:40 JST</pubDate>
+      <pubDate>Thu, 16 Oct 2014 00:10:40 &#43;0900</pubDate>
       
       <guid>http://tatsushid.github.io/blog/2014/10/time-piece-problem-at-parsing-date-header-in-a-mail/</guid>
       <description>

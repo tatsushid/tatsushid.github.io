@@ -8,13 +8,77 @@
     <language>ja-jp</language>
     
     
-    <lastBuildDate>Mon, 12 Jan 2015 10:39:52 JST</lastBuildDate>
+    
+    <lastBuildDate>Sun, 18 Jan 2015 23:21:58 &#43;0900</lastBuildDate>
     <atom:link href="http://tatsushid.github.io/blog/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>Fig で Libreboard 環境を構築してみた</title>
+      <link>http://tatsushid.github.io/blog/2015/01/managing-libreboard-containers-by-fig/</link>
+      <pubDate>Sun, 18 Jan 2015 23:21:58 &#43;0900</pubDate>
+      
+      <guid>http://tatsushid.github.io/blog/2015/01/managing-libreboard-containers-by-fig/</guid>
+      <description>&lt;p&gt;&lt;a href=&#34;http://tatsushid.github.io/blog/2015/01/run-libreboard-on-docker/&#34;&gt;前回&lt;/a&gt; は Docker 上で Libreboard を動かしてみたが、今のところ Libreboard の開発は非常に活発で、更新を Docker コンテナに反映させるたびに長々としたコマンドを叩くのが不便に感じてきたため、 &lt;a href=&#34;http://www.fig.sh/&#34;&gt;Fig&lt;/a&gt; を使って必要なコマンドなどをあらかじめ定義しておき、 &lt;code&gt;fig build&lt;/code&gt; や &lt;code&gt;fig up&lt;/code&gt; で楽に更新適用ができるようにしてみた。以下はその手順&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;Fig をインストール。今回は手元のサーバが Gentoo だったので emerge で入れてしまったが、 &lt;a href=&#34;http://www.fig.sh/install.html&#34;&gt;Installing Fig&lt;/a&gt; を見る限り、他の環境でも簡単に導入できると思う&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;Fig の作業ディレクトリを適当に作成して移動する&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;mkdir fig_libreboard
+cd fig_libreboard
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;&lt;code&gt;fig.yml&lt;/code&gt; を作成する。今回は下記のようにしてみた&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-yaml&#34;&gt;libreboard:
+  build: ../libreboard
+  links:
+    - mongo
+  ports:
+    - &amp;quot;5555:8080&amp;quot;
+  environment:
+    ROOT_URL: &amp;quot;http://libreboard.example.com&amp;quot;
+  command: &amp;quot;sh -c &#39;export MONGO_URL=mongodb://$MONGO_PORT_27017_TCP_ADDR:$MONGO_PORT_27017_TCP_PORT/libreboard; /meteor-run.sh&#39;&amp;quot;
+data:
+  image: busybox
+  volumes:
+    - /data/db
+backup:
+  image: busybox
+  volumes_from:
+    - data
+mongo:
+  image: mongo
+  volumes_from:
+    - data
+  entrypoint: mongod
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;code&gt;libreboard&lt;/code&gt;, &lt;code&gt;data&lt;/code&gt;, &lt;code&gt;backup&lt;/code&gt;, &lt;code&gt;mongo&lt;/code&gt; の 4 台構成になっている。それぞれの役割は、&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;libreboard&lt;/code&gt; はアプリケーションを稼働させるコンテナ。先ほど作った &lt;code&gt;fig_libreboard&lt;/code&gt; と同一階層の &lt;code&gt;libreboard&lt;/code&gt; ディレクトリにある Dockerfile を読み込んで Docker イメージを構築し、それを実行する。データストアとなる MongoDB コンテナとリンクして、起動時に環境変数経由で接続を行っている。&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;data&lt;/code&gt; は &lt;a href=&#34;https://docs.docker.com/userguide/dockervolumes/&#34;&gt;Managing data in containers - Docker Documentation&lt;/a&gt; で言うところのデータボリュームコンテナで、 MongoDB のデータを保持するためだけに使われている。&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;mongo&lt;/code&gt; は実際に MongoDB が稼働するコンテナ。 &lt;code&gt;data&lt;/code&gt; のボリュームに接続してデータをそこに保存している。&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;backup&lt;/code&gt; は、 &lt;code&gt;data&lt;/code&gt; からは &lt;code&gt;/data/db&lt;/code&gt; の中身が見えなかったため、確認作業などのために便宜上作成しておいたコンテナ。これがあると気軽に &lt;code&gt;fig run --rm backup ls -al /data/db&lt;/code&gt; などと打って中身を確認したり、 tar でのバックアップ作業がやりやすくなる。が、特別稼働そのものには関係ないので、なくてもかまわない&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;といったところ。起動コマンドやポートの設定は &lt;a href=&#34;http://tatsushid.github.io/blog/2015/01/run-libreboard-on-docker/&#34;&gt;前回&lt;/a&gt; のものを引き継ぐ形で指定している&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;上記設定ができたら、 &lt;code&gt;fig up&lt;/code&gt; を実行してコンテナ群を起動する。初回は &lt;code&gt;libreboard&lt;/code&gt; コンテナ用のイメージのビルドが実行されるので、少しばかり時間がかかる。無事に起動してウェブブラウザで 5555 番ポートにアクセスしてログイン画面が出れば成功。バックグラウンドでの起動に切り替えたい場合は、いったん &lt;code&gt;Ctrl-c&lt;/code&gt; を入力してコンテナ群を停止し、改めて &lt;code&gt;fig up -d&lt;/code&gt; で起動すればよい。&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;Libreboard の更新があった場合は &lt;code&gt;fig build&lt;/code&gt; を実行して Docker イメージを再作成する。イメージ作成に成功したら &lt;code&gt;fig up -d&lt;/code&gt; を実行して環境を再起動すればよい&lt;/p&gt;&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;Fig を使うと、このような感じで一度 &lt;code&gt;fig.yml&lt;/code&gt; を書くだけで、機能ごとに分割した複数のコンテナを保持しつつ、日常の操作は簡単な &lt;code&gt;fig&lt;/code&gt; コマンドを実行するだけで済むようになる。今回の Libreboard に限らず、 Fig を使うことでホスト側の環境にあれこれ手を入れずとも気軽にウェブアプリケーションの実行環境を用意できるので、単一ホスト内で実行させたいウェブアプリケーションの管理には非常に優れていると思う&lt;/p&gt;
+</description>
+    </item>
     
     <item>
       <title>Docker で Libreboard 動かしてみた</title>
       <link>http://tatsushid.github.io/blog/2015/01/run-libreboard-on-docker/</link>
-      <pubDate>Mon, 12 Jan 2015 10:39:52 JST</pubDate>
+      <pubDate>Mon, 12 Jan 2015 10:39:52 &#43;0900</pubDate>
       
       <guid>http://tatsushid.github.io/blog/2015/01/run-libreboard-on-docker/</guid>
       <description>&lt;p&gt;昨日「 &lt;a href=&#34;http://www.ryuzee.com/contents/blog/7032&#34;&gt;オープンソースのTrelloクローン Libreboard | Ryuzee.com&lt;/a&gt; 」の記事を読んで面白そうだと思ったので、 Docker で動かしてみた。一手間かかったけど動かすことはできたので、以下その手順。 Docker はインストールされてることを前提&lt;/p&gt;
@@ -61,7 +125,7 @@ docker run --name mymongo -d mongo
     <item>
       <title>Pandoc を使って Markdown を Mediawiki に変換する方法</title>
       <link>http://tatsushid.github.io/blog/2015/01/how-to-convert-markdown-into-mediawiki/</link>
-      <pubDate>Mon, 05 Jan 2015 20:53:48 JST</pubDate>
+      <pubDate>Mon, 05 Jan 2015 20:53:48 &#43;0900</pubDate>
       
       <guid>http://tatsushid.github.io/blog/2015/01/how-to-convert-markdown-into-mediawiki/</guid>
       <description>&lt;p&gt;あまり頻度の高くない作業だけど、ちょいちょい必要になりそうなため、忘れないようにメモ。 Markdown で書いたドキュメントは、 &lt;a href=&#34;http://johnmacfarlane.net/pandoc/&#34;&gt;Pandoc&lt;/a&gt; を使うと Mediawiki の書式に変換できる。たとえば&lt;/p&gt;
@@ -86,7 +150,7 @@ docker run --name mymongo -d mongo
     <item>
       <title>メールの Date ヘッダを Time::Piece でパースしようとしてはまった話</title>
       <link>http://tatsushid.github.io/blog/2014/10/time-piece-problem-at-parsing-date-header-in-a-mail/</link>
-      <pubDate>Thu, 16 Oct 2014 00:10:40 JST</pubDate>
+      <pubDate>Thu, 16 Oct 2014 00:10:40 &#43;0900</pubDate>
       
       <guid>http://tatsushid.github.io/blog/2014/10/time-piece-problem-at-parsing-date-header-in-a-mail/</guid>
       <description>
@@ -326,7 +390,7 @@ my $t = localtime(Time::Piece-&amp;gt;strptime($datetime, $format)-&amp;gt;epoch
     <item>
       <title>Go の Vim プラグインを vim-go に切り替えた</title>
       <link>http://tatsushid.github.io/blog/2014/10/switch-from-official-go-vim-plugin-to-vim-go/</link>
-      <pubDate>Mon, 13 Oct 2014 13:59:29 JST</pubDate>
+      <pubDate>Mon, 13 Oct 2014 13:59:29 &#43;0900</pubDate>
       
       <guid>http://tatsushid.github.io/blog/2014/10/switch-from-official-go-vim-plugin-to-vim-go/</guid>
       <description>&lt;p&gt;Vim で Go のコードを書いていて、エディタ内からお手軽にカバレッジ取れたらいいなと思って調べていたら、オフィシャルの Go の Vim プラグインではなく &lt;a href=&#34;https://github.com/fatih/vim-go&#34;&gt;vim-go&lt;/a&gt; を使えばできそうだということがわかったので、切り替えることにした&lt;/p&gt;
@@ -366,7 +430,7 @@ endfunction
     <item>
       <title>CentOS 3 の Docker イメージを作ってみた</title>
       <link>http://tatsushid.github.io/blog/2014/10/how-to-build-centos3-docker-image/</link>
-      <pubDate>Sat, 04 Oct 2014 14:34:47 JST</pubDate>
+      <pubDate>Sat, 04 Oct 2014 14:34:47 &#43;0900</pubDate>
       
       <guid>http://tatsushid.github.io/blog/2014/10/how-to-build-centos3-docker-image/</guid>
       <description>
@@ -456,7 +520,7 @@ endfunction
     <item>
       <title>HAProxy でのソース IP アドレスアフィニティ設定方法</title>
       <link>http://tatsushid.github.io/blog/2014/09/source-ip-address-affinty-configuration-in-haproxy/</link>
-      <pubDate>Mon, 29 Sep 2014 22:11:18 JST</pubDate>
+      <pubDate>Mon, 29 Sep 2014 22:11:18 &#43;0900</pubDate>
       
       <guid>http://tatsushid.github.io/blog/2014/09/source-ip-address-affinty-configuration-in-haproxy/</guid>
       <description>
@@ -498,7 +562,7 @@ backend web-back
     <item>
       <title>Go の構造体とポインタと omitempty の話</title>
       <link>http://tatsushid.github.io/blog/2014/09/go-structure-pointer-and-omitempty/</link>
-      <pubDate>Tue, 23 Sep 2014 06:42:55 JST</pubDate>
+      <pubDate>Tue, 23 Sep 2014 06:42:55 &#43;0900</pubDate>
       
       <guid>http://tatsushid.github.io/blog/2014/09/go-structure-pointer-and-omitempty/</guid>
       <description>
@@ -701,7 +765,7 @@ func main() {
     <item>
       <title>Go でインターフェース型の reflect.Type を取得する方法</title>
       <link>http://tatsushid.github.io/blog/2014/09/how-to-get-reflect-type-of-interface-type-in-go/</link>
-      <pubDate>Fri, 19 Sep 2014 21:46:21 JST</pubDate>
+      <pubDate>Fri, 19 Sep 2014 21:46:21 &#43;0900</pubDate>
       
       <guid>http://tatsushid.github.io/blog/2014/09/how-to-get-reflect-type-of-interface-type-in-go/</guid>
       <description>&lt;p&gt;Go の &lt;code&gt;reflect&lt;/code&gt; パッケージを使っていて、ときどき操作している変数型との比較のために &lt;code&gt;error&lt;/code&gt; などのインターフェース型の &lt;code&gt;reflect.Type&lt;/code&gt; がほしいことがあるのだけれど、これは &lt;code&gt;reflect.TypeOf((*error)(nil)).Elem()&lt;/code&gt; のように書くことで得られる。つまり、&lt;/p&gt;
@@ -759,7 +823,7 @@ func main() {
     <item>
       <title>CentOSのyumミラーリストの調べ方</title>
       <link>http://tatsushid.github.io/blog/2014/09/how-to-check-centos-mirrorlist/</link>
-      <pubDate>Thu, 18 Sep 2014 22:10:41 JST</pubDate>
+      <pubDate>Thu, 18 Sep 2014 22:10:41 &#43;0900</pubDate>
       
       <guid>http://tatsushid.github.io/blog/2014/09/how-to-check-centos-mirrorlist/</guid>
       <description>&lt;p&gt;ここ最近 CentOS の yum で updates からパッケージを持ってくる時の速度がやけに遅いので、 yum にはどんなミラーが返ってきてるのか調べてみた。 yum は 64bit 環境で特別設定を変えてなければ、通常 &lt;code&gt;http://mirrorlist.centos.org/?release=6&amp;amp;arch=x86_64&amp;amp;repo=os&lt;/code&gt; や &lt;code&gt;http://mirrorlist.centos.org/?release=6&amp;amp;arch=x86_64&amp;amp;repo=updates&lt;/code&gt; にアクセスしているので、この URL にブラウザでアクセスするか、&lt;/p&gt;
@@ -806,7 +870,7 @@ http://mirror.awanti.com/centos/6.5/updates/x86_64/
     <item>
       <title>静的サイトジェネレーターを Hugo に切り替えた</title>
       <link>http://tatsushid.github.io/blog/2014/08/change-site-generator-to-hugo/</link>
-      <pubDate>Sat, 16 Aug 2014 14:00:00 JST</pubDate>
+      <pubDate>Sat, 16 Aug 2014 14:00:00 &#43;0900</pubDate>
       
       <guid>http://tatsushid.github.io/blog/2014/08/change-site-generator-to-hugo/</guid>
       <description>&lt;p&gt;ここ半年から一年の間、ちょっとしたコマンドラインツールの開発にはずっと golang を使ってきてて、せっかくなのでサイトジェネレーターもこの際 golang 製に変えてみようということで、 &lt;a href=&#34;http://hugo.spf13.com/&#34;&gt;Hugo&lt;/a&gt; を使ってみることにした。今のところの使用感としては、&lt;/p&gt;
@@ -833,7 +897,7 @@ http://mirror.awanti.com/centos/6.5/updates/x86_64/
     <item>
       <title>wgetでの保存先ディレクトリを指定する</title>
       <link>http://tatsushid.github.io/blog/2014/08/specify-wget-savedir/</link>
-      <pubDate>Mon, 11 Aug 2014 16:54:00 JST</pubDate>
+      <pubDate>Mon, 11 Aug 2014 16:54:00 &#43;0900</pubDate>
       
       <guid>http://tatsushid.github.io/blog/2014/08/specify-wget-savedir/</guid>
       <description>&lt;p&gt;wget コマンドを使っていると、たまにカレントディレクトリではなくて他の場所にデータを保存したい時があるのだけれど、その方法をしばしば忘れるのでメモ。これをやりたい時は、 -P オプションを使えばよい。たとえば&lt;/p&gt;
@@ -848,7 +912,7 @@ http://mirror.awanti.com/centos/6.5/updates/x86_64/
     <item>
       <title>CentOS7をGPTパーティションで新規インストールする</title>
       <link>http://tatsushid.github.io/blog/2014/07/install-centos7-on-gpt-drive/</link>
-      <pubDate>Fri, 25 Jul 2014 13:04:00 JST</pubDate>
+      <pubDate>Fri, 25 Jul 2014 13:04:00 &#43;0900</pubDate>
       
       <guid>http://tatsushid.github.io/blog/2014/07/install-centos7-on-gpt-drive/</guid>
       <description>&lt;p&gt;CentOS 7 を GPT パーティションでインストールするのは難しくない。 &lt;a href=&#34;https://bugzilla.redhat.com/show_bug.cgi?id=1032428&#34;&gt;Bug 1032428 - Need a 1MB &amp;lsquo;biosboot&amp;rsquo; type partition when install RHEL7 on a GPT disk with custom partition&lt;/a&gt; によると、&lt;/p&gt;
@@ -865,7 +929,7 @@ http://mirror.awanti.com/centos/6.5/updates/x86_64/
     <item>
       <title>CentOS5をGPTパーティションで新規インストールする</title>
       <link>http://tatsushid.github.io/blog/2014/07/install-centos5-on-gpt-drive/</link>
-      <pubDate>Tue, 08 Jul 2014 20:06:00 JST</pubDate>
+      <pubDate>Tue, 08 Jul 2014 20:06:00 &#43;0900</pubDate>
       
       <guid>http://tatsushid.github.io/blog/2014/07/install-centos5-on-gpt-drive/</guid>
       <description>&lt;p&gt;CentOS 5 の新規インストール時に GPT パーティションを使いたい場合は、 CentOS 6 の様に一筋縄では行かない。今回は&lt;/p&gt;
@@ -965,7 +1029,7 @@ grub&amp;gt; quit
     <item>
       <title>CentOS6をGPTパーティションで新規インストールする</title>
       <link>http://tatsushid.github.io/blog/2014/07/install-centos6-on-gpt-drive/</link>
-      <pubDate>Mon, 07 Jul 2014 19:15:00 JST</pubDate>
+      <pubDate>Mon, 07 Jul 2014 19:15:00 &#43;0900</pubDate>
       
       <guid>http://tatsushid.github.io/blog/2014/07/install-centos6-on-gpt-drive/</guid>
       <description>&lt;p&gt;毎度毎度コマンドの打ち方を忘れてしまうのでメモ。 RHEL 6 互換のディストリビューションを新規インストールする際、 GPT パーティションを使いたい場合は、インストーラーで適当なところ（パーティション設定の直前辺り）まで進めたところで下記のようにコマンドを実行すると、自分でパーティションを切ることができる&lt;/p&gt;

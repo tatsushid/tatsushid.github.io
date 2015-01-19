@@ -11,7 +11,7 @@
 
   <title>
     
-      Pandoc を使って Markdown を Mediawiki に変換する方法 &middot; tatsushid.github.io
+      Fig &middot; tatsushid.github.io
     
   </title>
 
@@ -33,7 +33,7 @@
   <link rel="shortcut icon" href="/favicon.ico">
 
   
-  <link rel="alternate" type="application/rss+xml" title="RSS" href="">
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="http://tatsushid.github.io/tags/fig/index.xml">
 </head>
 
 
@@ -91,106 +91,29 @@
       </div>
 
       <div class="container content">
-        <div class="post">
-  <h1 class="post-title">
-    <a href="/blog/2015/01/how-to-convert-markdown-into-mediawiki/">
-      Pandoc を使って Markdown を Mediawiki に変換する方法
-    </a>
-  </h1>
+        <h1>Fig</h1>
+        <ul class="related-posts">
+          
+            <li>
+  <h3>
+    <a href="/blog/2015/01/managing-libreboard-containers-by-fig/">Fig で Libreboard 環境を構築してみた</a>
+    <small>
+      2015-01-18
+      <ul>
+        
+          <li><a href="/tags/docker">Docker</a></li>
+        
+          <li><a href="/tags/fig">Fig</a></li>
+        
+          <li><a href="/tags/libreboard">Libreboard</a></li>
+        
+      </ul>
+    </small>
+  </h3>
+</li>
 
-  <div class="post-meta">
-    2015-01-05
-    <ul>
-    
-      <li><a href="/tags/pandoc">Pandoc</a></li>
-    
-      <li><a href="/tags/markdown">Markdown</a></li>
-    
-      <li><a href="/tags/mediawiki">Mediawiki</a></li>
-    
-    </ul>
-  </div>
-
-  <p>あまり頻度の高くない作業だけど、ちょいちょい必要になりそうなため、忘れないようにメモ。 Markdown で書いたドキュメントは、 <a href="http://johnmacfarlane.net/pandoc/">Pandoc</a> を使うと Mediawiki の書式に変換できる。たとえば</p>
-
-<pre><code class="language-sh">pandoc -f markdown -t mediawiki -o sample.mediawiki sample.md
-</code></pre>
-
-<p>のようにコマンドを実行すると、 <code>sample.md</code> を <code>sample.mediawiki</code> のファイルへ形式変換して出力してくれる。変換後の書式などはおおむね問題ないが、意図通りじゃない部分もところどころ見られるので、中身はチェックした方がよい。 MacOS X を使っているのなら、変換後のファイルの中身を</p>
-
-<pre><code class="language-sh">cat sample.mediawiki | pbcopy
-</code></pre>
-
-<p>としてクリップボードに取り込んでしまえるので、 Wiki の入力フォームに張りつけることも簡単にできる。もちろん逆の変換も</p>
-
-<pre><code class="language-sh">pandoc -f mediawiki -t markdown -o sample.md sample.mediawiki
-</code></pre>
-
-<p>のようにできる</p>
-
-</div>
-
-        <nav>
-  <h2>Related posts</h2>
-    <ul class="related-posts">
-      
-        
-        
-      
-        
-        
-      
-        
-        
-      
-        
-        
-      
-        
-        
-      
-        
-        
-      
-        
-        
-      
-        
-        
-      
-        
-        
-      
-        
-        
-      
-        
-        
-      
-        
-        
-      
-        
-        
-      
-        
-        
-      
-        
-        
-      
-        
-        
-      
-    </ul>
-</nav>
-
-        <nav class="prev-next">
-          <ul>
-            <li><a href="/blog/2015/01/run-libreboard-on-docker/">Newer Post</a></li>
-            <li><a href="/blog/2014/10/time-piece-problem-at-parsing-date-header-in-a-mail/">Older Post</a></li>
-          </ul>
-        </nav>
+          
+        </ul>
       </div>
     </div>
 
