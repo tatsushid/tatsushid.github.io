@@ -1,113 +1,4 @@
-<!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
-
-  <head>
-  <link href="http://gmpg.org/xfn/11" rel="profile">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta http-equiv="content-type" content="text/html; charset=utf-8">
-
-  
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
-
-  <title>
-    
-      メールの Date ヘッダを Time::Piece でパースしようとしてはまった話 &middot; tatsushid.github.io
-    
-  </title>
-
-  
-  <link rel="stylesheet" href="/css/poole.css">
-  <link rel="stylesheet" href="/css/syntax.css">
-  <link rel="stylesheet" href="/css/lanyon.css">
-  <link rel="stylesheet" href="/css/overwrite.css">
-  <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=PT+Serif:400,400italic,700|PT+Sans:400">
-  <link rel="stylesheet" href="/css/font-awesome/css/font-awesome.min.css">
-  <link rel="stylesheet" href="/css/styles/zenburn.css">
-
-  
-  <script src="/js/highlight.pack.js"></script>
-  <script>hljs.initHighlightingOnLoad();</script>
-
-  
-  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/apple-touch-icon-precomposed.png">
-  <link rel="shortcut icon" href="/favicon.ico">
-
-  
-  <link rel="alternate" type="application/rss+xml" title="RSS" href="">
-</head>
-
-
-  <body class="theme-base-0d layout-reverse sidebar-overlay">
-
-    
-<input type="checkbox" class="sidebar-checkbox" id="sidebar-checkbox">
-
-
-<div class="sidebar" id="sidebar">
-  <div class="sidebar-item">
-    <p>   </p>
-  </div>
-
-  <nav class="sidebar-nav">
-    <ul>
-      <li><a class="sidebar-nav-item" href="/">Home</a></li>
-
-      
-      <li>
-        <a class="sidebar-nav-item" href="http://tatsushid.github.io/blog/">Blog</a>
-        
-      </li>
-      
-      <li>
-        <a class="sidebar-nav-item" href="http://tatsushid.github.io/tags/">Tags</a>
-        
-      </li>
-      
-
-    </ul>
-  </nav>
-
-  <div class="sidebar-item">
-    <ul class="media-links">
-      <li><a href="https://twitter.com/tatsushi_d"><i class="fa fa-twitter" aria-label="twitter"></i></a></li>
-      <li><a href="https://github.com/tatsushid"><i class="fa fa-github" aria-label="github"></i></a></li>
-    </ul>
-    <div class="footnote">
-      Powered by <a href="http://gohugo.io/">Hugo</a><br>
-      &copy; 2014-2015. Tatsushi Demachi All rights reserved.
-    </div>
-  </div>
-</div>
-
-
-    
-    <div class="wrap">
-      <div class="masthead">
-        <div class="container">
-          <h3 class="masthead-title">
-            <a href="/" title="Home">tatsushid.github.io</a>
-          </h3>
-        </div>
-      </div>
-
-      <div class="container content">
-        <div class="post">
-  <h1 class="post-title">
-    <a href="/blog/2014/10/time-piece-problem-at-parsing-date-header-in-a-mail/">
-      メールの Date ヘッダを Time::Piece でパースしようとしてはまった話
-    </a>
-  </h1>
-
-  <div class="post-meta">
-    2014-10-16
-    <ul>
-    
-      <li><a href="/tags/perl">Perl</a></li>
-    
-    </ul>
-  </div>
-
-  
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ja" lang="ja"><head><link href="http://gmpg.org/xfn/11" rel="profile"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1"><title>メールの Date ヘッダを Time::Piece でパースしようとしてはまった話 &middot; tatsushid.github.io</title><link rel="stylesheet" href="/css/main.css"><link rel="stylesheet" href="http://fonts.googleapis.com/css?family=PT+Serif:400,400italic,700|PT+Sans:400"><link rel="stylesheet" href="/css/font-awesome/css/font-awesome.min.css"><script src="/js/highlight.pack.js" onload="hljs.initHighlighting();" async></script><link rel="apple-touch-icon-precomposed" sizes="144x144" href="/apple-touch-icon-precomposed.png"><link rel="shortcut icon" href="/favicon.ico"><link rel="alternate" type="application/rss+xml" title="RSS" href=""></head><body class="theme-base-0d layout-reverse sidebar-overlay"><input id="sidebar-checkbox" class="sidebar-checkbox" type="checkbox"><div id="sidebar" class="sidebar"><div class="sidebar-item"><p> </a></p></div><nav class="sidebar-nav"><ul><li><a class="sidebar-nav-item" href="/">Home</a></li><li><a class="sidebar-nav-item" href="/blog/">Blog</a></li><li><a class="sidebar-nav-item" href="/tags/">Tags</a></li></ul></nav><div class="sidebar-item"><ul class="media-links"><li><a href="https://twitter.com/tatsushi_d"><i class="fa fa-twitter" aria-label="twitter"></i></a></li><li><a href="https://github.com/tatsushid"><i class="fa fa-github" aria-label="github"></i></a></li></ul><div class="footnote">Powered by <a href="http://gohugo.io/">Hugo</a><br>&copy; 2014-2015. Tatsushi Demachi All rights reserved.</div></div></div><div class="wrap"><div class="masthead"><div class="container"><h3 class="masthead-title"><a href="/" title="Home">tatsushid.github.io</a></h3></div></div><div class="container content"><div class="post"><h1 class="post-title"><a href="/blog/2014/10/time-piece-problem-at-parsing-date-header-in-a-mail/">メールの Date ヘッダを Time::Piece でパースしようとしてはまった話</a></h1><div class="post-meta">2014-10-16<ul><li><a href="/tags/perl">Perl</a></li></ul></div>
 
 <p>メールに含まれている Date ヘッダを Perl の Time::Piece でパースしようとしたところ、タイムゾーンがうまく扱えなくてはまった。たとえば、</p>
 
@@ -338,93 +229,20 @@ my $t = localtime(Time::Piece-&gt;strptime($datetime, $format)-&gt;epoch);
 <h2 id="まとめ:f982ae70135bfa8403b8ce10daa2a9de">まとめ</h2>
 
 <p>一つ一つ Time::Piece のコードを読んでいった結果、なんとか当初の目的は達成できた。が、標準モジュールとして入っている割には Time::Piece は細かな挙動が読めなくて使うのが難しいなとは感じた</p>
+</div><nav><h2>Related posts</h2><ul class="related-posts"></ul></nav><nav class="prev-next"><ul><li><a href="/blog/2015/01/how-to-convert-markdown-into-mediawiki/">Newer Post</a></li><li><a href="/blog/2014/10/switch-from-official-go-vim-plugin-to-vim-go/">Older Post</a></li></ul></nav></div></div><label class="sidebar-toggle" for="sidebar-checkbox"></label><script type="text/javascript">
+(function(document) {
+  var toggle = document.querySelector('.sidebar-toggle');
+  var sidebar = document.querySelector('#sidebar');
+  var checkbox = document.querySelector('#sidebar-checkbox');
 
-</div>
+  document.addEventListener('click', function(e) {
+    var target = e.target;
 
-        <nav>
-  <h2>Related posts</h2>
-    <ul class="related-posts">
-      
-        
-        
-      
-        
-        
-      
-        
-        
-      
-        
-        
-      
-        
-        
-      
-        
-        
-      
-        
-        
-      
-        
-        
-      
-        
-        
-      
-        
-        
-      
-        
-        
-      
-        
-        
-      
-        
-        
-      
-        
-        
-      
-        
-        
-      
-        
-        
-      
-    </ul>
-</nav>
+    if(!checkbox.checked ||
+       sidebar.contains(target) ||
+       (target === checkbox || target === toggle)) return;
 
-        <nav class="prev-next">
-          <ul>
-            <li><a href="/blog/2015/01/how-to-convert-markdown-into-mediawiki/">Newer Post</a></li>
-            <li><a href="/blog/2014/10/switch-from-official-go-vim-plugin-to-vim-go/">Older Post</a></li>
-          </ul>
-        </nav>
-      </div>
-    </div>
-
-    <label for="sidebar-checkbox" class="sidebar-toggle"></label>
-
-<script>
-  (function(document) {
-    var toggle = document.querySelector('.sidebar-toggle');
-    var sidebar = document.querySelector('#sidebar');
-    var checkbox = document.querySelector('#sidebar-checkbox');
-
-    document.addEventListener('click', function(e) {
-      var target = e.target;
-
-      if(!checkbox.checked ||
-         sidebar.contains(target) ||
-         (target === checkbox || target === toggle)) return;
-
-      checkbox.checked = false;
-    }, false);
-  })(document);
-</script>
-
-
-  </body>
-</html>
+    checkbox.checked = false;
+  }, false);
+})(document);
+</script></body></html>

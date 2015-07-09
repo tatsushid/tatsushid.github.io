@@ -6,16 +6,13 @@
     <description>Recent content in Golang on tatsushid.github.io</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>ja-jp</language>
-    
-    
-    
-    <lastBuildDate>Mon, 13 Oct 2014 13:59:29 &#43;0900</lastBuildDate>
+    <lastBuildDate>Mon, 13 Oct 2014 13:59:29 +0900</lastBuildDate>
     <atom:link href="http://tatsushid.github.io/tags/golang/index.xml" rel="self" type="application/rss+xml" />
     
     <item>
       <title>Go の Vim プラグインを vim-go に切り替えた</title>
       <link>http://tatsushid.github.io/blog/2014/10/switch-from-official-go-vim-plugin-to-vim-go/</link>
-      <pubDate>Mon, 13 Oct 2014 13:59:29 &#43;0900</pubDate>
+      <pubDate>Mon, 13 Oct 2014 13:59:29 +0900</pubDate>
       
       <guid>http://tatsushid.github.io/blog/2014/10/switch-from-official-go-vim-plugin-to-vim-go/</guid>
       <description>&lt;p&gt;Vim で Go のコードを書いていて、エディタ内からお手軽にカバレッジ取れたらいいなと思って調べていたら、オフィシャルの Go の Vim プラグインではなく &lt;a href=&#34;https://github.com/fatih/vim-go&#34;&gt;vim-go&lt;/a&gt; を使えばできそうだということがわかったので、切り替えることにした&lt;/p&gt;
@@ -55,7 +52,7 @@ endfunction
     <item>
       <title>Go の構造体とポインタと omitempty の話</title>
       <link>http://tatsushid.github.io/blog/2014/09/go-structure-pointer-and-omitempty/</link>
-      <pubDate>Tue, 23 Sep 2014 06:42:55 &#43;0900</pubDate>
+      <pubDate>Tue, 23 Sep 2014 06:42:55 +0900</pubDate>
       
       <guid>http://tatsushid.github.io/blog/2014/09/go-structure-pointer-and-omitempty/</guid>
       <description>
@@ -258,7 +255,7 @@ func main() {
     <item>
       <title>Go でインターフェース型の reflect.Type を取得する方法</title>
       <link>http://tatsushid.github.io/blog/2014/09/how-to-get-reflect-type-of-interface-type-in-go/</link>
-      <pubDate>Fri, 19 Sep 2014 21:46:21 &#43;0900</pubDate>
+      <pubDate>Fri, 19 Sep 2014 21:46:21 +0900</pubDate>
       
       <guid>http://tatsushid.github.io/blog/2014/09/how-to-get-reflect-type-of-interface-type-in-go/</guid>
       <description>&lt;p&gt;Go の &lt;code&gt;reflect&lt;/code&gt; パッケージを使っていて、ときどき操作している変数型との比較のために &lt;code&gt;error&lt;/code&gt; などのインターフェース型の &lt;code&gt;reflect.Type&lt;/code&gt; がほしいことがあるのだけれど、これは &lt;code&gt;reflect.TypeOf((*error)(nil)).Elem()&lt;/code&gt; のように書くことで得られる。つまり、&lt;/p&gt;
@@ -316,7 +313,7 @@ func main() {
     <item>
       <title>静的サイトジェネレーターを Hugo に切り替えた</title>
       <link>http://tatsushid.github.io/blog/2014/08/change-site-generator-to-hugo/</link>
-      <pubDate>Sat, 16 Aug 2014 14:00:00 &#43;0900</pubDate>
+      <pubDate>Sat, 16 Aug 2014 14:00:00 +0900</pubDate>
       
       <guid>http://tatsushid.github.io/blog/2014/08/change-site-generator-to-hugo/</guid>
       <description>&lt;p&gt;ここ半年から一年の間、ちょっとしたコマンドラインツールの開発にはずっと golang を使ってきてて、せっかくなのでサイトジェネレーターもこの際 golang 製に変えてみようということで、 &lt;a href=&#34;http://hugo.spf13.com/&#34;&gt;Hugo&lt;/a&gt; を使ってみることにした。今のところの使用感としては、&lt;/p&gt;

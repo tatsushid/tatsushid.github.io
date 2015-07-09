@@ -6,16 +6,13 @@
     <description>Recent content on tatsushid.github.io</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>ja-jp</language>
-    
-    
-    
-    <lastBuildDate>Sun, 18 Jan 2015 23:21:58 &#43;0900</lastBuildDate>
+    <lastBuildDate>Sun, 18 Jan 2015 23:21:58 +0900</lastBuildDate>
     <atom:link href="http://tatsushid.github.io/index.xml" rel="self" type="application/rss+xml" />
     
     <item>
       <title>Fig で Libreboard 環境を構築してみた</title>
       <link>http://tatsushid.github.io/blog/2015/01/managing-libreboard-containers-by-fig/</link>
-      <pubDate>Sun, 18 Jan 2015 23:21:58 &#43;0900</pubDate>
+      <pubDate>Sun, 18 Jan 2015 23:21:58 +0900</pubDate>
       
       <guid>http://tatsushid.github.io/blog/2015/01/managing-libreboard-containers-by-fig/</guid>
       <description>&lt;p&gt;&lt;a href=&#34;http://tatsushid.github.io/blog/2015/01/run-libreboard-on-docker/&#34;&gt;前回&lt;/a&gt; は Docker 上で Libreboard を動かしてみたが、今のところ Libreboard の開発は非常に活発で、更新を Docker コンテナに反映させるたびに長々としたコマンドを叩くのが不便に感じてきたため、 &lt;a href=&#34;http://www.fig.sh/&#34;&gt;Fig&lt;/a&gt; を使って必要なコマンドなどをあらかじめ定義しておき、 &lt;code&gt;fig build&lt;/code&gt; や &lt;code&gt;fig up&lt;/code&gt; で楽に更新適用ができるようにしてみた。以下はその手順&lt;/p&gt;
@@ -78,7 +75,7 @@ mongo:
     <item>
       <title>Docker で Libreboard 動かしてみた</title>
       <link>http://tatsushid.github.io/blog/2015/01/run-libreboard-on-docker/</link>
-      <pubDate>Mon, 12 Jan 2015 10:39:52 &#43;0900</pubDate>
+      <pubDate>Mon, 12 Jan 2015 10:39:52 +0900</pubDate>
       
       <guid>http://tatsushid.github.io/blog/2015/01/run-libreboard-on-docker/</guid>
       <description>&lt;p&gt;昨日「 &lt;a href=&#34;http://www.ryuzee.com/contents/blog/7032&#34;&gt;オープンソースのTrelloクローン Libreboard | Ryuzee.com&lt;/a&gt; 」の記事を読んで面白そうだと思ったので、 Docker で動かしてみた。一手間かかったけど動かすことはできたので、以下その手順。 Docker はインストールされてることを前提&lt;/p&gt;
@@ -125,7 +122,7 @@ docker run --name mymongo -d mongo
     <item>
       <title>Pandoc を使って Markdown を Mediawiki に変換する方法</title>
       <link>http://tatsushid.github.io/blog/2015/01/how-to-convert-markdown-into-mediawiki/</link>
-      <pubDate>Mon, 05 Jan 2015 20:53:48 &#43;0900</pubDate>
+      <pubDate>Mon, 05 Jan 2015 20:53:48 +0900</pubDate>
       
       <guid>http://tatsushid.github.io/blog/2015/01/how-to-convert-markdown-into-mediawiki/</guid>
       <description>&lt;p&gt;あまり頻度の高くない作業だけど、ちょいちょい必要になりそうなため、忘れないようにメモ。 Markdown で書いたドキュメントは、 &lt;a href=&#34;http://johnmacfarlane.net/pandoc/&#34;&gt;Pandoc&lt;/a&gt; を使うと Mediawiki の書式に変換できる。たとえば&lt;/p&gt;
@@ -150,7 +147,7 @@ docker run --name mymongo -d mongo
     <item>
       <title>メールの Date ヘッダを Time::Piece でパースしようとしてはまった話</title>
       <link>http://tatsushid.github.io/blog/2014/10/time-piece-problem-at-parsing-date-header-in-a-mail/</link>
-      <pubDate>Thu, 16 Oct 2014 00:10:40 &#43;0900</pubDate>
+      <pubDate>Thu, 16 Oct 2014 00:10:40 +0900</pubDate>
       
       <guid>http://tatsushid.github.io/blog/2014/10/time-piece-problem-at-parsing-date-header-in-a-mail/</guid>
       <description>
@@ -390,7 +387,7 @@ my $t = localtime(Time::Piece-&amp;gt;strptime($datetime, $format)-&amp;gt;epoch
     <item>
       <title>Go の Vim プラグインを vim-go に切り替えた</title>
       <link>http://tatsushid.github.io/blog/2014/10/switch-from-official-go-vim-plugin-to-vim-go/</link>
-      <pubDate>Mon, 13 Oct 2014 13:59:29 &#43;0900</pubDate>
+      <pubDate>Mon, 13 Oct 2014 13:59:29 +0900</pubDate>
       
       <guid>http://tatsushid.github.io/blog/2014/10/switch-from-official-go-vim-plugin-to-vim-go/</guid>
       <description>&lt;p&gt;Vim で Go のコードを書いていて、エディタ内からお手軽にカバレッジ取れたらいいなと思って調べていたら、オフィシャルの Go の Vim プラグインではなく &lt;a href=&#34;https://github.com/fatih/vim-go&#34;&gt;vim-go&lt;/a&gt; を使えばできそうだということがわかったので、切り替えることにした&lt;/p&gt;
@@ -430,7 +427,7 @@ endfunction
     <item>
       <title>CentOS 3 の Docker イメージを作ってみた</title>
       <link>http://tatsushid.github.io/blog/2014/10/how-to-build-centos3-docker-image/</link>
-      <pubDate>Sat, 04 Oct 2014 14:34:47 &#43;0900</pubDate>
+      <pubDate>Sat, 04 Oct 2014 14:34:47 +0900</pubDate>
       
       <guid>http://tatsushid.github.io/blog/2014/10/how-to-build-centos3-docker-image/</guid>
       <description>
@@ -520,7 +517,7 @@ endfunction
     <item>
       <title>HAProxy でのソース IP アドレスアフィニティ設定方法</title>
       <link>http://tatsushid.github.io/blog/2014/09/source-ip-address-affinty-configuration-in-haproxy/</link>
-      <pubDate>Mon, 29 Sep 2014 22:11:18 &#43;0900</pubDate>
+      <pubDate>Mon, 29 Sep 2014 22:11:18 +0900</pubDate>
       
       <guid>http://tatsushid.github.io/blog/2014/09/source-ip-address-affinty-configuration-in-haproxy/</guid>
       <description>
@@ -562,7 +559,7 @@ backend web-back
     <item>
       <title>Go の構造体とポインタと omitempty の話</title>
       <link>http://tatsushid.github.io/blog/2014/09/go-structure-pointer-and-omitempty/</link>
-      <pubDate>Tue, 23 Sep 2014 06:42:55 &#43;0900</pubDate>
+      <pubDate>Tue, 23 Sep 2014 06:42:55 +0900</pubDate>
       
       <guid>http://tatsushid.github.io/blog/2014/09/go-structure-pointer-and-omitempty/</guid>
       <description>
@@ -765,7 +762,7 @@ func main() {
     <item>
       <title>Go でインターフェース型の reflect.Type を取得する方法</title>
       <link>http://tatsushid.github.io/blog/2014/09/how-to-get-reflect-type-of-interface-type-in-go/</link>
-      <pubDate>Fri, 19 Sep 2014 21:46:21 &#43;0900</pubDate>
+      <pubDate>Fri, 19 Sep 2014 21:46:21 +0900</pubDate>
       
       <guid>http://tatsushid.github.io/blog/2014/09/how-to-get-reflect-type-of-interface-type-in-go/</guid>
       <description>&lt;p&gt;Go の &lt;code&gt;reflect&lt;/code&gt; パッケージを使っていて、ときどき操作している変数型との比較のために &lt;code&gt;error&lt;/code&gt; などのインターフェース型の &lt;code&gt;reflect.Type&lt;/code&gt; がほしいことがあるのだけれど、これは &lt;code&gt;reflect.TypeOf((*error)(nil)).Elem()&lt;/code&gt; のように書くことで得られる。つまり、&lt;/p&gt;
@@ -823,7 +820,7 @@ func main() {
     <item>
       <title>CentOSのyumミラーリストの調べ方</title>
       <link>http://tatsushid.github.io/blog/2014/09/how-to-check-centos-mirrorlist/</link>
-      <pubDate>Thu, 18 Sep 2014 22:10:41 &#43;0900</pubDate>
+      <pubDate>Thu, 18 Sep 2014 22:10:41 +0900</pubDate>
       
       <guid>http://tatsushid.github.io/blog/2014/09/how-to-check-centos-mirrorlist/</guid>
       <description>&lt;p&gt;ここ最近 CentOS の yum で updates からパッケージを持ってくる時の速度がやけに遅いので、 yum にはどんなミラーが返ってきてるのか調べてみた。 yum は 64bit 環境で特別設定を変えてなければ、通常 &lt;code&gt;http://mirrorlist.centos.org/?release=6&amp;amp;arch=x86_64&amp;amp;repo=os&lt;/code&gt; や &lt;code&gt;http://mirrorlist.centos.org/?release=6&amp;amp;arch=x86_64&amp;amp;repo=updates&lt;/code&gt; にアクセスしているので、この URL にブラウザでアクセスするか、&lt;/p&gt;
@@ -870,7 +867,7 @@ http://mirror.awanti.com/centos/6.5/updates/x86_64/
     <item>
       <title>静的サイトジェネレーターを Hugo に切り替えた</title>
       <link>http://tatsushid.github.io/blog/2014/08/change-site-generator-to-hugo/</link>
-      <pubDate>Sat, 16 Aug 2014 14:00:00 &#43;0900</pubDate>
+      <pubDate>Sat, 16 Aug 2014 14:00:00 +0900</pubDate>
       
       <guid>http://tatsushid.github.io/blog/2014/08/change-site-generator-to-hugo/</guid>
       <description>&lt;p&gt;ここ半年から一年の間、ちょっとしたコマンドラインツールの開発にはずっと golang を使ってきてて、せっかくなのでサイトジェネレーターもこの際 golang 製に変えてみようということで、 &lt;a href=&#34;http://hugo.spf13.com/&#34;&gt;Hugo&lt;/a&gt; を使ってみることにした。今のところの使用感としては、&lt;/p&gt;
@@ -897,7 +894,7 @@ http://mirror.awanti.com/centos/6.5/updates/x86_64/
     <item>
       <title>wgetでの保存先ディレクトリを指定する</title>
       <link>http://tatsushid.github.io/blog/2014/08/specify-wget-savedir/</link>
-      <pubDate>Mon, 11 Aug 2014 16:54:00 &#43;0900</pubDate>
+      <pubDate>Mon, 11 Aug 2014 16:54:00 +0900</pubDate>
       
       <guid>http://tatsushid.github.io/blog/2014/08/specify-wget-savedir/</guid>
       <description>&lt;p&gt;wget コマンドを使っていると、たまにカレントディレクトリではなくて他の場所にデータを保存したい時があるのだけれど、その方法をしばしば忘れるのでメモ。これをやりたい時は、 -P オプションを使えばよい。たとえば&lt;/p&gt;
@@ -912,7 +909,7 @@ http://mirror.awanti.com/centos/6.5/updates/x86_64/
     <item>
       <title>CentOS7をGPTパーティションで新規インストールする</title>
       <link>http://tatsushid.github.io/blog/2014/07/install-centos7-on-gpt-drive/</link>
-      <pubDate>Fri, 25 Jul 2014 13:04:00 &#43;0900</pubDate>
+      <pubDate>Fri, 25 Jul 2014 13:04:00 +0900</pubDate>
       
       <guid>http://tatsushid.github.io/blog/2014/07/install-centos7-on-gpt-drive/</guid>
       <description>&lt;p&gt;CentOS 7 を GPT パーティションでインストールするのは難しくない。 &lt;a href=&#34;https://bugzilla.redhat.com/show_bug.cgi?id=1032428&#34;&gt;Bug 1032428 - Need a 1MB &amp;lsquo;biosboot&amp;rsquo; type partition when install RHEL7 on a GPT disk with custom partition&lt;/a&gt; によると、&lt;/p&gt;
@@ -929,7 +926,7 @@ http://mirror.awanti.com/centos/6.5/updates/x86_64/
     <item>
       <title>CentOS5をGPTパーティションで新規インストールする</title>
       <link>http://tatsushid.github.io/blog/2014/07/install-centos5-on-gpt-drive/</link>
-      <pubDate>Tue, 08 Jul 2014 20:06:00 &#43;0900</pubDate>
+      <pubDate>Tue, 08 Jul 2014 20:06:00 +0900</pubDate>
       
       <guid>http://tatsushid.github.io/blog/2014/07/install-centos5-on-gpt-drive/</guid>
       <description>&lt;p&gt;CentOS 5 の新規インストール時に GPT パーティションを使いたい場合は、 CentOS 6 の様に一筋縄では行かない。今回は&lt;/p&gt;
@@ -1029,7 +1026,7 @@ grub&amp;gt; quit
     <item>
       <title>CentOS6をGPTパーティションで新規インストールする</title>
       <link>http://tatsushid.github.io/blog/2014/07/install-centos6-on-gpt-drive/</link>
-      <pubDate>Mon, 07 Jul 2014 19:15:00 &#43;0900</pubDate>
+      <pubDate>Mon, 07 Jul 2014 19:15:00 +0900</pubDate>
       
       <guid>http://tatsushid.github.io/blog/2014/07/install-centos6-on-gpt-drive/</guid>
       <description>&lt;p&gt;毎度毎度コマンドの打ち方を忘れてしまうのでメモ。 RHEL 6 互換のディストリビューションを新規インストールする際、 GPT パーティションを使いたい場合は、インストーラーで適当なところ（パーティション設定の直前辺り）まで進めたところで下記のようにコマンドを実行すると、自分でパーティションを切ることができる&lt;/p&gt;
