@@ -6,8 +6,36 @@
     <description>Recent content in Docker on tatsushid.github.io</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>ja-jp</language>
-    <lastBuildDate>Sun, 18 Jan 2015 23:21:58 +0900</lastBuildDate>
+    <lastBuildDate>Mon, 31 Aug 2015 18:51:34 +0900</lastBuildDate>
     <atom:link href="http://tatsushid.github.io/tags/docker/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>docker-machine の env 設定が MacVim と競合する、らしい</title>
+      <link>http://tatsushid.github.io/blog/2015/08/docker-machine-env-prevents-macvim-from-opening-window/</link>
+      <pubDate>Mon, 31 Aug 2015 18:51:34 +0900</pubDate>
+      
+      <guid>http://tatsushid.github.io/blog/2015/08/docker-machine-env-prevents-macvim-from-opening-window/</guid>
+      <description>&lt;p&gt;docker-machine を使っている環境上で MacVim を起動すると、なぜか編集ウィンドウが開かない問題に遭遇したので、対応内容をメモ。&lt;/p&gt;
+
+&lt;p&gt;結論から言うと、 docker-machine の仮想マシン起動後に設定される各種環境変数（たとえば &lt;code&gt;DOCKER_HOST&lt;/code&gt; ）を自動設定するために &lt;code&gt;.bash_profile&lt;/code&gt; の中に書いていた&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;if [ &amp;quot;$(docker-machine status myvm)&amp;quot; = &amp;quot;Running&amp;quot; ]; then
+    eval &amp;quot;$(docker-machine env myvm)&amp;quot;
+fi
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;の部分、特に &lt;code&gt;eval &amp;quot;$(docker-machine env myvm)&amp;quot;&lt;/code&gt; が問題を引き起こしており、これを MacVim からの起動時だけ実行しないようにすることで解消した。具体的には、 MacVim から起動した時は &lt;code&gt;TERM&lt;/code&gt; 環境変数が &lt;code&gt;dumb&lt;/code&gt; となり、通常起動時の値とは異なっていることを利用して&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;if [ &amp;quot;$TERM&amp;quot; != &amp;quot;dumb&amp;quot; -a &amp;quot;$(docker-machine status myvm)&amp;quot; = &amp;quot;Running&amp;quot; ]; then
+    eval &amp;quot;$(docker-machine env myvm)&amp;quot;
+fi
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;とした。&lt;/p&gt;
+
+&lt;p&gt;具体的にこの行がダメな理由についてはよくわからない。 MacVim 自体のソースコードを追った結果、 MacVim は mvim コマンドを開くために内部的にログインシェルを開き、そこからコマンドを起動しているらしく、その流れで &lt;code&gt;.bash_profile&lt;/code&gt; が読み込まれて実行されているようだったが、 &lt;code&gt;eval&lt;/code&gt; 自体は同じ &lt;code&gt;.bash_profile&lt;/code&gt; 中の他の部分でも使用しているので、直接それが問題のようには見えなかった。この辺りは機会があれば調べてみることに。&lt;/p&gt;
+</description>
+    </item>
     
     <item>
       <title>Fig で Libreboard 環境を構築してみた</title>

@@ -4,7 +4,26 @@ if (document.readyState === "complete") {
 } else {
   hljs.initHighlightingOnLoad();
 }
-</script><link rel="apple-touch-icon-precomposed" sizes="144x144" href="/apple-touch-icon-precomposed.png"><link rel="shortcut icon" href="/favicon.ico"><link rel="alternate" type="application/rss+xml" title="RSS" href="http://tatsushid.github.io/index.xml"></head><body class="theme-base-0d layout-reverse sidebar-overlay"><input id="sidebar-checkbox" class="sidebar-checkbox" type="checkbox"><div id="sidebar" class="sidebar"><div class="sidebar-item"><p> </a></p></div><nav class="sidebar-nav"><ul><li><a class="sidebar-nav-item active" href="/">Home</a></li><li><a class="sidebar-nav-item" href="/blog/">Blog</a></li><li><a class="sidebar-nav-item" href="/tags/">Tags</a></li></ul></nav><div class="sidebar-item"><ul class="media-links"><li><a href="https://twitter.com/tatsushi_d"><i class="fa fa-twitter" aria-label="twitter"></i></a></li><li><a href="https://github.com/tatsushid"><i class="fa fa-github" aria-label="github"></i></a></li></ul><div class="footnote">Powered by <a href="http://gohugo.io/">Hugo</a><br>&copy; 2014-2015. Tatsushi Demachi All rights reserved.</div></div></div><div class="wrap"><div class="masthead"><div class="container"><h3 class="masthead-title"><a href="/" title="Home">tatsushid.github.io</a></h3></div></div><div class="container content"><div class="posts"><div class="post"><h1 class="post-title"><a href="/blog/2015/01/managing-libreboard-containers-by-fig/">Fig で Libreboard 環境を構築してみた</a></h1><div class="post-meta">2015-01-18<ul><li><a href="/tags/docker">Docker</a></li><li><a href="/tags/fig">Fig</a></li><li><a href="/tags/libreboard">Libreboard</a></li></ul></div><p><a href="/blog/2015/01/run-libreboard-on-docker/">前回</a> は Docker 上で Libreboard を動かしてみたが、今のところ Libreboard の開発は非常に活発で、更新を Docker コンテナに反映させるたびに長々としたコマンドを叩くのが不便に感じてきたため、 <a href="http://www.fig.sh/">Fig</a> を使って必要なコマンドなどをあらかじめ定義しておき、 <code>fig build</code> や <code>fig up</code> で楽に更新適用ができるようにしてみた。以下はその手順</p>
+</script><link rel="apple-touch-icon-precomposed" sizes="144x144" href="/apple-touch-icon-precomposed.png"><link rel="shortcut icon" href="/favicon.ico"><link rel="alternate" type="application/rss+xml" title="RSS" href="http://tatsushid.github.io/index.xml"></head><body class="theme-base-0d layout-reverse sidebar-overlay"><input id="sidebar-checkbox" class="sidebar-checkbox" type="checkbox"><div id="sidebar" class="sidebar"><div class="sidebar-item"><p> </a></p></div><nav class="sidebar-nav"><ul><li><a class="sidebar-nav-item active" href="/">Home</a></li><li><a class="sidebar-nav-item" href="/blog/">Blog</a></li><li><a class="sidebar-nav-item" href="/tags/">Tags</a></li></ul></nav><div class="sidebar-item"><ul class="media-links"><li><a href="https://twitter.com/tatsushi_d"><i class="fa fa-twitter" aria-label="twitter"></i></a></li><li><a href="https://github.com/tatsushid"><i class="fa fa-github" aria-label="github"></i></a></li></ul><div class="footnote">Powered by <a href="http://gohugo.io/">Hugo</a><br>&copy; 2014-2015. Tatsushi Demachi All rights reserved.</div></div></div><div class="wrap"><div class="masthead"><div class="container"><h3 class="masthead-title"><a href="/" title="Home">tatsushid.github.io</a></h3></div></div><div class="container content"><div class="posts"><div class="post"><h1 class="post-title"><a href="/blog/2015/08/docker-machine-env-prevents-macvim-from-opening-window/">docker-machine の env 設定が MacVim と競合する、らしい</a></h1><div class="post-meta">2015-08-31<ul><li><a href="/tags/vim">vim</a></li><li><a href="/tags/docker">docker</a></li></ul></div><p>docker-machine を使っている環境上で MacVim を起動すると、なぜか編集ウィンドウが開かない問題に遭遇したので、対応内容をメモ。</p>
+
+<p>結論から言うと、 docker-machine の仮想マシン起動後に設定される各種環境変数（たとえば <code>DOCKER_HOST</code> ）を自動設定するために <code>.bash_profile</code> の中に書いていた</p>
+
+<pre><code class="language-bash">if [ &quot;$(docker-machine status myvm)&quot; = &quot;Running&quot; ]; then
+    eval &quot;$(docker-machine env myvm)&quot;
+fi
+</code></pre>
+
+<p>の部分、特に <code>eval &quot;$(docker-machine env myvm)&quot;</code> が問題を引き起こしており、これを MacVim からの起動時だけ実行しないようにすることで解消した。具体的には、 MacVim から起動した時は <code>TERM</code> 環境変数が <code>dumb</code> となり、通常起動時の値とは異なっていることを利用して</p>
+
+<pre><code class="language-bash">if [ &quot;$TERM&quot; != &quot;dumb&quot; -a &quot;$(docker-machine status myvm)&quot; = &quot;Running&quot; ]; then
+    eval &quot;$(docker-machine env myvm)&quot;
+fi
+</code></pre>
+
+<p>とした。</p>
+
+<p>具体的にこの行がダメな理由についてはよくわからない。 MacVim 自体のソースコードを追った結果、 MacVim は mvim コマンドを開くために内部的にログインシェルを開き、そこからコマンドを起動しているらしく、その流れで <code>.bash_profile</code> が読み込まれて実行されているようだったが、 <code>eval</code> 自体は同じ <code>.bash_profile</code> 中の他の部分でも使用しているので、直接それが問題のようには見えなかった。この辺りは機会があれば調べてみることに。</p>
+</div><div class="post"><h1 class="post-title"><a href="/blog/2015/01/managing-libreboard-containers-by-fig/">Fig で Libreboard 環境を構築してみた</a></h1><div class="post-meta">2015-01-18<ul><li><a href="/tags/docker">Docker</a></li><li><a href="/tags/fig">Fig</a></li><li><a href="/tags/libreboard">Libreboard</a></li></ul></div><p><a href="/blog/2015/01/run-libreboard-on-docker/">前回</a> は Docker 上で Libreboard を動かしてみたが、今のところ Libreboard の開発は非常に活発で、更新を Docker コンテナに反映させるたびに長々としたコマンドを叩くのが不便に感じてきたため、 <a href="http://www.fig.sh/">Fig</a> を使って必要なコマンドなどをあらかじめ定義しておき、 <code>fig build</code> や <code>fig up</code> で楽に更新適用ができるようにしてみた。以下はその手順</p>
 
 <ol>
 <li>Fig をインストール。今回は手元のサーバが Gentoo だったので emerge で入れてしまったが、 <a href="http://www.fig.sh/install.html">Installing Fig</a> を見る限り、他の環境でも簡単に導入できると思う</li>
@@ -343,37 +362,6 @@ my $t = localtime(Time::Piece-&gt;strptime($datetime, $format)-&gt;epoch);
 <h2 id="まとめ:f982ae70135bfa8403b8ce10daa2a9de">まとめ</h2>
 
 <p>一つ一つ Time::Piece のコードを読んでいった結果、なんとか当初の目的は達成できた。が、標準モジュールとして入っている割には Time::Piece は細かな挙動が読めなくて使うのが難しいなとは感じた</p>
-</div><div class="post"><h1 class="post-title"><a href="/blog/2014/10/switch-from-official-go-vim-plugin-to-vim-go/">Go の Vim プラグインを vim-go に切り替えた</a></h1><div class="post-meta">2014-10-13<ul><li><a href="/tags/golang">Golang</a></li><li><a href="/tags/vim">Vim</a></li></ul></div><p>Vim で Go のコードを書いていて、エディタ内からお手軽にカバレッジ取れたらいいなと思って調べていたら、オフィシャルの Go の Vim プラグインではなく <a href="https://github.com/fatih/vim-go">vim-go</a> を使えばできそうだということがわかったので、切り替えることにした</p>
-
-<p>まずは</p>
-
-<pre><code class="language-vim">&quot; Set golang vim scripts
-exe 'set runtimepath+='.substitute(system('brew --prefix go'), '\n', '', 'g').'/libexec/misc/vim'
-</code></pre>
-
-<p>として読み込んでいたオフィシャルプラグインを外して、自分の環境ではプラグイン管理に <a href="https://github.com/Shougo/neobundle.vim">NeoBundle</a> を使っているので</p>
-
-<pre><code class="language-vim">NeoBundleLazy 'fatih/vim-go', {
-       \ 'depends' : 'majutsushi/tagbar',
-       \ 'autoload' : {
-       \   'filetypes' : 'go',
-       \   'commands' : ['GoInstallBinaries', 'GoUpdateBinaries'],
-       \ }}
-
-&quot; vim-go &quot;{{{
-let bundle = neobundle#get('vim-go')
-function! bundle.hooks.on_source(bundle)
-       let g:go_fmt_autosave = 0
-       let g:go_fmt_fail_silently = 1
-endfunction
-&quot;}}}
-</code></pre>
-
-<p>のように設定してみた。 <a href="http://majutsushi.github.io/tagbar/">Tagbar</a> を使っている場合は <code>depends</code> に一緒に読み込む設定を書いておくことで、 <a href="https://github.com/jstemmer/gotags">gotags</a> を使ったアウトライン表示ができる。また、当初の目的だったカバレッジ取得は、 <code>:GoCoverage</code> を実行すれば自動的にウェブブラウザが開いて結果を表示してくれるようになっている</p>
-
-<p>他にも支援プログラムを使った各種機能が盛りだくさんで、仮にそれらに必要なソフトウェアがインストールされていない場合は <code>:GoInstallBinaries</code> を実行すれば、内部的に <code>go get</code> して必要なパッケージを拾ってきてインストールしてくれる。それらの一括更新も <code>:GoUpdateBinaries</code> で実行できて便利</p>
-
-<p>これでちょっとばかり Go を書く環境がリッチになったので、しばらく使い込んでみたい</p>
 </div></div></div></div><label class="sidebar-toggle" for="sidebar-checkbox"></label><script type="text/javascript">
 (function(document) {
   var toggle = document.querySelector('.sidebar-toggle');

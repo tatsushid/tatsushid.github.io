@@ -1,0 +1,42 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ja" lang="ja"><head><link href="http://gmpg.org/xfn/11" rel="profile"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1"><title>docker-machine の env 設定が MacVim と競合する、らしい &middot; tatsushid.github.io</title><link rel="stylesheet" href="http://fonts.googleapis.com/css?family=PT+Serif:400,400italic,700|PT+Sans:400"><link rel="stylesheet" href="/css/main.css"><script src="/js/highlight.pack.js" async></script><script type="text/javascript">
+if (document.readyState === "complete") {
+  hljs.initHighlighting();
+} else {
+  hljs.initHighlightingOnLoad();
+}
+</script><link rel="apple-touch-icon-precomposed" sizes="144x144" href="/apple-touch-icon-precomposed.png"><link rel="shortcut icon" href="/favicon.ico"><link rel="alternate" type="application/rss+xml" title="RSS" href=""></head><body class="theme-base-0d layout-reverse sidebar-overlay"><input id="sidebar-checkbox" class="sidebar-checkbox" type="checkbox"><div id="sidebar" class="sidebar"><div class="sidebar-item"><p> </a></p></div><nav class="sidebar-nav"><ul><li><a class="sidebar-nav-item" href="/">Home</a></li><li><a class="sidebar-nav-item" href="/blog/">Blog</a></li><li><a class="sidebar-nav-item" href="/tags/">Tags</a></li></ul></nav><div class="sidebar-item"><ul class="media-links"><li><a href="https://twitter.com/tatsushi_d"><i class="fa fa-twitter" aria-label="twitter"></i></a></li><li><a href="https://github.com/tatsushid"><i class="fa fa-github" aria-label="github"></i></a></li></ul><div class="footnote">Powered by <a href="http://gohugo.io/">Hugo</a><br>&copy; 2014-2015. Tatsushi Demachi All rights reserved.</div></div></div><div class="wrap"><div class="masthead"><div class="container"><h3 class="masthead-title"><a href="/" title="Home">tatsushid.github.io</a></h3></div></div><div class="container content"><div class="post"><h1 class="post-title"><a href="/blog/2015/08/docker-machine-env-prevents-macvim-from-opening-window/">docker-machine の env 設定が MacVim と競合する、らしい</a></h1><div class="post-meta">2015-08-31<ul><li><a href="/tags/vim">vim</a></li><li><a href="/tags/docker">docker</a></li></ul></div><p>docker-machine を使っている環境上で MacVim を起動すると、なぜか編集ウィンドウが開かない問題に遭遇したので、対応内容をメモ。</p>
+
+<p>結論から言うと、 docker-machine の仮想マシン起動後に設定される各種環境変数（たとえば <code>DOCKER_HOST</code> ）を自動設定するために <code>.bash_profile</code> の中に書いていた</p>
+
+<pre><code class="language-bash">if [ &quot;$(docker-machine status myvm)&quot; = &quot;Running&quot; ]; then
+    eval &quot;$(docker-machine env myvm)&quot;
+fi
+</code></pre>
+
+<p>の部分、特に <code>eval &quot;$(docker-machine env myvm)&quot;</code> が問題を引き起こしており、これを MacVim からの起動時だけ実行しないようにすることで解消した。具体的には、 MacVim から起動した時は <code>TERM</code> 環境変数が <code>dumb</code> となり、通常起動時の値とは異なっていることを利用して</p>
+
+<pre><code class="language-bash">if [ &quot;$TERM&quot; != &quot;dumb&quot; -a &quot;$(docker-machine status myvm)&quot; = &quot;Running&quot; ]; then
+    eval &quot;$(docker-machine env myvm)&quot;
+fi
+</code></pre>
+
+<p>とした。</p>
+
+<p>具体的にこの行がダメな理由についてはよくわからない。 MacVim 自体のソースコードを追った結果、 MacVim は mvim コマンドを開くために内部的にログインシェルを開き、そこからコマンドを起動しているらしく、その流れで <code>.bash_profile</code> が読み込まれて実行されているようだったが、 <code>eval</code> 自体は同じ <code>.bash_profile</code> 中の他の部分でも使用しているので、直接それが問題のようには見えなかった。この辺りは機会があれば調べてみることに。</p>
+</div><nav><h2>Related posts</h2><ul class="related-posts"></ul></nav><nav class="prev-next"><ul><li>Newer Post</li><li><a href="/blog/2015/01/managing-libreboard-containers-by-fig/">Older Post</a></li></ul></nav></div></div><label class="sidebar-toggle" for="sidebar-checkbox"></label><script type="text/javascript">
+(function(document) {
+  var toggle = document.querySelector('.sidebar-toggle');
+  var sidebar = document.querySelector('#sidebar');
+  var checkbox = document.querySelector('#sidebar-checkbox');
+
+  document.addEventListener('click', function(e) {
+    var target = e.target;
+
+    if(!checkbox.checked ||
+       sidebar.contains(target) ||
+       (target === checkbox || target === toggle)) return;
+
+    checkbox.checked = false;
+  }, false);
+})(document);
+</script></body></html>
