@@ -1,0 +1,145 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ja" lang="ja"><head><link href="http://gmpg.org/xfn/11" rel="profile"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1"><title>Docker を使ってパッケージング &middot; tatsushid.github.io</title><link rel="stylesheet" href="http://fonts.googleapis.com/css?family=PT+Serif:400,400italic,700|PT+Sans:400"><link rel="stylesheet" href="/css/main.css"><script src="/js/highlight.pack.js" async></script><script type="text/javascript">
+if (document.readyState === "complete") {
+  hljs.initHighlighting();
+} else {
+  hljs.initHighlightingOnLoad();
+}
+</script><link rel="apple-touch-icon-precomposed" sizes="144x144" href="/apple-touch-icon-precomposed.png"><link rel="shortcut icon" href="/favicon.ico"><link rel="alternate" type="application/rss+xml" title="RSS" href=""></head><body class="theme-base-0d layout-reverse sidebar-overlay"><input id="sidebar-checkbox" class="sidebar-checkbox" type="checkbox"><div id="sidebar" class="sidebar"><div class="sidebar-item"><p> </a></p></div><nav class="sidebar-nav"><ul><li><a class="sidebar-nav-item" href="/">Home</a></li><li><a class="sidebar-nav-item" href="/blog/">Blog</a></li><li><a class="sidebar-nav-item" href="/tags/">Tags</a></li></ul></nav><div class="sidebar-item"><ul class="media-links"><li><a href="https://twitter.com/tatsushi_d"><i class="fa fa-twitter" aria-label="twitter"></i></a></li><li><a href="https://github.com/tatsushid"><i class="fa fa-github" aria-label="github"></i></a></li></ul><div class="footnote">Powered by <a href="http://gohugo.io/">Hugo</a><br>&copy; 2014-2015. Tatsushi Demachi All rights reserved.</div></div></div><div class="wrap"><div class="masthead"><div class="container"><h3 class="masthead-title"><a href="/" title="Home">tatsushid.github.io</a></h3></div></div><div class="container content"><div class="post"><h1 class="post-title"><a href="/blog/2015/12/packaging-with-docker/">Docker を使ってパッケージング</a></h1><div class="post-meta">2015-12-11<ul><li><a href="/tags/docker">Docker</a></li><li><a href="/tags/nseg">NSEG</a></li></ul></div>
+
+<p>これは <a href="http://www.adventar.org/calendars/808">NSEG Advent Calender 2015 -Adventar</a> 11 日目の記事です。</p>
+
+<h2 id="nseg-とは:ffc6e8e4c2073712378c7d26dc5d3680">NSEG とは？</h2>
+
+<p>一言で言うと「長野の IT 勉強会」ということになりますが、勉強会と言ってもお堅いものではなく、長野県やコンピュータにかかわることを幅広く取り上げて、楽しんだり技術の向上を目指す、といった感じで活動しております。詳しくは <a href="http://nseg.jp/">nseg.jp</a> もご覧ください。</p>
+
+<h2 id="これは何:ffc6e8e4c2073712378c7d26dc5d3680">これは何？</h2>
+
+<p>先日の<a href="https://github.com/nseg-jp/w/wiki/第69回勉強会">「理論から学ぶデータベース実践入門」読書会スペシャル</a>の懇親会で、「 Docker 周辺が盛り上がっているけど、実際業務に使ってたりする？」ということを聞かれたので、自分は「独自で RPM なんかのパッケージを作る時に便利に活用してますよ」ということを話したのですが、じゃあ具体的にどんなことをしているのか、というのを公開している <a href="https://github.com/tatsushid/h2o-rpm">h2o-rpm</a> を元に書いてみようかな、という趣旨です。</p>
+
+<p>Docker 自体はウェブアプリケーションなどの展開・運用にそのまま便利に使え、そちらが本筋とも思いますが、こんな使い方もできる、という一例にしてもらえれば幸いです。なお RPM の SPEC の書き方については、今回は省略します。</p>
+
+<h2 id="パッケージング作業の概要:ffc6e8e4c2073712378c7d26dc5d3680">パッケージング作業の概要</h2>
+
+<p>そもそも RPM などのパッケージを作る時は、パッケージ対象のソースコードと関連ファイル、 SPEC ファイルのようなパッケージング手順が書かれたファイルなどが必要なわけですが、もう一つ、パッケージを作成する対象のディストリビューションのクリーンな環境が必要です。しかしながらこれを毎回物理サーバやいわゆる仮想マシン上でやっていると、メンテナンスが大変、起動に時間がかかる、など作業上のストレスがあっという間にたまることになるので、気軽に作成・削除のできる Docker でその部分をやろう、ということになります。かつての boot2docker や、最近では <a href="https://docs.docker.com/machine/">Docker Machine</a> のおかげで、自分のマシン上でもお手軽に作業ができるのも利点です。</p>
+
+<p>その場合のおおまかなパッケージ作成の流れは、</p>
+
+<ol>
+<li>パッケージ作成対象のディストリビューションの環境を整える</li>
+<li>パッケージ作成に必要なソースファイルなどを Docker コンテナに展開</li>
+<li>ビルド、パッケージングを行う</li>
+<li>できたパッケージを Docker コンテナから取り出す</li>
+</ol>
+
+<p>となりますが、 <a href="https://github.com/tatsushid/h2o-rpm">h2o-rpm</a> ではこれを <code>Dockerfile</code> と <code>Makefile</code> で記述して、</p>
+
+<ol>
+<li><code>Dockerfile</code> を使ったイメージビルドを利用して、環境準備、ソース展開、ビルド、パッケージング</li>
+<li>できあがったイメージからデータ取り出しのためだけのダミーコンテナを作ってパッケージを取り出し</li>
+</ol>
+
+<p>という形に落とし込んで、 <code>make</code> 一つで自動でパッケージングできるようにしています。パッケージングまでの部分は <code>docker run</code> でやるのも一つなのですが、イメージビルドを使うことにしたのは、</p>
+
+<ul>
+<li><code>docker run</code> だと、ローカルファイルシステム・コンテナ間でデータの受け渡し方法を用意するのが面倒</li>
+<li>結局自動処理のためにシェルスクリプトを書くことになるのなら、 <code>Dockerfile</code> の方がシンプルで見通しがよい</li>
+<li><code>Dockerfile</code> の各ステップの中間イメージが残っていくため、失敗した時の作業再開や調査がやりやすい</li>
+</ul>
+
+<p>という理由によるものです。</p>
+
+<p>以下、リポジトリの <code>Dockerfile</code> のうち <a href="https://github.com/tatsushid/h2o-rpm/blob/f167500a687aebb08fccb500c41a903363f94bca/Dockerfile.centos7"><code>Dockerfile.centos7</code></a> と <a href="https://github.com/tatsushid/h2o-rpm/blob/f167500a687aebb08fccb500c41a903363f94bca/Makefile"><code>Makefile</code></a> を元に、この流れを見ていきます。</p>
+
+<h2 id="ビルド環境の準備:ffc6e8e4c2073712378c7d26dc5d3680">ビルド環境の準備</h2>
+
+<p>まず、ビルド環境の準備は <code>Dockerfile</code> に記述してある</p>
+
+<pre><code class="language-Dockerfile">FROM centos:7
+ENV HOME /
+RUN yum update -y
+RUN yum install -y rpm-build redhat-rpm-config rpmdevtools cmake gcc-c++ tar make openssl-devel ruby bison
+RUN rpmdev-setuptree
+RUN echo '%dist   .el7' &gt;&gt; /.rpmmacros
+</code></pre>
+
+<p>で行っています。 <a href="https://hub.docker.com/_/centos/"><code>centos7</code> の公式イメージ</a>を元に、環境内のパッケージの全アップデート、ビルド作業に必要なコンパイラなどのパッケージやビルド対象と依存関係にあるパッケージのインストール、ビルド用ディレクトリツリーの作成などを順に実施しています。</p>
+
+<p><code>ENV HOME /</code> については、 RPM のパッケージング処理がホームディレクトリ配下の <code>rpmbuild</code> ディレクトリを使う、という方式なのと、一般的なコンテナ内ではトップディレクトリが起点になっているというのを合わせる意味で指定しています。イメージ環境自体は使い捨てなので、通常やらないだろう設定をやってもいっこうに構いません。</p>
+
+<h2 id="ソース展開:ffc6e8e4c2073712378c7d26dc5d3680">ソース展開</h2>
+
+<p>ソースの展開は <code>Makefile</code> の</p>
+
+<pre><code class="language-Makefile">cp Dockerfile.$* Dockerfile
+tar -czf - Dockerfile rpmbuild | docker build -t $(IMAGE_NAME) -
+</code></pre>
+
+<p>と <code>Dockerfile</code> の</p>
+
+<pre><code class="language-Dockerfile">ADD ./rpmbuild/ /rpmbuild/
+</code></pre>
+
+<p>の共同作業になります。</p>
+
+<p>まず <code>Makefile</code> の方ですが、各ディストリビューション用に <code>Dockerfile.{dist}</code> のような形でを用意しているものを <code>Dockerfile</code> にコピーした後、パッケージ用ファイルを配置してある <code>rpmbuild</code> ディレクトリとともに <code>tar.gz</code> 形式にまとめ、それを <code>docker build</code> に <code>STDIN</code> 経由で渡しています。このように渡されたファイルは、 <code>tar.gz</code> 内のディレクトリツリー構造そのままに <code>Dockerfile</code> の <code>ADD</code> や <code>COPY</code> で参照できるので、これを使ってコンテナ内の <code>/rpmbuild</code> 以下にファイルを展開しています。</p>
+
+<p>この辺りについては Docker の <a href="https://docs.docker.com/engine/reference/commandline/build/">build コマンドのリファレンス</a>、 <a href="https://docs.docker.com/engine/reference/builder/">Dockerfile のリファレンス</a> に詳しいです。</p>
+
+<p>また、最初にこの方式で書いた時期とは異なり、現在では <code>.dockerignore</code> や <code>docker build</code> の <code>-f</code> オプションも使えますので、上記のような形ではなく、これらの機能を使うことでも同様のものを実現可能と思います。</p>
+
+<h2 id="ビルドとパッケージング:ffc6e8e4c2073712378c7d26dc5d3680">ビルドとパッケージング</h2>
+
+<p>ここは <code>Dockerfile</code> 内の記述になりますが、</p>
+
+<pre><code class="language-Dockerfile">RUN rpmbuild -ba /rpmbuild/SPECS/h2o.spec
+RUN tar -czf /tmp/h2o.tar.gz -C /rpmbuild RPMS SRPMS
+CMD [&quot;/bin/true&quot;]
+</code></pre>
+
+<p>という形で、 RPM のビルド処理を行い、できあがったものを <code>/tmp</code> 以下に <code>tar.gz</code> ファイルとしてまとめています。このアーカイブファイルは次の取り出しで参照します。</p>
+
+<p>最後の <code>CMD</code> 行は、イメージから作成したコンテナを即時終了させるために便宜的に設定したものとなります。</p>
+
+<h2 id="パッケージの取り出し:ffc6e8e4c2073712378c7d26dc5d3680">パッケージの取り出し</h2>
+
+<p>ここは <code>Makefile</code> 側の処理になりますが、前のステップまででできあがったイメージを参照し、</p>
+
+<pre><code class="language-Makefile">docker run --name $(IMAGE_NAME)-tmp $(IMAGE_NAME)
+mkdir -p tmp
+docker wait $(IMAGE_NAME)-tmp
+docker cp $(IMAGE_NAME)-tmp:/tmp/$(TARGZ_FILE) tmp
+docker rm $(IMAGE_NAME)-tmp
+</code></pre>
+
+<p>のコマンドを順に処理して、 <code>Dockerfile</code> で生成された <code>tar.gz</code> ファイルを取り出しています。</p>
+
+<p>まず <code>docker run</code> で、 <code>Dockerfile</code> で作成したイメージを元にダミーコンテナを起動しています。 <code>Dockerfile</code> 内で指定してある <code>CMD [&quot;/bin/true&quot;]</code> により、このコンテナの実行は即座に終わります。欲しいのはダミーコンテナ内のファイルなので、コンテナが起動している必要はありません。念のため <code>docker wait</code> を入れて、コピー処理の前にコンテナが停止しているのを確実にしています。</p>
+
+<p>ダミーコンテナが停止した後は <code>docker cp</code> を使い、コンテナ内のファイルをローカルのファイルシステムにコピーし、用が済んだダミーコンテナを <code>docker rm</code> で削除しています。</p>
+
+<p>欲しいファイルを取り出せたので、後は好きにこれを展開すればいいのですが、本リポジトリではこれを <code>{dist}.build</code> のようなディレクトリ配下に展開しています。</p>
+
+<h2 id="まとめ:ffc6e8e4c2073712378c7d26dc5d3680">まとめ</h2>
+
+<p>以上のような形で自動パッケージングを行い、ローカル側にコピーしてきているわけですが、もちろんできたものを直接特定のサーバにアップロードするなども自由自在です。対象もパッケージングに限らず、 Docker 環境中でなにかしらの成果物を作り、取り出す、という方法として一般的に使える、と思います。</p>
+
+<p>また、ここでは単に好みから <code>Makefile</code> を使っていますが、シェルスクリプトやバッチファイルでも構いません。かつては <code>tar.gz</code> などのアーカイブファイルを渡さなければいけない以上、 Windows で実行するのは若干難しかったように思いますが、今では前述の <code>.dockerignore</code> や <code>docker build</code> の <code>-f</code> オプションもあるので、敷居は下がったのではないかと思います。</p>
+
+<p>さらに <a href="https://www.microsoft.com/ja-jp/server-cloud/products-windows-server-2016.aspx">Windows Server 2016</a> では Docker がサポートされることも発表されていますので、 Windows アプリケーションも同じような手法でパッケージングできたりするのかもしれず、今後が楽しみです</p>
+</div><nav><h2>Related posts</h2><ul class="related-posts"><li><a href="/blog/2015/08/docker-machine-env-prevents-macvim-from-opening-window/">docker-machine の env 設定が MacVim と競合する、らしい</a><small>2015-08-31<ul><li><a href="/tags/vim">Vim</a></li><li><a href="/tags/docker">Docker</a></li></ul></small></li><li><a href="/blog/2015/01/managing-libreboard-containers-by-fig/">Fig で Libreboard 環境を構築してみた</a><small>2015-01-18<ul><li><a href="/tags/docker">Docker</a></li><li><a href="/tags/fig">Fig</a></li><li><a href="/tags/libreboard">Libreboard</a></li></ul></small></li><li><a href="/blog/2015/01/run-libreboard-on-docker/">Docker で Libreboard 動かしてみた</a><small>2015-01-12<ul><li><a href="/tags/docker">Docker</a></li><li><a href="/tags/libreboard">Libreboard</a></li></ul></small></li><li><a href="/blog/2014/10/how-to-build-centos3-docker-image/">CentOS 3 の Docker イメージを作ってみた</a><small>2014-10-04<ul><li><a href="/tags/docker">Docker</a></li><li><a href="/tags/centos">CentOS</a></li></ul></small></li></ul></nav><nav class="prev-next"><ul><li>Newer Post</li><li><a href="/blog/2015/08/docker-machine-env-prevents-macvim-from-opening-window/">Older Post</a></li></ul></nav></div></div><label class="sidebar-toggle" for="sidebar-checkbox"></label><script type="text/javascript">
+(function(document) {
+  var toggle = document.querySelector('.sidebar-toggle');
+  var sidebar = document.querySelector('#sidebar');
+  var checkbox = document.querySelector('#sidebar-checkbox');
+
+  document.addEventListener('click', function(e) {
+    var target = e.target;
+
+    if(!checkbox.checked ||
+       sidebar.contains(target) ||
+       (target === checkbox || target === toggle)) return;
+
+    checkbox.checked = false;
+  }, false);
+})(document);
+</script></body></html>

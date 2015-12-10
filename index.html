@@ -4,7 +4,129 @@ if (document.readyState === "complete") {
 } else {
   hljs.initHighlightingOnLoad();
 }
-</script><link rel="apple-touch-icon-precomposed" sizes="144x144" href="/apple-touch-icon-precomposed.png"><link rel="shortcut icon" href="/favicon.ico"><link rel="alternate" type="application/rss+xml" title="RSS" href="http://tatsushid.github.io/index.xml"></head><body class="theme-base-0d layout-reverse sidebar-overlay"><input id="sidebar-checkbox" class="sidebar-checkbox" type="checkbox"><div id="sidebar" class="sidebar"><div class="sidebar-item"><p> </a></p></div><nav class="sidebar-nav"><ul><li><a class="sidebar-nav-item active" href="/">Home</a></li><li><a class="sidebar-nav-item" href="/blog/">Blog</a></li><li><a class="sidebar-nav-item" href="/tags/">Tags</a></li></ul></nav><div class="sidebar-item"><ul class="media-links"><li><a href="https://twitter.com/tatsushi_d"><i class="fa fa-twitter" aria-label="twitter"></i></a></li><li><a href="https://github.com/tatsushid"><i class="fa fa-github" aria-label="github"></i></a></li></ul><div class="footnote">Powered by <a href="http://gohugo.io/">Hugo</a><br>&copy; 2014-2015. Tatsushi Demachi All rights reserved.</div></div></div><div class="wrap"><div class="masthead"><div class="container"><h3 class="masthead-title"><a href="/" title="Home">tatsushid.github.io</a></h3></div></div><div class="container content"><div class="posts"><div class="post"><h1 class="post-title"><a href="/blog/2015/08/docker-machine-env-prevents-macvim-from-opening-window/">docker-machine の env 設定が MacVim と競合する、らしい</a></h1><div class="post-meta">2015-08-31<ul><li><a href="/tags/vim">vim</a></li><li><a href="/tags/docker">docker</a></li></ul></div><p>docker-machine を使っている環境上で MacVim を起動すると、なぜか編集ウィンドウが開かない問題に遭遇したので、対応内容をメモ。</p>
+</script><link rel="apple-touch-icon-precomposed" sizes="144x144" href="/apple-touch-icon-precomposed.png"><link rel="shortcut icon" href="/favicon.ico"><link rel="alternate" type="application/rss+xml" title="RSS" href="http://tatsushid.github.io/index.xml"></head><body class="theme-base-0d layout-reverse sidebar-overlay"><input id="sidebar-checkbox" class="sidebar-checkbox" type="checkbox"><div id="sidebar" class="sidebar"><div class="sidebar-item"><p> </a></p></div><nav class="sidebar-nav"><ul><li><a class="sidebar-nav-item active" href="/">Home</a></li><li><a class="sidebar-nav-item" href="/blog/">Blog</a></li><li><a class="sidebar-nav-item" href="/tags/">Tags</a></li></ul></nav><div class="sidebar-item"><ul class="media-links"><li><a href="https://twitter.com/tatsushi_d"><i class="fa fa-twitter" aria-label="twitter"></i></a></li><li><a href="https://github.com/tatsushid"><i class="fa fa-github" aria-label="github"></i></a></li></ul><div class="footnote">Powered by <a href="http://gohugo.io/">Hugo</a><br>&copy; 2014-2015. Tatsushi Demachi All rights reserved.</div></div></div><div class="wrap"><div class="masthead"><div class="container"><h3 class="masthead-title"><a href="/" title="Home">tatsushid.github.io</a></h3></div></div><div class="container content"><div class="posts"><div class="post"><h1 class="post-title"><a href="/blog/2015/12/packaging-with-docker/">Docker を使ってパッケージング</a></h1><div class="post-meta">2015-12-11<ul><li><a href="/tags/docker">Docker</a></li><li><a href="/tags/nseg">NSEG</a></li></ul></div>
+
+<p>これは <a href="http://www.adventar.org/calendars/808">NSEG Advent Calender 2015 -Adventar</a> 11 日目の記事です。</p>
+
+<h2 id="nseg-とは:ffc6e8e4c2073712378c7d26dc5d3680">NSEG とは？</h2>
+
+<p>一言で言うと「長野の IT 勉強会」ということになりますが、勉強会と言ってもお堅いものではなく、長野県やコンピュータにかかわることを幅広く取り上げて、楽しんだり技術の向上を目指す、といった感じで活動しております。詳しくは <a href="http://nseg.jp/">nseg.jp</a> もご覧ください。</p>
+
+<h2 id="これは何:ffc6e8e4c2073712378c7d26dc5d3680">これは何？</h2>
+
+<p>先日の<a href="https://github.com/nseg-jp/w/wiki/第69回勉強会">「理論から学ぶデータベース実践入門」読書会スペシャル</a>の懇親会で、「 Docker 周辺が盛り上がっているけど、実際業務に使ってたりする？」ということを聞かれたので、自分は「独自で RPM なんかのパッケージを作る時に便利に活用してますよ」ということを話したのですが、じゃあ具体的にどんなことをしているのか、というのを公開している <a href="https://github.com/tatsushid/h2o-rpm">h2o-rpm</a> を元に書いてみようかな、という趣旨です。</p>
+
+<p>Docker 自体はウェブアプリケーションなどの展開・運用にそのまま便利に使え、そちらが本筋とも思いますが、こんな使い方もできる、という一例にしてもらえれば幸いです。なお RPM の SPEC の書き方については、今回は省略します。</p>
+
+<h2 id="パッケージング作業の概要:ffc6e8e4c2073712378c7d26dc5d3680">パッケージング作業の概要</h2>
+
+<p>そもそも RPM などのパッケージを作る時は、パッケージ対象のソースコードと関連ファイル、 SPEC ファイルのようなパッケージング手順が書かれたファイルなどが必要なわけですが、もう一つ、パッケージを作成する対象のディストリビューションのクリーンな環境が必要です。しかしながらこれを毎回物理サーバやいわゆる仮想マシン上でやっていると、メンテナンスが大変、起動に時間がかかる、など作業上のストレスがあっという間にたまることになるので、気軽に作成・削除のできる Docker でその部分をやろう、ということになります。かつての boot2docker や、最近では <a href="https://docs.docker.com/machine/">Docker Machine</a> のおかげで、自分のマシン上でもお手軽に作業ができるのも利点です。</p>
+
+<p>その場合のおおまかなパッケージ作成の流れは、</p>
+
+<ol>
+<li>パッケージ作成対象のディストリビューションの環境を整える</li>
+<li>パッケージ作成に必要なソースファイルなどを Docker コンテナに展開</li>
+<li>ビルド、パッケージングを行う</li>
+<li>できたパッケージを Docker コンテナから取り出す</li>
+</ol>
+
+<p>となりますが、 <a href="https://github.com/tatsushid/h2o-rpm">h2o-rpm</a> ではこれを <code>Dockerfile</code> と <code>Makefile</code> で記述して、</p>
+
+<ol>
+<li><code>Dockerfile</code> を使ったイメージビルドを利用して、環境準備、ソース展開、ビルド、パッケージング</li>
+<li>できあがったイメージからデータ取り出しのためだけのダミーコンテナを作ってパッケージを取り出し</li>
+</ol>
+
+<p>という形に落とし込んで、 <code>make</code> 一つで自動でパッケージングできるようにしています。パッケージングまでの部分は <code>docker run</code> でやるのも一つなのですが、イメージビルドを使うことにしたのは、</p>
+
+<ul>
+<li><code>docker run</code> だと、ローカルファイルシステム・コンテナ間でデータの受け渡し方法を用意するのが面倒</li>
+<li>結局自動処理のためにシェルスクリプトを書くことになるのなら、 <code>Dockerfile</code> の方がシンプルで見通しがよい</li>
+<li><code>Dockerfile</code> の各ステップの中間イメージが残っていくため、失敗した時の作業再開や調査がやりやすい</li>
+</ul>
+
+<p>という理由によるものです。</p>
+
+<p>以下、リポジトリの <code>Dockerfile</code> のうち <a href="https://github.com/tatsushid/h2o-rpm/blob/f167500a687aebb08fccb500c41a903363f94bca/Dockerfile.centos7"><code>Dockerfile.centos7</code></a> と <a href="https://github.com/tatsushid/h2o-rpm/blob/f167500a687aebb08fccb500c41a903363f94bca/Makefile"><code>Makefile</code></a> を元に、この流れを見ていきます。</p>
+
+<h2 id="ビルド環境の準備:ffc6e8e4c2073712378c7d26dc5d3680">ビルド環境の準備</h2>
+
+<p>まず、ビルド環境の準備は <code>Dockerfile</code> に記述してある</p>
+
+<pre><code class="language-Dockerfile">FROM centos:7
+ENV HOME /
+RUN yum update -y
+RUN yum install -y rpm-build redhat-rpm-config rpmdevtools cmake gcc-c++ tar make openssl-devel ruby bison
+RUN rpmdev-setuptree
+RUN echo '%dist   .el7' &gt;&gt; /.rpmmacros
+</code></pre>
+
+<p>で行っています。 <a href="https://hub.docker.com/_/centos/"><code>centos7</code> の公式イメージ</a>を元に、環境内のパッケージの全アップデート、ビルド作業に必要なコンパイラなどのパッケージやビルド対象と依存関係にあるパッケージのインストール、ビルド用ディレクトリツリーの作成などを順に実施しています。</p>
+
+<p><code>ENV HOME /</code> については、 RPM のパッケージング処理がホームディレクトリ配下の <code>rpmbuild</code> ディレクトリを使う、という方式なのと、一般的なコンテナ内ではトップディレクトリが起点になっているというのを合わせる意味で指定しています。イメージ環境自体は使い捨てなので、通常やらないだろう設定をやってもいっこうに構いません。</p>
+
+<h2 id="ソース展開:ffc6e8e4c2073712378c7d26dc5d3680">ソース展開</h2>
+
+<p>ソースの展開は <code>Makefile</code> の</p>
+
+<pre><code class="language-Makefile">cp Dockerfile.$* Dockerfile
+tar -czf - Dockerfile rpmbuild | docker build -t $(IMAGE_NAME) -
+</code></pre>
+
+<p>と <code>Dockerfile</code> の</p>
+
+<pre><code class="language-Dockerfile">ADD ./rpmbuild/ /rpmbuild/
+</code></pre>
+
+<p>の共同作業になります。</p>
+
+<p>まず <code>Makefile</code> の方ですが、各ディストリビューション用に <code>Dockerfile.{dist}</code> のような形でを用意しているものを <code>Dockerfile</code> にコピーした後、パッケージ用ファイルを配置してある <code>rpmbuild</code> ディレクトリとともに <code>tar.gz</code> 形式にまとめ、それを <code>docker build</code> に <code>STDIN</code> 経由で渡しています。このように渡されたファイルは、 <code>tar.gz</code> 内のディレクトリツリー構造そのままに <code>Dockerfile</code> の <code>ADD</code> や <code>COPY</code> で参照できるので、これを使ってコンテナ内の <code>/rpmbuild</code> 以下にファイルを展開しています。</p>
+
+<p>この辺りについては Docker の <a href="https://docs.docker.com/engine/reference/commandline/build/">build コマンドのリファレンス</a>、 <a href="https://docs.docker.com/engine/reference/builder/">Dockerfile のリファレンス</a> に詳しいです。</p>
+
+<p>また、最初にこの方式で書いた時期とは異なり、現在では <code>.dockerignore</code> や <code>docker build</code> の <code>-f</code> オプションも使えますので、上記のような形ではなく、これらの機能を使うことでも同様のものを実現可能と思います。</p>
+
+<h2 id="ビルドとパッケージング:ffc6e8e4c2073712378c7d26dc5d3680">ビルドとパッケージング</h2>
+
+<p>ここは <code>Dockerfile</code> 内の記述になりますが、</p>
+
+<pre><code class="language-Dockerfile">RUN rpmbuild -ba /rpmbuild/SPECS/h2o.spec
+RUN tar -czf /tmp/h2o.tar.gz -C /rpmbuild RPMS SRPMS
+CMD [&quot;/bin/true&quot;]
+</code></pre>
+
+<p>という形で、 RPM のビルド処理を行い、できあがったものを <code>/tmp</code> 以下に <code>tar.gz</code> ファイルとしてまとめています。このアーカイブファイルは次の取り出しで参照します。</p>
+
+<p>最後の <code>CMD</code> 行は、イメージから作成したコンテナを即時終了させるために便宜的に設定したものとなります。</p>
+
+<h2 id="パッケージの取り出し:ffc6e8e4c2073712378c7d26dc5d3680">パッケージの取り出し</h2>
+
+<p>ここは <code>Makefile</code> 側の処理になりますが、前のステップまででできあがったイメージを参照し、</p>
+
+<pre><code class="language-Makefile">docker run --name $(IMAGE_NAME)-tmp $(IMAGE_NAME)
+mkdir -p tmp
+docker wait $(IMAGE_NAME)-tmp
+docker cp $(IMAGE_NAME)-tmp:/tmp/$(TARGZ_FILE) tmp
+docker rm $(IMAGE_NAME)-tmp
+</code></pre>
+
+<p>のコマンドを順に処理して、 <code>Dockerfile</code> で生成された <code>tar.gz</code> ファイルを取り出しています。</p>
+
+<p>まず <code>docker run</code> で、 <code>Dockerfile</code> で作成したイメージを元にダミーコンテナを起動しています。 <code>Dockerfile</code> 内で指定してある <code>CMD [&quot;/bin/true&quot;]</code> により、このコンテナの実行は即座に終わります。欲しいのはダミーコンテナ内のファイルなので、コンテナが起動している必要はありません。念のため <code>docker wait</code> を入れて、コピー処理の前にコンテナが停止しているのを確実にしています。</p>
+
+<p>ダミーコンテナが停止した後は <code>docker cp</code> を使い、コンテナ内のファイルをローカルのファイルシステムにコピーし、用が済んだダミーコンテナを <code>docker rm</code> で削除しています。</p>
+
+<p>欲しいファイルを取り出せたので、後は好きにこれを展開すればいいのですが、本リポジトリではこれを <code>{dist}.build</code> のようなディレクトリ配下に展開しています。</p>
+
+<h2 id="まとめ:ffc6e8e4c2073712378c7d26dc5d3680">まとめ</h2>
+
+<p>以上のような形で自動パッケージングを行い、ローカル側にコピーしてきているわけですが、もちろんできたものを直接特定のサーバにアップロードするなども自由自在です。対象もパッケージングに限らず、 Docker 環境中でなにかしらの成果物を作り、取り出す、という方法として一般的に使える、と思います。</p>
+
+<p>また、ここでは単に好みから <code>Makefile</code> を使っていますが、シェルスクリプトやバッチファイルでも構いません。かつては <code>tar.gz</code> などのアーカイブファイルを渡さなければいけない以上、 Windows で実行するのは若干難しかったように思いますが、今では前述の <code>.dockerignore</code> や <code>docker build</code> の <code>-f</code> オプションもあるので、敷居は下がったのではないかと思います。</p>
+
+<p>さらに <a href="https://www.microsoft.com/ja-jp/server-cloud/products-windows-server-2016.aspx">Windows Server 2016</a> では Docker がサポートされることも発表されていますので、 Windows アプリケーションも同じような手法でパッケージングできたりするのかもしれず、今後が楽しみです</p>
+</div><div class="post"><h1 class="post-title"><a href="/blog/2015/08/docker-machine-env-prevents-macvim-from-opening-window/">docker-machine の env 設定が MacVim と競合する、らしい</a></h1><div class="post-meta">2015-08-31<ul><li><a href="/tags/vim">Vim</a></li><li><a href="/tags/docker">Docker</a></li></ul></div><p>docker-machine を使っている環境上で MacVim を起動すると、なぜか編集ウィンドウが開かない問題に遭遇したので、対応内容をメモ。</p>
 
 <p>結論から言うと、 docker-machine の仮想マシン起動後に設定される各種環境変数（たとえば <code>DOCKER_HOST</code> ）を自動設定するために <code>.bash_profile</code> の中に書いていた</p>
 
@@ -131,237 +253,6 @@ docker run --name mymongo -d mongo
 </code></pre>
 
 <p>のようにできる</p>
-</div><div class="post"><h1 class="post-title"><a href="/blog/2014/10/time-piece-problem-at-parsing-date-header-in-a-mail/">メールの Date ヘッダを Time::Piece でパースしようとしてはまった話</a></h1><div class="post-meta">2014-10-16<ul><li><a href="/tags/perl">Perl</a></li></ul></div>
-
-<p>メールに含まれている Date ヘッダを Perl の Time::Piece でパースしようとしたところ、タイムゾーンがうまく扱えなくてはまった。たとえば、</p>
-
-<pre><code class="language-perl">#!/usr/bin/env perl
-
-use strict;
-use warnings;
-
-use POSIX qw(setlocale LC_TIME);
-use Time::Piece;
-
-setlocale(LC_TIME, &quot;C&quot;);
-
-my $format = '%a, %e %b %Y %T %z';
-my $datetime = &quot;Tue, 14 Oct 2014 18:23:53 +0900&quot;;
-my $t = Time::Piece-&gt;strptime($datetime, $format);
-print $t-&gt;strftime($format), &quot;\n&quot;;
-</code></pre>
-
-<p>とした時、元と同じ結果が返ってくることが期待されるが、実際には <code>Tue, 14 Oct 2014 09:23:53 +0900</code> となって、 JST の 9 時間分ずれる。この辺については</p>
-
-<ul>
-<li><a href="http://d.hatena.ne.jp/hirose31/20110210/1297341952">Time::Piece とタイムゾーンの甘い罠</a></li>
-<li><a href="http://qiita.com/dayflower/items/199252df1ab759bd318e">Time::Piece に関するとりとめのないコト</a></li>
-</ul>
-
-<p>など多々まとめがあるが、一応自分でも Time::Piece のコードを読んで確認したことと、とりあえずの回避策をメモしておきたい。なお、検証は Perl 5.18.2 と現時点での Time::Piece 最新版である 1.29 を使って行っている</p>
-
-<h2 id="回避策:f982ae70135bfa8403b8ce10daa2a9de">回避策</h2>
-
-<p>検証部分が長いので、まず回避策を先に書いてしまうが、結論としては先ほどのコードを</p>
-
-<pre><code class="language-perl">#!/usr/bin/env perl
-
-use strict;
-use warnings;
-
-use POSIX qw(setlocale LC_TIME);
-use Time::Piece;
-
-setlocale(LC_TIME, &quot;C&quot;);
-
-my $format = '%a, %e %b %Y %T %z';
-my $datetime = &quot;Tue, 14 Oct 2014 18:23:53 +0900&quot;;
-my $t = localtime(Time::Piece-&gt;strptime($datetime, $format)-&gt;epoch);
-print $t-&gt;strftime($format), &quot;\n&quot;;
-</code></pre>
-
-<p>のように書き換えればよい、と言うことになる。パースした結果の <code>epoch</code> を取り出して <code>localhost</code> （ Time::Piece でオーバーライドされてる）に渡せば、内部的には自身のタイムゾーンの値としてうまく扱ってくれる。以下はその理由</p>
-
-<h2 id="検証:f982ae70135bfa8403b8ce10daa2a9de">検証</h2>
-
-<h3 id="strptime-の-z-で何をやっているか:f982ae70135bfa8403b8ce10daa2a9de">strptime の %z で何をやっているか</h3>
-
-<p>関連記事を読むと、 <code>%z</code> を使ってる時に問題が出るケースが多く、かつ、この例でも使ってるので、まずはそこを調べてみる。 <code>Piece.xs</code> によると、 <code>strptime</code> の内部実装 <code>_strptime</code> は</p>
-
-<pre><code class="language-xs">void
-_strptime ( string, format )
-        char * string
-        char * format
-  PREINIT:
-       struct tm mytm;
-       time_t t;
-       char * remainder;
-       int got_GMT;
-  PPCODE:
-       t = 0;
-       mytm = *gmtime(&amp;t);
-       got_GMT = 0;
-
-       remainder = (char *)_strptime(aTHX_ string, format, &amp;mytm, &amp;got_GMT);
-       if (remainder == NULL) {
-           croak(&quot;Error parsing time&quot;);
-       }
-       if (*remainder != '\0') {
-           warn(&quot;garbage at end of string in strptime: %s&quot;, remainder);
-       }
-
-       return_11part_tm(aTHX_ SP, &amp;mytm);
-       return;
-</code></pre>
-
-<p>となっていて、 <code>gmtime</code> として初期化されている。さらにここで呼んでいる <code>_strptime</code> の中では、 <code>%z</code> の処理は</p>
-
-<pre><code class="language-c">case 'z':
-        {
-        int sign = 1;
-
-        if (*buf != '+') {
-                if (*buf == '-')
-                        sign = -1;
-                else
-                        return 0;
-        }
-
-        buf++;
-        i = 0;
-        for (len = 4; len &gt; 0; len--) {
-                if (isdigit((int)*buf)) {
-                        i *= 10;
-                        i += *buf - '0';
-                        buf++;
-                } else
-                        return 0;
-        }
-
-        tm-&gt;tm_hour -= sign * (i / 100);
-        tm-&gt;tm_min  -= sign * (i % 100);
-        *got_GMT = 1;
-        }
-        break;
-}
-</code></pre>
-
-<p>となっていて、つまり <code>+0900</code> の部分を時と分に分解して元の時と分の値を調整した後、 <code>GMT</code> として扱うようフラグを立てている。従って内部的には <code>GMT</code> で正しく計算された値が入っていることになる</p>
-
-<h3 id="strftime-は何をやっているか:f982ae70135bfa8403b8ce10daa2a9de">strftime は何をやっているか</h3>
-
-<p>では、出力を生成している <code>strftime</code> で何をやっているかというと、 <code>Piece.pm</code> では</p>
-
-<pre><code class="language-perl">sub strftime {
-    my $time = shift;
-    my $tzname = $time-&gt;[c_islocal] ? '%Z' : 'UTC';
-    my $format = @_ ? shift(@_) : &quot;%a, %d %b %Y %H:%M:%S $tzname&quot;;
-    if (!defined $time-&gt;[c_wday]) {
-        if ($time-&gt;[c_islocal]) {
-            return _strftime($format, CORE::localtime($time-&gt;epoch));
-        }
-        else {
-            return _strftime($format, CORE::gmtime($time-&gt;epoch));
-        }
-    }
-    return _strftime($format, (@$time)[c_sec..c_isdst]);
-}
-</code></pre>
-
-<p>となっていて、この場合、 <code>strptime</code> で <code>GMT</code> として生成されたものを <code>_strftime($format, CORE::gmtime($time-&gt;epoch))</code> という形で渡すことになる。 <code>_strptime</code> は <code>Piece.xs</code> で定義されていて、</p>
-
-<pre><code class="language-xs">void
-_strftime(fmt, sec, min, hour, mday, mon, year, wday = -1, yday = -1, isdst = -1)
-    char *        fmt
-    int        sec
-    int        min
-    int        hour
-    int        mday
-    int        mon
-    int        year
-    int        wday
-    int        yday
-    int        isdst
-    CODE:
-    {
-        char tmpbuf[128];
-        struct tm mytm;
-        int len;
-        memset(&amp;mytm, 0, sizeof(mytm));
-        my_init_tm(&amp;mytm);    /* XXX workaround - see my_init_tm() above */
-        mytm.tm_sec = sec;
-        mytm.tm_min = min;
-        mytm.tm_hour = hour;
-        mytm.tm_mday = mday;
-        mytm.tm_mon = mon;
-        mytm.tm_year = year;
-        mytm.tm_wday = wday;
-        mytm.tm_yday = yday;
-        mytm.tm_isdst = isdst;
-        my_mini_mktime(&amp;mytm);
-        len = strftime(tmpbuf, sizeof tmpbuf, fmt, &amp;mytm);
-</code></pre>
-
-<p>となっているが、どうやら <code>my_init_tm</code> （この関数は Perl 5.8.0 以降では Perl 本体の <code>util.c</code> に定義されている <code>init_tm</code> のエイリアスになっている）でローカルタイムとして定義した後、 C 標準関数の <code>strftime</code> を呼び出しており、そこで <code>%z</code> は実行環境のタイムゾーンである <code>+0900</code> を返してくることになる。つまり、 <code>GMT</code> の時刻 + 実行環境のタイムゾーンが生成されていて、これがおかしな表示の理由ということになる。</p>
-
-<h3 id="gmtime-を-localtime-に変換する:f982ae70135bfa8403b8ce10daa2a9de">gmtime を localtime に変換する</h3>
-
-<p>ここまでの結果からズレを直すには</p>
-
-<ul>
-<li>時刻はそのまま、タイムゾーンとして <code>GMT</code>, <code>UTC</code>, <code>+0000</code> が返ってくるようにする</li>
-<li>タイムゾーンはそのまま、時刻をローカルタイムに変換する</li>
-</ul>
-
-<p>のどちらかを取ればよさそうだということがわかった。前者については GitHub に Time::Piece への <a href="https://github.com/rjbs/Time-Piece/pull/3">Pull Request</a> があって、これがマージされれば解消できるように見える。ここでは後者について考えたい。</p>
-
-<p>まず、単純に</p>
-
-<pre><code class="language-perl">my $format = '%a, %e %b %Y %T %z';
-my $datetime = &quot;Tue, 14 Oct 2014 18:23:53 +0900&quot;;
-my $t = localtime(Time::Piece-&gt;strptime($datetime, $format));
-</code></pre>
-
-<p>としてみたが、これはうまくいかなかった。 <code>Piece.pm</code> を見ると</p>
-
-<pre><code class="language-perl">sub localtime {
-    unshift @_, __PACKAGE__ unless eval { $_[0]-&gt;isa('Time::Piece') };
-    my $class = shift;
-    my $time  = shift;
-    $time = time if (!defined $time);
-    $class-&gt;_mktime($time, 1);
-}
-
-sub _mktime {
-    my ($class, $time, $islocal) = @_;
-    $class = eval { (ref $class) &amp;&amp; (ref $class)-&gt;isa('Time::Piece') }
-           ? ref $class
-           : $class;
-    if (ref($time)) {
-        $time-&gt;[c_epoch] = undef;
-        return wantarray ? @$time : bless [@$time[0..9], $islocal], $class;
-    }
-    _tzset();
-    my @time = $islocal ?
-            CORE::localtime($time)
-                :
-            CORE::gmtime($time);
-    wantarray ? @time : bless [@time, $time, $islocal], $class;
-}
-</code></pre>
-
-<p>となっていて、 <code>$time</code> が Time::Piece オブジェクトの場合、 <code>$islocal</code> フラグを立てて単に中身をコピーしてるだけ、ということなので、これだと時刻のズレはそのままフラグが立ってしまうという結果になる。これを回避するためには、</p>
-
-<pre><code class="language-perl">my $format = '%a, %e %b %Y %T %z';
-my $datetime = &quot;Tue, 14 Oct 2014 18:23:53 +0900&quot;;
-my $t = localtime(Time::Piece-&gt;strptime($datetime, $format)-&gt;epoch);
-</code></pre>
-
-<p>としてエポックタイムを渡すようにし、 <code>_mktime</code> の <code>CORE::localtime($time)</code> を通るようにしてやればよい。結果、前述の回避策、ということになる</p>
-
-<h2 id="まとめ:f982ae70135bfa8403b8ce10daa2a9de">まとめ</h2>
-
-<p>一つ一つ Time::Piece のコードを読んでいった結果、なんとか当初の目的は達成できた。が、標準モジュールとして入っている割には Time::Piece は細かな挙動が読めなくて使うのが難しいなとは感じた</p>
 </div></div></div></div><label class="sidebar-toggle" for="sidebar-checkbox"></label><script type="text/javascript">
 (function(document) {
   var toggle = document.querySelector('.sidebar-toggle');

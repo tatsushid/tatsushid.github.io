@@ -6,8 +6,139 @@
     <description>Recent content on tatsushid.github.io</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>ja-jp</language>
-    <lastBuildDate>Mon, 31 Aug 2015 18:51:34 +0900</lastBuildDate>
+    <lastBuildDate>Fri, 11 Dec 2015 00:33:25 +0900</lastBuildDate>
     <atom:link href="http://tatsushid.github.io/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>Docker を使ってパッケージング</title>
+      <link>http://tatsushid.github.io/blog/2015/12/packaging-with-docker/</link>
+      <pubDate>Fri, 11 Dec 2015 00:33:25 +0900</pubDate>
+      
+      <guid>http://tatsushid.github.io/blog/2015/12/packaging-with-docker/</guid>
+      <description>
+
+&lt;p&gt;これは &lt;a href=&#34;http://www.adventar.org/calendars/808&#34;&gt;NSEG Advent Calender 2015 -Adventar&lt;/a&gt; 11 日目の記事です。&lt;/p&gt;
+
+&lt;h2 id=&#34;nseg-とは:ffc6e8e4c2073712378c7d26dc5d3680&#34;&gt;NSEG とは？&lt;/h2&gt;
+
+&lt;p&gt;一言で言うと「長野の IT 勉強会」ということになりますが、勉強会と言ってもお堅いものではなく、長野県やコンピュータにかかわることを幅広く取り上げて、楽しんだり技術の向上を目指す、といった感じで活動しております。詳しくは &lt;a href=&#34;http://nseg.jp/&#34;&gt;nseg.jp&lt;/a&gt; もご覧ください。&lt;/p&gt;
+
+&lt;h2 id=&#34;これは何:ffc6e8e4c2073712378c7d26dc5d3680&#34;&gt;これは何？&lt;/h2&gt;
+
+&lt;p&gt;先日の&lt;a href=&#34;https://github.com/nseg-jp/w/wiki/第69回勉強会&#34;&gt;「理論から学ぶデータベース実践入門」読書会スペシャル&lt;/a&gt;の懇親会で、「 Docker 周辺が盛り上がっているけど、実際業務に使ってたりする？」ということを聞かれたので、自分は「独自で RPM なんかのパッケージを作る時に便利に活用してますよ」ということを話したのですが、じゃあ具体的にどんなことをしているのか、というのを公開している &lt;a href=&#34;https://github.com/tatsushid/h2o-rpm&#34;&gt;h2o-rpm&lt;/a&gt; を元に書いてみようかな、という趣旨です。&lt;/p&gt;
+
+&lt;p&gt;Docker 自体はウェブアプリケーションなどの展開・運用にそのまま便利に使え、そちらが本筋とも思いますが、こんな使い方もできる、という一例にしてもらえれば幸いです。なお RPM の SPEC の書き方については、今回は省略します。&lt;/p&gt;
+
+&lt;h2 id=&#34;パッケージング作業の概要:ffc6e8e4c2073712378c7d26dc5d3680&#34;&gt;パッケージング作業の概要&lt;/h2&gt;
+
+&lt;p&gt;そもそも RPM などのパッケージを作る時は、パッケージ対象のソースコードと関連ファイル、 SPEC ファイルのようなパッケージング手順が書かれたファイルなどが必要なわけですが、もう一つ、パッケージを作成する対象のディストリビューションのクリーンな環境が必要です。しかしながらこれを毎回物理サーバやいわゆる仮想マシン上でやっていると、メンテナンスが大変、起動に時間がかかる、など作業上のストレスがあっという間にたまることになるので、気軽に作成・削除のできる Docker でその部分をやろう、ということになります。かつての boot2docker や、最近では &lt;a href=&#34;https://docs.docker.com/machine/&#34;&gt;Docker Machine&lt;/a&gt; のおかげで、自分のマシン上でもお手軽に作業ができるのも利点です。&lt;/p&gt;
+
+&lt;p&gt;その場合のおおまかなパッケージ作成の流れは、&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;パッケージ作成対象のディストリビューションの環境を整える&lt;/li&gt;
+&lt;li&gt;パッケージ作成に必要なソースファイルなどを Docker コンテナに展開&lt;/li&gt;
+&lt;li&gt;ビルド、パッケージングを行う&lt;/li&gt;
+&lt;li&gt;できたパッケージを Docker コンテナから取り出す&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;となりますが、 &lt;a href=&#34;https://github.com/tatsushid/h2o-rpm&#34;&gt;h2o-rpm&lt;/a&gt; ではこれを &lt;code&gt;Dockerfile&lt;/code&gt; と &lt;code&gt;Makefile&lt;/code&gt; で記述して、&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;&lt;code&gt;Dockerfile&lt;/code&gt; を使ったイメージビルドを利用して、環境準備、ソース展開、ビルド、パッケージング&lt;/li&gt;
+&lt;li&gt;できあがったイメージからデータ取り出しのためだけのダミーコンテナを作ってパッケージを取り出し&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;という形に落とし込んで、 &lt;code&gt;make&lt;/code&gt; 一つで自動でパッケージングできるようにしています。パッケージングまでの部分は &lt;code&gt;docker run&lt;/code&gt; でやるのも一つなのですが、イメージビルドを使うことにしたのは、&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;docker run&lt;/code&gt; だと、ローカルファイルシステム・コンテナ間でデータの受け渡し方法を用意するのが面倒&lt;/li&gt;
+&lt;li&gt;結局自動処理のためにシェルスクリプトを書くことになるのなら、 &lt;code&gt;Dockerfile&lt;/code&gt; の方がシンプルで見通しがよい&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;Dockerfile&lt;/code&gt; の各ステップの中間イメージが残っていくため、失敗した時の作業再開や調査がやりやすい&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;という理由によるものです。&lt;/p&gt;
+
+&lt;p&gt;以下、リポジトリの &lt;code&gt;Dockerfile&lt;/code&gt; のうち &lt;a href=&#34;https://github.com/tatsushid/h2o-rpm/blob/f167500a687aebb08fccb500c41a903363f94bca/Dockerfile.centos7&#34;&gt;&lt;code&gt;Dockerfile.centos7&lt;/code&gt;&lt;/a&gt; と &lt;a href=&#34;https://github.com/tatsushid/h2o-rpm/blob/f167500a687aebb08fccb500c41a903363f94bca/Makefile&#34;&gt;&lt;code&gt;Makefile&lt;/code&gt;&lt;/a&gt; を元に、この流れを見ていきます。&lt;/p&gt;
+
+&lt;h2 id=&#34;ビルド環境の準備:ffc6e8e4c2073712378c7d26dc5d3680&#34;&gt;ビルド環境の準備&lt;/h2&gt;
+
+&lt;p&gt;まず、ビルド環境の準備は &lt;code&gt;Dockerfile&lt;/code&gt; に記述してある&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-Dockerfile&#34;&gt;FROM centos:7
+ENV HOME /
+RUN yum update -y
+RUN yum install -y rpm-build redhat-rpm-config rpmdevtools cmake gcc-c++ tar make openssl-devel ruby bison
+RUN rpmdev-setuptree
+RUN echo &#39;%dist   .el7&#39; &amp;gt;&amp;gt; /.rpmmacros
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;で行っています。 &lt;a href=&#34;https://hub.docker.com/_/centos/&#34;&gt;&lt;code&gt;centos7&lt;/code&gt; の公式イメージ&lt;/a&gt;を元に、環境内のパッケージの全アップデート、ビルド作業に必要なコンパイラなどのパッケージやビルド対象と依存関係にあるパッケージのインストール、ビルド用ディレクトリツリーの作成などを順に実施しています。&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;ENV HOME /&lt;/code&gt; については、 RPM のパッケージング処理がホームディレクトリ配下の &lt;code&gt;rpmbuild&lt;/code&gt; ディレクトリを使う、という方式なのと、一般的なコンテナ内ではトップディレクトリが起点になっているというのを合わせる意味で指定しています。イメージ環境自体は使い捨てなので、通常やらないだろう設定をやってもいっこうに構いません。&lt;/p&gt;
+
+&lt;h2 id=&#34;ソース展開:ffc6e8e4c2073712378c7d26dc5d3680&#34;&gt;ソース展開&lt;/h2&gt;
+
+&lt;p&gt;ソースの展開は &lt;code&gt;Makefile&lt;/code&gt; の&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-Makefile&#34;&gt;cp Dockerfile.$* Dockerfile
+tar -czf - Dockerfile rpmbuild | docker build -t $(IMAGE_NAME) -
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;と &lt;code&gt;Dockerfile&lt;/code&gt; の&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-Dockerfile&#34;&gt;ADD ./rpmbuild/ /rpmbuild/
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;の共同作業になります。&lt;/p&gt;
+
+&lt;p&gt;まず &lt;code&gt;Makefile&lt;/code&gt; の方ですが、各ディストリビューション用に &lt;code&gt;Dockerfile.{dist}&lt;/code&gt; のような形でを用意しているものを &lt;code&gt;Dockerfile&lt;/code&gt; にコピーした後、パッケージ用ファイルを配置してある &lt;code&gt;rpmbuild&lt;/code&gt; ディレクトリとともに &lt;code&gt;tar.gz&lt;/code&gt; 形式にまとめ、それを &lt;code&gt;docker build&lt;/code&gt; に &lt;code&gt;STDIN&lt;/code&gt; 経由で渡しています。このように渡されたファイルは、 &lt;code&gt;tar.gz&lt;/code&gt; 内のディレクトリツリー構造そのままに &lt;code&gt;Dockerfile&lt;/code&gt; の &lt;code&gt;ADD&lt;/code&gt; や &lt;code&gt;COPY&lt;/code&gt; で参照できるので、これを使ってコンテナ内の &lt;code&gt;/rpmbuild&lt;/code&gt; 以下にファイルを展開しています。&lt;/p&gt;
+
+&lt;p&gt;この辺りについては Docker の &lt;a href=&#34;https://docs.docker.com/engine/reference/commandline/build/&#34;&gt;build コマンドのリファレンス&lt;/a&gt;、 &lt;a href=&#34;https://docs.docker.com/engine/reference/builder/&#34;&gt;Dockerfile のリファレンス&lt;/a&gt; に詳しいです。&lt;/p&gt;
+
+&lt;p&gt;また、最初にこの方式で書いた時期とは異なり、現在では &lt;code&gt;.dockerignore&lt;/code&gt; や &lt;code&gt;docker build&lt;/code&gt; の &lt;code&gt;-f&lt;/code&gt; オプションも使えますので、上記のような形ではなく、これらの機能を使うことでも同様のものを実現可能と思います。&lt;/p&gt;
+
+&lt;h2 id=&#34;ビルドとパッケージング:ffc6e8e4c2073712378c7d26dc5d3680&#34;&gt;ビルドとパッケージング&lt;/h2&gt;
+
+&lt;p&gt;ここは &lt;code&gt;Dockerfile&lt;/code&gt; 内の記述になりますが、&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-Dockerfile&#34;&gt;RUN rpmbuild -ba /rpmbuild/SPECS/h2o.spec
+RUN tar -czf /tmp/h2o.tar.gz -C /rpmbuild RPMS SRPMS
+CMD [&amp;quot;/bin/true&amp;quot;]
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;という形で、 RPM のビルド処理を行い、できあがったものを &lt;code&gt;/tmp&lt;/code&gt; 以下に &lt;code&gt;tar.gz&lt;/code&gt; ファイルとしてまとめています。このアーカイブファイルは次の取り出しで参照します。&lt;/p&gt;
+
+&lt;p&gt;最後の &lt;code&gt;CMD&lt;/code&gt; 行は、イメージから作成したコンテナを即時終了させるために便宜的に設定したものとなります。&lt;/p&gt;
+
+&lt;h2 id=&#34;パッケージの取り出し:ffc6e8e4c2073712378c7d26dc5d3680&#34;&gt;パッケージの取り出し&lt;/h2&gt;
+
+&lt;p&gt;ここは &lt;code&gt;Makefile&lt;/code&gt; 側の処理になりますが、前のステップまででできあがったイメージを参照し、&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-Makefile&#34;&gt;docker run --name $(IMAGE_NAME)-tmp $(IMAGE_NAME)
+mkdir -p tmp
+docker wait $(IMAGE_NAME)-tmp
+docker cp $(IMAGE_NAME)-tmp:/tmp/$(TARGZ_FILE) tmp
+docker rm $(IMAGE_NAME)-tmp
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;のコマンドを順に処理して、 &lt;code&gt;Dockerfile&lt;/code&gt; で生成された &lt;code&gt;tar.gz&lt;/code&gt; ファイルを取り出しています。&lt;/p&gt;
+
+&lt;p&gt;まず &lt;code&gt;docker run&lt;/code&gt; で、 &lt;code&gt;Dockerfile&lt;/code&gt; で作成したイメージを元にダミーコンテナを起動しています。 &lt;code&gt;Dockerfile&lt;/code&gt; 内で指定してある &lt;code&gt;CMD [&amp;quot;/bin/true&amp;quot;]&lt;/code&gt; により、このコンテナの実行は即座に終わります。欲しいのはダミーコンテナ内のファイルなので、コンテナが起動している必要はありません。念のため &lt;code&gt;docker wait&lt;/code&gt; を入れて、コピー処理の前にコンテナが停止しているのを確実にしています。&lt;/p&gt;
+
+&lt;p&gt;ダミーコンテナが停止した後は &lt;code&gt;docker cp&lt;/code&gt; を使い、コンテナ内のファイルをローカルのファイルシステムにコピーし、用が済んだダミーコンテナを &lt;code&gt;docker rm&lt;/code&gt; で削除しています。&lt;/p&gt;
+
+&lt;p&gt;欲しいファイルを取り出せたので、後は好きにこれを展開すればいいのですが、本リポジトリではこれを &lt;code&gt;{dist}.build&lt;/code&gt; のようなディレクトリ配下に展開しています。&lt;/p&gt;
+
+&lt;h2 id=&#34;まとめ:ffc6e8e4c2073712378c7d26dc5d3680&#34;&gt;まとめ&lt;/h2&gt;
+
+&lt;p&gt;以上のような形で自動パッケージングを行い、ローカル側にコピーしてきているわけですが、もちろんできたものを直接特定のサーバにアップロードするなども自由自在です。対象もパッケージングに限らず、 Docker 環境中でなにかしらの成果物を作り、取り出す、という方法として一般的に使える、と思います。&lt;/p&gt;
+
+&lt;p&gt;また、ここでは単に好みから &lt;code&gt;Makefile&lt;/code&gt; を使っていますが、シェルスクリプトやバッチファイルでも構いません。かつては &lt;code&gt;tar.gz&lt;/code&gt; などのアーカイブファイルを渡さなければいけない以上、 Windows で実行するのは若干難しかったように思いますが、今では前述の &lt;code&gt;.dockerignore&lt;/code&gt; や &lt;code&gt;docker build&lt;/code&gt; の &lt;code&gt;-f&lt;/code&gt; オプションもあるので、敷居は下がったのではないかと思います。&lt;/p&gt;
+
+&lt;p&gt;さらに &lt;a href=&#34;https://www.microsoft.com/ja-jp/server-cloud/products-windows-server-2016.aspx&#34;&gt;Windows Server 2016&lt;/a&gt; では Docker がサポートされることも発表されていますので、 Windows アプリケーションも同じような手法でパッケージングできたりするのかもしれず、今後が楽しみです&lt;/p&gt;
+</description>
+    </item>
     
     <item>
       <title>docker-machine の env 設定が MacVim と競合する、らしい</title>
@@ -948,106 +1079,6 @@ http://mirror.awanti.com/centos/6.5/updates/x86_64/
 &lt;/ul&gt;
 
 &lt;p&gt;という形となっているため、通常は意識して選択する必要がない。また、 2TB 未満のディスクも GPT パーティションとしてインストールしたければ、インストール CD からインストーラーをブートする時のカーネルオプションに inst.gpt を指定しておくと、ディスク種別にかかわらず GTP パーティションが使われるようになる&lt;/p&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>CentOS5をGPTパーティションで新規インストールする</title>
-      <link>http://tatsushid.github.io/blog/2014/07/install-centos5-on-gpt-drive/</link>
-      <pubDate>Tue, 08 Jul 2014 20:06:00 +0900</pubDate>
-      
-      <guid>http://tatsushid.github.io/blog/2014/07/install-centos5-on-gpt-drive/</guid>
-      <description>&lt;p&gt;CentOS 5 の新規インストール時に GPT パーティションを使いたい場合は、 CentOS 6 の様に一筋縄では行かない。今回は&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;&lt;a href=&#34;http://blog.endpoint.com/2013/11/installing-centos-5-on-3tb-drive.html&#34;&gt;Installing CentOS 5 on a 3 TB Drive&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;http://wiki.tkr.mydns.jp/index.php?title=Linux関連/CentOS5_GPT_対応インストール手順&#34;&gt;CentOS5 GPT 対応インストール手順&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;を参考に、下記のような手順で仮想マシン作成作業を行ってみた&lt;/p&gt;
-
-&lt;ol&gt;
-&lt;li&gt;ネットワークインストール用の ISO イメージをダウンロードし、仮想マシンに CD イメージとして読み込ませる設定を行う&lt;/li&gt;
-&lt;li&gt;起動選択画面で &lt;code&gt;linux resque&lt;/code&gt; と入力し、レスキューモードでサーバを起動する&lt;/li&gt;
-&lt;li&gt;起動後は言語選択、キーボード設定、ネットワーク設定、レスキューモード用イメージのダウンロード先を指定して進める。既存 OS 選択画面では Skip を選択して進める&lt;/li&gt;
-
-&lt;li&gt;&lt;p&gt;レスキューモードのシェルが立ち上がるので、下記のようにコマンドを実行してディスクのパーティションを切る&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;parted /dev/sda
-(parted) mklabel gpt
-(parted) mkpart primary ext3 0 200MB
-(parted) mkpart primary linux-swap 200MB 2248MB
-(parted) mkpart primary ext3 2248MB 21.5GB
-(parted) set 1 boot on
-(parted) quit
-mkfs.ext3 /dev/sda1
-mkfs.ext3 /dev/sda3
-mkswap /dev/sda2
-tune2fs -c 0 -i 0 /dev/sda1
-tune2fs -c 0 -i 0 /dev/sda3
-&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
-
-&lt;li&gt;&lt;p&gt;そのままでは Anaconda のエラーメッセージが出てインストール処理を先に進められないので、 Anaconda を下記の手順で上書きする&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;mkdir /mnt/anaconda
-mount -t tmpfs none /mnt/anaconda
-cd /mnt/anaconda
-tar -cpf - -C /mnt/runtime/usr/lib/anaconda . | tar -xpf -
-vi partitions.py # ここで 1082 行目の errors を warnings に書き換えて保存する
-mount -o bind /mnt/anaconda /mnt/runtime/usr/lib/anaconda
-&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
-
-&lt;li&gt;&lt;p&gt;このまま Anaconda を起動すると &lt;code&gt;/sbin&lt;/code&gt; が存在しているというエラーが出て起動できないため、下記の手順で空の &lt;code&gt;/sbin&lt;/code&gt; を用意する&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;export PATH=$PATH:/sbin.bak
-mv /sbin /sbin.bak
-mkdir /sbin
-&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
-
-&lt;li&gt;&lt;p&gt;Anaconda の起動準備が完了したので、適切なミラーサイトの URL を使って Anaconda を起動する&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;anaconda --dmraid --selinux -T -m &amp;quot;http://ftp.iij.ad.jp/pub/linux/centos/5/os/x86_64/&amp;quot;
-&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
-
-&lt;li&gt;&lt;p&gt;インストール処理は、ディスクのパーティション設定以外、いつもの通りに進める。パーティション設定の画面では、すでに作成されているパーティションにマウントポイントを割り当てるにとどめ。パーティションの再フォーマットなどは行わない。 GPT では起動できないとの警告が出たら、そのまま OK を押して進める&lt;/p&gt;&lt;/li&gt;
-
-&lt;li&gt;&lt;p&gt;インストールが終わったら再起動を行うが、その前に、後の GRUB のインストール作業のために、 ISO イメージを CentOS 5 のものから CentOS 6 のものに差し替えておく&lt;/p&gt;&lt;/li&gt;
-
-&lt;li&gt;&lt;p&gt;再起動を行う。そのまま再起動ボタンを押しても、 Anaconda が終了するだけで再起動処理が行われないので、 &lt;code&gt;Ctrl+Alt+Delete&lt;/code&gt; を入力するなどして再起動する&lt;/p&gt;&lt;/li&gt;
-
-&lt;li&gt;&lt;p&gt;CentOS 6 のディスクで起動してきたら、レスキューモードを選択して進める。言語選択、キーボード設定を行うが、ネットワーク設定は不要。既存 OS 選択画面では Skip を選択して進める&lt;/p&gt;&lt;/li&gt;
-
-&lt;li&gt;&lt;p&gt;シェルが立ち上がったら下記の手順で &lt;code&gt;/boot&lt;/code&gt; パーティションをマウントし、必要な GRUB のファイルを上書きする&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;mkdir /boot
-mount /dev/sda1 /boot
-cp /usr/share/grub/x86_64-redhat/e2fs_stage1_5 /boot/grub/
-cp /usr/share/grub/x86_64-redhat/fat_stage1_5 /boot/grub/
-cp /usr/share/grub/x86_64-redhat/ffs_stage1_5 /boot/grub/
-cp /usr/share/grub/x86_64-redhat/iso9660_stage1_5 /boot/grub/
-cp /usr/share/grub/x86_64-redhat/jfs_stage1_5 /boot/grub/
-cp /usr/share/grub/x86_64-redhat/minix_stage1_5 /boot/grub/
-cp /usr/share/grub/x86_64-redhat/reiserfs_stage1_5 /boot/grub/
-cp /usr/share/grub/x86_64-redhat/stage1 /boot/grub/
-cp /usr/share/grub/x86_64-redhat/stage2 /boot/grub/
-cp /usr/share/grub/x86_64-redhat/ufs2_stage1_5 /boot/grub/
-cp /usr/share/grub/x86_64-redhat/vstafs_stage1_5 /boot/grub/
-cp /usr/share/grub/x86_64-redhat/xfs_stage1_5 /boot/grub/
-umount /boot
-&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
-
-&lt;li&gt;&lt;p&gt;ファイルを上書きしたら、 MBR へ GRUB をインストールする&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;grub
-grub&amp;gt; root (hd0,0)
-grub&amp;gt; setup (hd0)
-grub&amp;gt; quit
-&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
-
-&lt;li&gt;&lt;p&gt;GRUB のインストールが完了したら、 ISO イメージを取り出し、再起動を行う&lt;/p&gt;&lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;p&gt;以上の手順で、 GPT パーティションが有効な状態で、新規インストールした CentOS 5 が起動できた&lt;/p&gt;
 </description>
     </item>
     
