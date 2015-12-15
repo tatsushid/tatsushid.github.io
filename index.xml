@@ -6,8 +6,78 @@
     <description>Recent content on tatsushid.github.io</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>ja-jp</language>
-    <lastBuildDate>Fri, 11 Dec 2015 00:33:25 +0900</lastBuildDate>
+    <lastBuildDate>Tue, 15 Dec 2015 19:06:29 +0900</lastBuildDate>
     <atom:link href="http://tatsushid.github.io/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>TinyCoreLinux の Docker イメージを作った話</title>
+      <link>http://tatsushid.github.io/blog/2015/12/making-docker-image-of-tinycorelinux/</link>
+      <pubDate>Tue, 15 Dec 2015 19:06:29 +0900</pubDate>
+      
+      <guid>http://tatsushid.github.io/blog/2015/12/making-docker-image-of-tinycorelinux/</guid>
+      <description>
+
+&lt;p&gt;これは &lt;a href=&#34;http://www.adventar.org/calendars/808&#34;&gt;NSEG Advent Calender 2015 -Adventar&lt;/a&gt; 15 日目の記事です。&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&#34;http://tatsushid.github.io/2015/12/packaging-with-docker/&#34;&gt;前回&lt;/a&gt; に引き続き Docker の話ですが、 &lt;a href=&#34;http://www.tinycorelinux.net/&#34;&gt;Tiny Core Linux&lt;/a&gt; の &lt;a href=&#34;https://hub.docker.com/r/tatsushid/tinycore/&#34;&gt;Docker イメージ&lt;/a&gt;とその仲間（たとえば &lt;a href=&#34;https://hub.docker.com/r/tatsushid/tinycore-ruby/&#34;&gt;tinycore-ruby&lt;/a&gt;）を作った話をまとめておこうと思います。&lt;/p&gt;
+
+&lt;h2 id=&#34;tiny-core-linux-とは:3b5f7e7f5ab00186906a8ce1b6a9a96c&#34;&gt;Tiny Core Linux とは？&lt;/h2&gt;
+
+&lt;p&gt;&lt;a href=&#34;http://www.tinycorelinux.net/&#34;&gt;The Core Project&lt;/a&gt; で作成されている Linux ディストリビューションの一つで、有名どころでは &lt;a href=&#34;https://docs.docker.com/machine/&#34;&gt;Docker Machine&lt;/a&gt; の OS としても使われていたりします。コア機能に絞り込むと 10MB 以下、 GUI 関連パッケージまで含めても 100MB 以下と、ディスク消費が非常に小さいながらデスクトップ環境まで構築でき、独自形式ながらパッケージ機構も持っているため、他のメジャーなディストリビューションと比べて使用が難しすぎるということもなく、なかなか便利なディストリビューションです。&lt;/p&gt;
+
+&lt;h2 id=&#34;イメージ作成動機:3b5f7e7f5ab00186906a8ce1b6a9a96c&#34;&gt;イメージ作成動機&lt;/h2&gt;
+
+&lt;p&gt;Docker をある程度使っていると感じることかと思いますが、公式で提供されている各種ディストリビューションの Docker イメージは容量が少なくとも 200MB 越えしているものがほとんどで、かつ、それを元にした各言語の公式実行環境はそれ以上の容量となることが一般的です。&lt;/p&gt;
+
+&lt;p&gt;一方で、特に Node.js などは比較的頻繁にリリースされ、その都度環境を更新することも多くなりますが、その度に大容量のイメージをダウンロード・展開することになります。&lt;/p&gt;
+
+&lt;p&gt;そこで、もっとディスク容量を抑えた環境はできないかなと思っていたところ、 Tiny Core Linux の存在を知り、特定の一言語の実行環境であればもっとコンパクトなものが作れるのではないかということで、イメージ作成を試してみることにしました。&lt;/p&gt;
+
+&lt;p&gt;結果、基本の OS イメージでは 7MB 弱、先に上げた &lt;a href=&#34;https://hub.docker.com/r/tatsushid/tinycore-ruby/&#34;&gt;tinycore-ruby&lt;/a&gt; イメージでも 60MB そこそこと、一通りの機能を組み込んだ上でもかなり容量を削ることに成功しています。&lt;/p&gt;
+
+&lt;h2 id=&#34;tiny-core-linux-基本イメージ:3b5f7e7f5ab00186906a8ce1b6a9a96c&#34;&gt;Tiny Core Linux 基本イメージ&lt;/h2&gt;
+
+&lt;p&gt;各言語の環境を作る前に、まずは基本となる OS イメージが必要なので、それを &lt;a href=&#34;http://www.tinycorelinux.net/6.x/x86/release/distribution_files/&#34;&gt;x86&lt;/a&gt;, &lt;a href=&#34;http://www.tinycorelinux.net/6.x/x86_64/release/distribution_files/&#34;&gt;x86_64&lt;/a&gt; それぞれで配布されている rootfs.gz ないし rootfs64.gz から構築しています。&lt;/p&gt;
+
+&lt;p&gt;この rootfs.gz は cpio 形式でアーカイブされていますが、 Docker に読み込ませるには tar 形式である必要があるため、一度これを展開してアーカイブし直す必要があります。&lt;/p&gt;
+
+&lt;p&gt;また、 Tiny Core Linux のパッケージは squashfs を利用して作成されており、パッケージインストール時にはこの squashfs をマウントしてファイルを取りだす仕組みになっているため、そのまま rootfs.gz を展開してイメージを作ってしまうと、パッケージ機構を利用する時にはコンテナに privileged 権限をつけて起動する必要が出てきます。これでは日常利用で不便ですので、それを回避するために、 unsquashfs を入れると同時にパッケージプログラムに少々手を加え、 privileged なしでもパッケージを扱えるようにしています&lt;/p&gt;
+
+&lt;p&gt;イメージ生成に &lt;a href=&#34;https://docs.docker.com/docker-hub/builds/&#34;&gt;Docker の Automated Build&lt;/a&gt; を使えるようにするため、イメージ作成に必要な処理は &lt;a href=&#34;https://github.com/tatsushid/docker-tinycore&#34;&gt;Github&lt;/a&gt; にて公開していますので、詳しくはそちらを参照してください。&lt;/p&gt;
+
+&lt;h2 id=&#34;tinycore-ruby-イメージ:3b5f7e7f5ab00186906a8ce1b6a9a96c&#34;&gt;tinycore-ruby イメージ&lt;/h2&gt;
+
+&lt;p&gt;OS イメージができたので、それを元にして使いたい言語の環境を作るのですが、ここでは Ruby のものを例として見ていきます。&lt;/p&gt;
+
+&lt;p&gt;基本的には&lt;a href=&#34;https://hub.docker.com/_/ruby/&#34;&gt;公式の Ruby イメージ&lt;/a&gt;と同じような使い勝手になるよう、公開されている Dockerfile の手順と同様に記述していくことになりますが、元々の目的が容量削減でしたので、一度インストールしたパッケージも動作に必須でなければ極力アンインストールするなどしています。&lt;/p&gt;
+
+&lt;p&gt;また、公式でも同様ですが、 &lt;code&gt;RUN&lt;/code&gt; の処理を、できるだけ&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-Dockerfile&#34;&gt;RUN gem install bundler --version &amp;quot;$BUNDLER_VERSION&amp;quot; \
+    &amp;amp;&amp;amp; bundle config --global path &amp;quot;$GEM_HOME&amp;quot; \
+    &amp;amp;&amp;amp; bundle config --global bin &amp;quot;$GEM_HOME/bin&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;のように &lt;code&gt;\ &amp;amp;&amp;amp;&lt;/code&gt; でつなげて書いています。これは、同一のシェルコンテキストで実行とするという意味合いもありますが、それぞれを分けて、たとえば&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-Dockerfile&#34;&gt;RUN gem install bundler --version &amp;quot;$BUNDLER_VERSION&amp;quot;
+RUN bundle config --global path &amp;quot;$GEM_HOME&amp;quot;
+RUN bundle config --global bin &amp;quot;$GEM_HOME/bin&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;のように書くと、それぞれの &lt;code&gt;RUN&lt;/code&gt; の処理中で生成されたデータがそのままイメージ容量に加算されていき、後の処理で不要なデータを削除したとしてもイメージ全体のサイズが減らなくなってしまうため、それを回避する目的が主です。同一コンテキスト内で最終的に不要なデータを削除しておけば、その分はイメージ容量には加算されないので、容量肥大化を防ぐことができます。&lt;/p&gt;
+
+&lt;p&gt;ただし、このように書いてしまうと、一度イメージ作成処理に失敗すると、次に実行する時もキャッシュが効かず、同一コンテキストの最初から（つまり &lt;code&gt;RUN&lt;/code&gt; の最初から）やり直しになってしまい、特に大きなパッケージファイルをダウンロードしている時など実行時間がかかって待たされることになるため、試行錯誤している時などは個別の &lt;code&gt;RUN&lt;/code&gt; に分割しておくと、キャッシュの恩恵を受けて効率良く作業ができます。処理が固まったら改めて &lt;code&gt;\ &amp;amp;&amp;amp;&lt;/code&gt; でひとまとめにするといいでしょう。&lt;/p&gt;
+
+&lt;p&gt;こちらも &lt;a href=&#34;https://github.com/tatsushid/docker-tinycore-ruby&#34;&gt;Github&lt;/a&gt; にてイメージ生成過程は公開してますので、具体的な内容などはそちらを参照してください。&lt;/p&gt;
+
+&lt;h2 id=&#34;まとめ:3b5f7e7f5ab00186906a8ce1b6a9a96c&#34;&gt;まとめ&lt;/h2&gt;
+
+&lt;p&gt;以上のような流れで、 Ruby 以外の言語のイメージや、特定のプログラムだけを配置したイメージも比較的簡単に作ることができます。容量だけで見れば公式で配布されている &lt;a href=&#34;https://hub.docker.com/_/busybox/&#34;&gt;busybox イメージ&lt;/a&gt;を使う、という方法もありますが、それだけでは機能不足であるとか、容量は抑えつつ欲しい機能を手軽に追加したい、という向きには、このイメージは便利に使っていただけるかと思います。&lt;/p&gt;
+
+&lt;p&gt;余談ですが、現在公開中の &lt;a href=&#34;https://hub.docker.com/r/tatsushid/tinycore-ruby/&#34;&gt;Ruby&lt;/a&gt;, &lt;a href=&#34;https://hub.docker.com/r/tatsushid/tinycore-python/&#34;&gt;Python&lt;/a&gt;, &lt;a href=&#34;https://hub.docker.com/r/tatsushid/tinycore-node/&#34;&gt;Node.js&lt;/a&gt; 以外にも、 PHP, Go などの作成も試してみたのですが、 PHP は TinyCore のパッケージに含まれないライブラリへの依存関係が多く挫折、 Go は作成できたものの公式と容量が 100MB も違いがなく（主に &lt;code&gt;go get&lt;/code&gt; などの内部で使われる git, mercurial, subversion を組み込んだ影響）、あえて作る意味もないということで公開はしないこととしました。これらの言語では素直に公式イメージを使うのが吉、ということのようです。&lt;/p&gt;
+</description>
+    </item>
     
     <item>
       <title>Docker を使ってパッケージング</title>
@@ -1062,23 +1132,6 @@ http://mirror.awanti.com/centos/6.5/updates/x86_64/
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;の様に実行すると、 &lt;code&gt;path/to/dstdir/srcfile.tar.gz&lt;/code&gt; の様に保存される&lt;/p&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>CentOS7をGPTパーティションで新規インストールする</title>
-      <link>http://tatsushid.github.io/blog/2014/07/install-centos7-on-gpt-drive/</link>
-      <pubDate>Fri, 25 Jul 2014 13:04:00 +0900</pubDate>
-      
-      <guid>http://tatsushid.github.io/blog/2014/07/install-centos7-on-gpt-drive/</guid>
-      <description>&lt;p&gt;CentOS 7 を GPT パーティションでインストールするのは難しくない。 &lt;a href=&#34;https://bugzilla.redhat.com/show_bug.cgi?id=1032428&#34;&gt;Bug 1032428 - Need a 1MB &amp;lsquo;biosboot&amp;rsquo; type partition when install RHEL7 on a GPT disk with custom partition&lt;/a&gt; によると、&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;2TB 未満のディスクを使用すると自動的に MSDOS パーティションを使用&lt;/li&gt;
-&lt;li&gt;2TB 以上のディスクを使用すると自動的に GPT パーティションを使用&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;という形となっているため、通常は意識して選択する必要がない。また、 2TB 未満のディスクも GPT パーティションとしてインストールしたければ、インストール CD からインストーラーをブートする時のカーネルオプションに inst.gpt を指定しておくと、ディスク種別にかかわらず GTP パーティションが使われるようになる&lt;/p&gt;
 </description>
     </item>
     

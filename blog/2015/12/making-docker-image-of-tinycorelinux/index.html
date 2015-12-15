@@ -1,0 +1,84 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ja" lang="ja"><head><link href="http://gmpg.org/xfn/11" rel="profile"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1"><title>TinyCoreLinux の Docker イメージを作った話 &middot; tatsushid.github.io</title><link rel="stylesheet" href="http://fonts.googleapis.com/css?family=PT+Serif:400,400italic,700|PT+Sans:400"><link rel="stylesheet" href="/css/main.css"><script src="/js/highlight.pack.js" async></script><script type="text/javascript">
+if (document.readyState === "complete") {
+  hljs.initHighlighting();
+} else {
+  hljs.initHighlightingOnLoad();
+}
+</script><link rel="apple-touch-icon-precomposed" sizes="144x144" href="/apple-touch-icon-precomposed.png"><link rel="shortcut icon" href="/favicon.ico"><link rel="alternate" type="application/rss+xml" title="RSS" href=""></head><body class="theme-base-0d layout-reverse sidebar-overlay"><input id="sidebar-checkbox" class="sidebar-checkbox" type="checkbox"><div id="sidebar" class="sidebar"><div class="sidebar-item"><p> </a></p></div><nav class="sidebar-nav"><ul><li><a class="sidebar-nav-item" href="/">Home</a></li><li><a class="sidebar-nav-item" href="/blog/">Blog</a></li><li><a class="sidebar-nav-item" href="/tags/">Tags</a></li></ul></nav><div class="sidebar-item"><ul class="media-links"><li><a href="https://twitter.com/tatsushi_d"><i class="fa fa-twitter" aria-label="twitter"></i></a></li><li><a href="https://github.com/tatsushid"><i class="fa fa-github" aria-label="github"></i></a></li></ul><div class="footnote">Powered by <a href="http://gohugo.io/">Hugo</a><br>&copy; 2014-2015. Tatsushi Demachi All rights reserved.</div></div></div><div class="wrap"><div class="masthead"><div class="container"><h3 class="masthead-title"><a href="/" title="Home">tatsushid.github.io</a></h3></div></div><div class="container content"><div class="post"><h1 class="post-title"><a href="/blog/2015/12/making-docker-image-of-tinycorelinux/">TinyCoreLinux の Docker イメージを作った話</a></h1><div class="post-meta">2015-12-15<ul><li><a href="/tags/docker">Docker</a></li></ul></div>
+
+<p>これは <a href="http://www.adventar.org/calendars/808">NSEG Advent Calender 2015 -Adventar</a> 15 日目の記事です。</p>
+
+<p><a href="/2015/12/packaging-with-docker/">前回</a> に引き続き Docker の話ですが、 <a href="http://www.tinycorelinux.net/">Tiny Core Linux</a> の <a href="https://hub.docker.com/r/tatsushid/tinycore/">Docker イメージ</a>とその仲間（たとえば <a href="https://hub.docker.com/r/tatsushid/tinycore-ruby/">tinycore-ruby</a>）を作った話をまとめておこうと思います。</p>
+
+<h2 id="tiny-core-linux-とは:3b5f7e7f5ab00186906a8ce1b6a9a96c">Tiny Core Linux とは？</h2>
+
+<p><a href="http://www.tinycorelinux.net/">The Core Project</a> で作成されている Linux ディストリビューションの一つで、有名どころでは <a href="https://docs.docker.com/machine/">Docker Machine</a> の OS としても使われていたりします。コア機能に絞り込むと 10MB 以下、 GUI 関連パッケージまで含めても 100MB 以下と、ディスク消費が非常に小さいながらデスクトップ環境まで構築でき、独自形式ながらパッケージ機構も持っているため、他のメジャーなディストリビューションと比べて使用が難しすぎるということもなく、なかなか便利なディストリビューションです。</p>
+
+<h2 id="イメージ作成動機:3b5f7e7f5ab00186906a8ce1b6a9a96c">イメージ作成動機</h2>
+
+<p>Docker をある程度使っていると感じることかと思いますが、公式で提供されている各種ディストリビューションの Docker イメージは容量が少なくとも 200MB 越えしているものがほとんどで、かつ、それを元にした各言語の公式実行環境はそれ以上の容量となることが一般的です。</p>
+
+<p>一方で、特に Node.js などは比較的頻繁にリリースされ、その都度環境を更新することも多くなりますが、その度に大容量のイメージをダウンロード・展開することになります。</p>
+
+<p>そこで、もっとディスク容量を抑えた環境はできないかなと思っていたところ、 Tiny Core Linux の存在を知り、特定の一言語の実行環境であればもっとコンパクトなものが作れるのではないかということで、イメージ作成を試してみることにしました。</p>
+
+<p>結果、基本の OS イメージでは 7MB 弱、先に上げた <a href="https://hub.docker.com/r/tatsushid/tinycore-ruby/">tinycore-ruby</a> イメージでも 60MB そこそこと、一通りの機能を組み込んだ上でもかなり容量を削ることに成功しています。</p>
+
+<h2 id="tiny-core-linux-基本イメージ:3b5f7e7f5ab00186906a8ce1b6a9a96c">Tiny Core Linux 基本イメージ</h2>
+
+<p>各言語の環境を作る前に、まずは基本となる OS イメージが必要なので、それを <a href="http://www.tinycorelinux.net/6.x/x86/release/distribution_files/">x86</a>, <a href="http://www.tinycorelinux.net/6.x/x86_64/release/distribution_files/">x86_64</a> それぞれで配布されている rootfs.gz ないし rootfs64.gz から構築しています。</p>
+
+<p>この rootfs.gz は cpio 形式でアーカイブされていますが、 Docker に読み込ませるには tar 形式である必要があるため、一度これを展開してアーカイブし直す必要があります。</p>
+
+<p>また、 Tiny Core Linux のパッケージは squashfs を利用して作成されており、パッケージインストール時にはこの squashfs をマウントしてファイルを取りだす仕組みになっているため、そのまま rootfs.gz を展開してイメージを作ってしまうと、パッケージ機構を利用する時にはコンテナに privileged 権限をつけて起動する必要が出てきます。これでは日常利用で不便ですので、それを回避するために、 unsquashfs を入れると同時にパッケージプログラムに少々手を加え、 privileged なしでもパッケージを扱えるようにしています</p>
+
+<p>イメージ生成に <a href="https://docs.docker.com/docker-hub/builds/">Docker の Automated Build</a> を使えるようにするため、イメージ作成に必要な処理は <a href="https://github.com/tatsushid/docker-tinycore">Github</a> にて公開していますので、詳しくはそちらを参照してください。</p>
+
+<h2 id="tinycore-ruby-イメージ:3b5f7e7f5ab00186906a8ce1b6a9a96c">tinycore-ruby イメージ</h2>
+
+<p>OS イメージができたので、それを元にして使いたい言語の環境を作るのですが、ここでは Ruby のものを例として見ていきます。</p>
+
+<p>基本的には<a href="https://hub.docker.com/_/ruby/">公式の Ruby イメージ</a>と同じような使い勝手になるよう、公開されている Dockerfile の手順と同様に記述していくことになりますが、元々の目的が容量削減でしたので、一度インストールしたパッケージも動作に必須でなければ極力アンインストールするなどしています。</p>
+
+<p>また、公式でも同様ですが、 <code>RUN</code> の処理を、できるだけ</p>
+
+<pre><code class="language-Dockerfile">RUN gem install bundler --version &quot;$BUNDLER_VERSION&quot; \
+    &amp;&amp; bundle config --global path &quot;$GEM_HOME&quot; \
+    &amp;&amp; bundle config --global bin &quot;$GEM_HOME/bin&quot;
+</code></pre>
+
+<p>のように <code>\ &amp;&amp;</code> でつなげて書いています。これは、同一のシェルコンテキストで実行とするという意味合いもありますが、それぞれを分けて、たとえば</p>
+
+<pre><code class="language-Dockerfile">RUN gem install bundler --version &quot;$BUNDLER_VERSION&quot;
+RUN bundle config --global path &quot;$GEM_HOME&quot;
+RUN bundle config --global bin &quot;$GEM_HOME/bin&quot;
+</code></pre>
+
+<p>のように書くと、それぞれの <code>RUN</code> の処理中で生成されたデータがそのままイメージ容量に加算されていき、後の処理で不要なデータを削除したとしてもイメージ全体のサイズが減らなくなってしまうため、それを回避する目的が主です。同一コンテキスト内で最終的に不要なデータを削除しておけば、その分はイメージ容量には加算されないので、容量肥大化を防ぐことができます。</p>
+
+<p>ただし、このように書いてしまうと、一度イメージ作成処理に失敗すると、次に実行する時もキャッシュが効かず、同一コンテキストの最初から（つまり <code>RUN</code> の最初から）やり直しになってしまい、特に大きなパッケージファイルをダウンロードしている時など実行時間がかかって待たされることになるため、試行錯誤している時などは個別の <code>RUN</code> に分割しておくと、キャッシュの恩恵を受けて効率良く作業ができます。処理が固まったら改めて <code>\ &amp;&amp;</code> でひとまとめにするといいでしょう。</p>
+
+<p>こちらも <a href="https://github.com/tatsushid/docker-tinycore-ruby">Github</a> にてイメージ生成過程は公開してますので、具体的な内容などはそちらを参照してください。</p>
+
+<h2 id="まとめ:3b5f7e7f5ab00186906a8ce1b6a9a96c">まとめ</h2>
+
+<p>以上のような流れで、 Ruby 以外の言語のイメージや、特定のプログラムだけを配置したイメージも比較的簡単に作ることができます。容量だけで見れば公式で配布されている <a href="https://hub.docker.com/_/busybox/">busybox イメージ</a>を使う、という方法もありますが、それだけでは機能不足であるとか、容量は抑えつつ欲しい機能を手軽に追加したい、という向きには、このイメージは便利に使っていただけるかと思います。</p>
+
+<p>余談ですが、現在公開中の <a href="https://hub.docker.com/r/tatsushid/tinycore-ruby/">Ruby</a>, <a href="https://hub.docker.com/r/tatsushid/tinycore-python/">Python</a>, <a href="https://hub.docker.com/r/tatsushid/tinycore-node/">Node.js</a> 以外にも、 PHP, Go などの作成も試してみたのですが、 PHP は TinyCore のパッケージに含まれないライブラリへの依存関係が多く挫折、 Go は作成できたものの公式と容量が 100MB も違いがなく（主に <code>go get</code> などの内部で使われる git, mercurial, subversion を組み込んだ影響）、あえて作る意味もないということで公開はしないこととしました。これらの言語では素直に公式イメージを使うのが吉、ということのようです。</p>
+</div><nav><h2>Related posts</h2><ul class="related-posts"><li><a href="/blog/2015/12/packaging-with-docker/">Docker を使ってパッケージング</a><small>2015-12-11<ul><li><a href="/tags/docker">Docker</a></li><li><a href="/tags/nseg">NSEG</a></li></ul></small></li><li><a href="/blog/2015/08/docker-machine-env-prevents-macvim-from-opening-window/">docker-machine の env 設定が MacVim と競合する、らしい</a><small>2015-08-31<ul><li><a href="/tags/vim">Vim</a></li><li><a href="/tags/docker">Docker</a></li></ul></small></li><li><a href="/blog/2015/01/managing-libreboard-containers-by-fig/">Fig で Libreboard 環境を構築してみた</a><small>2015-01-18<ul><li><a href="/tags/docker">Docker</a></li><li><a href="/tags/fig">Fig</a></li><li><a href="/tags/libreboard">Libreboard</a></li></ul></small></li><li><a href="/blog/2015/01/run-libreboard-on-docker/">Docker で Libreboard 動かしてみた</a><small>2015-01-12<ul><li><a href="/tags/docker">Docker</a></li><li><a href="/tags/libreboard">Libreboard</a></li></ul></small></li><li><a href="/blog/2014/10/how-to-build-centos3-docker-image/">CentOS 3 の Docker イメージを作ってみた</a><small>2014-10-04<ul><li><a href="/tags/docker">Docker</a></li><li><a href="/tags/centos">CentOS</a></li></ul></small></li></ul></nav><nav class="prev-next"><ul><li>Newer Post</li><li><a href="/blog/2015/12/packaging-with-docker/">Older Post</a></li></ul></nav></div></div><label class="sidebar-toggle" for="sidebar-checkbox"></label><script type="text/javascript">
+(function(document) {
+  var toggle = document.querySelector('.sidebar-toggle');
+  var sidebar = document.querySelector('#sidebar');
+  var checkbox = document.querySelector('#sidebar-checkbox');
+
+  document.addEventListener('click', function(e) {
+    var target = e.target;
+
+    if(!checkbox.checked ||
+       sidebar.contains(target) ||
+       (target === checkbox || target === toggle)) return;
+
+    checkbox.checked = false;
+  }, false);
+})(document);
+</script></body></html>
