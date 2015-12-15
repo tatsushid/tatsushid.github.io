@@ -17,7 +17,7 @@
       <guid>http://tatsushid.github.io/blog/2015/12/making-docker-image-of-tinycorelinux/</guid>
       <description>
 
-&lt;p&gt;これは &lt;a href=&#34;http://www.adventar.org/calendars/808&#34;&gt;NSEG Advent Calender 2015 -Adventar&lt;/a&gt; 15 日目の記事です。&lt;/p&gt;
+&lt;p&gt;これは &lt;a href=&#34;http://www.adventar.org/calendars/808&#34;&gt;NSEG Advent Calendar 2015 -Adventar&lt;/a&gt; 15 日目の記事です。&lt;/p&gt;
 
 &lt;p&gt;&lt;a href=&#34;http://tatsushid.github.io/2015/12/packaging-with-docker/&#34;&gt;前回&lt;/a&gt; に引き続き Docker の話ですが、 &lt;a href=&#34;http://www.tinycorelinux.net/&#34;&gt;Tiny Core Linux&lt;/a&gt; の &lt;a href=&#34;https://hub.docker.com/r/tatsushid/tinycore/&#34;&gt;Docker イメージ&lt;/a&gt;とその仲間（たとえば &lt;a href=&#34;https://hub.docker.com/r/tatsushid/tinycore-ruby/&#34;&gt;tinycore-ruby&lt;/a&gt;）を作った話をまとめておこうと思います。&lt;/p&gt;
 
@@ -87,7 +87,7 @@ RUN bundle config --global bin &amp;quot;$GEM_HOME/bin&amp;quot;
       <guid>http://tatsushid.github.io/blog/2015/12/packaging-with-docker/</guid>
       <description>
 
-&lt;p&gt;これは &lt;a href=&#34;http://www.adventar.org/calendars/808&#34;&gt;NSEG Advent Calender 2015 -Adventar&lt;/a&gt; 11 日目の記事です。&lt;/p&gt;
+&lt;p&gt;これは &lt;a href=&#34;http://www.adventar.org/calendars/808&#34;&gt;NSEG Advent Calendar 2015 -Adventar&lt;/a&gt; 11 日目の記事です。&lt;/p&gt;
 
 &lt;h2 id=&#34;nseg-とは:ffc6e8e4c2073712378c7d26dc5d3680&#34;&gt;NSEG とは？&lt;/h2&gt;
 
