@@ -23,18 +23,12 @@
 
 &lt;p&gt;UDP で代表的なプロトコルといえば DNS なので、今回は&lt;/p&gt;
 
-&lt;pre&gt;&lt;code&gt;                              +---------+
-                       _______| Dnsmasq |
-                      /       +---------+
-+--------+     +-------+      example.com
-| Client |-----| NGINX |      127.0.0.10
-+--------+     +-------+
-                      \       +---------+
-                       `------| Dnsmasq |
-                              +---------+
-                              example.com
-                              127.0.0.20
-&lt;/code&gt;&lt;/pre&gt;
+&lt;div class=&#34;mermaid&#34;&gt;
+graph LR
+    Client --- NGINX
+    NGINX --- dns1[Dnsmasq1&lt;br&gt;example.com A 127.0.0.10]
+    NGINX --- dns2[Dnsmasq2&lt;br&gt;example.com A 127.0.0.20]
+&lt;/div&gt;
 
 &lt;p&gt;という構成を Docker Compose で作り、 NGINX に対して &lt;code&gt;dig&lt;/code&gt; コマンドで &lt;code&gt;example.com&lt;/code&gt; の名前解決クエリを送った時に、 &lt;code&gt;127.0.0.10&lt;/code&gt; と &lt;code&gt;127.0.0.20&lt;/code&gt; が交互に返ってくるかどうかを見ることにしました。この構成を作るに当たって必要なファイルは &lt;a href=&#34;https://github.com/tatsushid/nginx-udp-lb-example&#34;&gt;Github リポジトリ&lt;/a&gt;として公開しています。&lt;/p&gt;
 
