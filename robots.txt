@@ -1,0 +1,5 @@
+User-agent: *
+Disallow: /archives/
+Disallow: /tags/
+
+Sitemap: http://tatsushid.github.io/sitemap.xml
