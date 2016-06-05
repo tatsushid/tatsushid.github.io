@@ -1,8 +1,135 @@
-<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ja" lang="ja"><head><link href="http://gmpg.org/xfn/11" rel="profile"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1"><title>tatsushid.github.io</title><link rel="stylesheet" href="http://fonts.googleapis.com/css?family=PT+Serif:400,400italic,700|PT+Sans:400"><link rel="stylesheet" href="/css/main.css"><script src="/js/highlight.pack.js" async></script><script src="/js/mermaid.min.js" async></script><link rel="apple-touch-icon-precomposed" sizes="144x144" href="/apple-touch-icon-precomposed.png"><link rel="shortcut icon" href="/favicon.ico"><link rel="alternate" type="application/rss+xml" title="RSS" href="http://tatsushid.github.io/index.xml"></head><body class="theme-base-0d layout-reverse sidebar-overlay"><input id="sidebar-checkbox" class="sidebar-checkbox" type="checkbox"><div id="sidebar" class="sidebar"><div class="sidebar-item"><p> </a></p></div><nav class="sidebar-nav"><ul><li><a class="sidebar-nav-item active" href="/">Home</a></li><li><a class="sidebar-nav-item" href="/blog/">Blog</a></li><li><a class="sidebar-nav-item" href="/tags/">Tags</a></li></ul></nav><div class="sidebar-item"><ul class="media-links"><li><a href="https://twitter.com/tatsushi_d"><i class="fa fa-twitter" aria-label="twitter"></i></a></li><li><a href="https://github.com/tatsushid"><i class="fa fa-github" aria-label="github"></i></a></li></ul><div class="footnote">Powered by <a href="http://gohugo.io/">Hugo</a><br>&copy; 2014-2016. Tatsushi Demachi All rights reserved.</div></div></div><div class="wrap"><div class="masthead"><div class="container"><h3 class="masthead-title"><a href="/" title="Home">tatsushid.github.io</a></h3></div></div><div class="container content"><div class="posts"><div class="post"><h1 class="post-title"><a href="/blog/2016/03/tried-udp-load-balancing-added-to-nginx/">NGINX に追加された UDP ロードバランシングを試してみた</a></h1><div class="post-meta">2016-03-19<ul><li><a href="/tags/nginx">NGINX</a></li></ul></div>
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ja" lang="ja"><head>
+	<meta name="generator" content="Hugo 0.16" /><link href="http://gmpg.org/xfn/11" rel="profile"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1"><title>tatsushid.github.io</title><link rel="preload" as="style" href="http://fonts.googleapis.com/css?family=PT+Serif:400,400italic,700|PT+Sans:400" onload="this.rel='stylesheet'"><link rel="preload" as="style" href="/css/main.css" onload="this.rel='stylesheet'"><noscript><link rel="stylesheet" href="http://fonts.googleapis.com/css?family=PT+Serif:400,400italic,700|PT+Sans:400"></noscript><noscript><link rel="stylesheet" href="/css/main.css"></noscript><script type="text/javascript">
+ 
+/*! loadCSS: load a CSS file asynchronously. [c]2016 @scottjehl, Filament Group, Inc. Licensed MIT */
+(function(w){
+  "use strict";
+   
+  var loadCSS = function( href, before, media ){
+    
+    
+    
+      
+    
+    var doc = w.document;
+    var ss = doc.createElement( "link" );
+    var ref;
+    if( before ){
+      ref = before;
+    }
+    else {
+      var refs = ( doc.body || doc.getElementsByTagName( "head" )[ 0 ] ).childNodes;
+      ref = refs[ refs.length - 1];
+    }
+
+    var sheets = doc.styleSheets;
+    ss.rel = "stylesheet";
+    ss.href = href;
+    
+    ss.media = "only x";
+
+    
+    function ready( cb ){
+      if( doc.body ){
+        return cb();
+      }
+      setTimeout(function(){
+        ready( cb );
+      });
+    }
+    
+      
+      
+    ready( function(){
+      ref.parentNode.insertBefore( ss, ( before ? ref : ref.nextSibling ) );
+    });
+    
+    var onloadcssdefined = function( cb ){
+      var resolvedHref = ss.href;
+      var i = sheets.length;
+      while( i-- ){
+        if( sheets[ i ].href === resolvedHref ){
+          return cb();
+        }
+      }
+      setTimeout(function() {
+        onloadcssdefined( cb );
+      });
+    };
+
+    function loadCB(){
+      if( ss.addEventListener ){
+        ss.removeEventListener( "load", loadCB );
+      }
+      ss.media = media || "all";
+    }
+
+    
+    if( ss.addEventListener ){
+      ss.addEventListener( "load", loadCB);
+    }
+    ss.onloadcssdefined = onloadcssdefined;
+    onloadcssdefined( loadCB );
+    return ss;
+  };
+  
+  if( typeof exports !== "undefined" ){
+    exports.loadCSS = loadCSS;
+  }
+  else {
+    w.loadCSS = loadCSS;
+  }
+}( typeof global !== "undefined" ? global : this ));
+
+/*! CSS rel=preload polyfill. Depends on loadCSS function. [c]2016 @scottjehl, Filament Group, Inc. Licensed MIT  */
+(function( w ){
+  
+  if( !w.loadCSS ){
+    return;
+  }
+  var rp = loadCSS.relpreload = {};
+  rp.support = function(){
+    try {
+      return w.document.createElement( "link" ).relList.supports( "preload" );
+    } catch (e) {
+      return false;
+    }
+  };
+
+  
+  rp.poly = function(){
+    var links = w.document.getElementsByTagName( "link" );
+    for( var i = 0; i < links.length; i++ ){
+      var link = links[ i ];
+      if( link.rel === "preload" && link.getAttribute( "as" ) === "style" ){
+        w.loadCSS( link.href, link );
+        link.rel = null;
+      }
+    }
+  };
+
+  
+  if( !rp.support() ){
+    rp.poly();
+    var run = w.setInterval( rp.poly, 300 );
+    if( w.addEventListener ){
+      w.addEventListener( "load", function(){
+        w.clearInterval( run );
+      } );
+    }
+    if( w.attachEvent ){
+      w.attachEvent( "onload", function(){
+        w.clearInterval( run );
+      } )
+    }
+  }
+}( this ));
+
+</script><script src="/js/highlight.pack.js" async></script><script src="/js/mermaid.min.js" async></script><link rel="apple-touch-icon-precomposed" sizes="144x144" href="/apple-touch-icon-precomposed.png"><link rel="shortcut icon" href="/favicon.ico"><link rel="alternate" type="application/rss+xml" title="RSS" href="http://tatsushid.github.io/index.xml"></head><body class="theme-base-0d layout-reverse sidebar-overlay"><input id="sidebar-checkbox" class="sidebar-checkbox" type="checkbox"><div id="sidebar" class="sidebar"><div class="sidebar-item"><p> </a></p></div><nav class="sidebar-nav"><ul><li><a class="sidebar-nav-item active" href="/">Home</a></li><li><a class="sidebar-nav-item" href="/blog/">Blog</a></li><li><a class="sidebar-nav-item" href="/tags/">Tags</a></li></ul></nav><div class="sidebar-item"><ul class="media-links"><li><a href="https://twitter.com/tatsushi_d"><i class="fa fa-twitter" aria-label="twitter"></i></a></li><li><a href="https://github.com/tatsushid"><i class="fa fa-github" aria-label="github"></i></a></li></ul><div class="footnote">Powered by <a href="http://gohugo.io/">Hugo</a><br>&copy; 2014-2016. Tatsushi Demachi All rights reserved.</div></div></div><div class="wrap"><div class="masthead"><div class="container"><h3 class="masthead-title"><a href="/" title="Home">tatsushid.github.io</a></h3></div></div><div class="container content"><div class="posts"><div class="post"><h1 class="post-title"><a href="/blog/2016/03/tried-udp-load-balancing-added-to-nginx/">NGINX に追加された UDP ロードバランシングを試してみた</a></h1><div class="post-meta">2016-03-19<ul><li><a href="/tags/nginx">NGINX</a></li></ul></div>
 
 <p>つい先日、 NGINX 公式ブログでアナウンスされた <a href="https://www.nginx.com/blog/announcing-udp-load-balancing/">UDP ロードバランシング機能</a>が気になっていたので、まだ正式リリース前ではありますが試してみました。</p>
 
-<h2 id="構成:f07075f6590da3486ce18c8ef1061b72">構成</h2>
+<h2 id="構成">構成</h2>
 
 <p>UDP で代表的なプロトコルといえば DNS なので、今回は</p>
 
@@ -15,9 +142,9 @@ graph LR
 
 <p>という構成を Docker Compose で作り、 NGINX に対して <code>dig</code> コマンドで <code>example.com</code> の名前解決クエリを送った時に、 <code>127.0.0.10</code> と <code>127.0.0.20</code> が交互に返ってくるかどうかを見ることにしました。この構成を作るに当たって必要なファイルは <a href="https://github.com/tatsushid/nginx-udp-lb-example">Github リポジトリ</a>として公開しています。</p>
 
-<h2 id="準備:f07075f6590da3486ce18c8ef1061b72">準備</h2>
+<h2 id="準備">準備</h2>
 
-<h3 id="nginx:f07075f6590da3486ce18c8ef1061b72">NGINX</h3>
+<h3 id="nginx">NGINX</h3>
 
 <p>まず、 UDP ロードバランシング機能が含まれている NGINX を用意する必要がありますが、現時点では開発リポジトリ上にのみ存在する状態のため（ 1.9.13 で正式リリース予定）、 Mercurial 経由で</p>
 
@@ -61,7 +188,7 @@ stream {
 
 <p>また、 <code>proxy_responses</code> ディレクティブが追加され、それぞれのクライアント要求において、いくつアップストリームサーバから UDP パケットを受けとったかを数え、 <code>proxy_responses</code> と同じだけパケットを受けとった場合には接続を閉じる、という処理を定義できます。デフォルトは無制限で、その場合、 <code>proxy_timeout</code> の時間が経過するまで UDP パケットの到着を待ち続ける形となるようです。</p>
 
-<h3 id="dnsmasq:f07075f6590da3486ce18c8ef1061b72">Dnsmasq</h3>
+<h3 id="dnsmasq">Dnsmasq</h3>
 
 <p>実際の DNS リクエストに応答する Dnsmasq は <a href="https://hub.docker.com/r/andyshinn/dnsmasq/">andyshinn/dnsmasq</a> の Docker イメージを使い、二つのサーバの起動オプションにシンプルに <code>--host-record</code> を追加し、</p>
 
@@ -71,11 +198,11 @@ dnsmasq -k --host-record=example.com,127.0.0.20
 
 <p>という形でそれぞれ立ち上がるよう設定することとしました。</p>
 
-<h3 id="docker-compose:f07075f6590da3486ce18c8ef1061b72">Docker Compose</h3>
+<h3 id="docker-compose">Docker Compose</h3>
 
 <p>上記の NGINX, Dnsmasq の一連の処理を <a href="https://github.com/tatsushid/nginx-udp-lb-example/blob/master/docker-compose.yml">docker-compose.yml</a> にまとめ、 <code>docker-compose up</code> で環境全体を構築できるようにしています。</p>
 
-<h2 id="動作確認:f07075f6590da3486ce18c8ef1061b72">動作確認</h2>
+<h2 id="動作確認">動作確認</h2>
 
 <p><code>docker-compose up</code> を実行して環境を構築後、 Docker Machine を使っている場合はリクエスト先の IP アドレスを <code>docker-machine ip your-machine</code> で調べておき、下記のようにコマンドを実行すると、交互に結果が返ってくることが確認できるかと思います。</p>
 
@@ -87,7 +214,7 @@ $ dig @192.168.99.100 example.com +short
 127.0.0.10
 </code></pre>
 
-<h2 id="まとめ:f07075f6590da3486ce18c8ef1061b72">まとめ</h2>
+<h2 id="まとめ">まとめ</h2>
 
 <p>非常にシンプルな設定で UDP ロードバランサが構築できることを確認できました。</p>
 
@@ -100,11 +227,11 @@ $ dig @192.168.99.100 example.com +short
 
 <p><a href="/2015/12/packaging-with-docker/">前回</a> に引き続き Docker の話ですが、 <a href="http://www.tinycorelinux.net/">Tiny Core Linux</a> の <a href="https://hub.docker.com/r/tatsushid/tinycore/">Docker イメージ</a>とその仲間（たとえば <a href="https://hub.docker.com/r/tatsushid/tinycore-ruby/">tinycore-ruby</a>）を作った話をまとめておこうと思います。</p>
 
-<h2 id="tiny-core-linux-とは:3b5f7e7f5ab00186906a8ce1b6a9a96c">Tiny Core Linux とは？</h2>
+<h2 id="tiny-core-linux-とは">Tiny Core Linux とは？</h2>
 
 <p><a href="http://www.tinycorelinux.net/">The Core Project</a> で作成されている Linux ディストリビューションの一つで、有名どころでは <a href="https://docs.docker.com/machine/">Docker Machine</a> の OS としても使われていたりします。コア機能に絞り込むと 10MB 以下、 GUI 関連パッケージまで含めても 100MB 以下と、ディスク消費が非常に小さいながらデスクトップ環境まで構築でき、独自形式ながらパッケージ機構も持っているため、他のメジャーなディストリビューションと比べて使用が難しすぎるということもなく、なかなか便利なディストリビューションです。</p>
 
-<h2 id="イメージ作成動機:3b5f7e7f5ab00186906a8ce1b6a9a96c">イメージ作成動機</h2>
+<h2 id="イメージ作成動機">イメージ作成動機</h2>
 
 <p>Docker をある程度使っていると感じることかと思いますが、公式で提供されている各種ディストリビューションの Docker イメージは容量が少なくとも 200MB 越えしているものがほとんどで、かつ、それを元にした各言語の公式実行環境はそれ以上の容量となることが一般的です。</p>
 
@@ -114,7 +241,7 @@ $ dig @192.168.99.100 example.com +short
 
 <p>結果、基本の OS イメージでは 7MB 弱、先に上げた <a href="https://hub.docker.com/r/tatsushid/tinycore-ruby/">tinycore-ruby</a> イメージでも 60MB そこそこと、一通りの機能を組み込んだ上でもかなり容量を削ることに成功しています。</p>
 
-<h2 id="tiny-core-linux-基本イメージ:3b5f7e7f5ab00186906a8ce1b6a9a96c">Tiny Core Linux 基本イメージ</h2>
+<h2 id="tiny-core-linux-基本イメージ">Tiny Core Linux 基本イメージ</h2>
 
 <p>各言語の環境を作る前に、まずは基本となる OS イメージが必要なので、それを <a href="http://www.tinycorelinux.net/6.x/x86/release/distribution_files/">x86</a>, <a href="http://www.tinycorelinux.net/6.x/x86_64/release/distribution_files/">x86_64</a> それぞれで配布されている rootfs.gz ないし rootfs64.gz から構築しています。</p>
 
@@ -124,7 +251,7 @@ $ dig @192.168.99.100 example.com +short
 
 <p>イメージ生成に <a href="https://docs.docker.com/docker-hub/builds/">Docker の Automated Build</a> を使えるようにするため、イメージ作成に必要な処理は <a href="https://github.com/tatsushid/docker-tinycore">Github</a> にて公開していますので、詳しくはそちらを参照してください。</p>
 
-<h2 id="tinycore-ruby-イメージ:3b5f7e7f5ab00186906a8ce1b6a9a96c">tinycore-ruby イメージ</h2>
+<h2 id="tinycore-ruby-イメージ">tinycore-ruby イメージ</h2>
 
 <p>OS イメージができたので、それを元にして使いたい言語の環境を作るのですが、ここでは Ruby のものを例として見ていきます。</p>
 
@@ -150,7 +277,7 @@ RUN bundle config --global bin &quot;$GEM_HOME/bin&quot;
 
 <p>こちらも <a href="https://github.com/tatsushid/docker-tinycore-ruby">Github</a> にてイメージ生成過程は公開してますので、具体的な内容などはそちらを参照してください。</p>
 
-<h2 id="まとめ:3b5f7e7f5ab00186906a8ce1b6a9a96c">まとめ</h2>
+<h2 id="まとめ">まとめ</h2>
 
 <p>以上のような流れで、 Ruby 以外の言語のイメージや、特定のプログラムだけを配置したイメージも比較的簡単に作ることができます。容量だけで見れば公式で配布されている <a href="https://hub.docker.com/_/busybox/">busybox イメージ</a>を使う、という方法もありますが、それだけでは機能不足であるとか、容量は抑えつつ欲しい機能を手軽に追加したい、という向きには、このイメージは便利に使っていただけるかと思います。</p>
 
@@ -159,17 +286,17 @@ RUN bundle config --global bin &quot;$GEM_HOME/bin&quot;
 
 <p>これは <a href="http://www.adventar.org/calendars/808">NSEG Advent Calendar 2015 -Adventar</a> 11 日目の記事です。</p>
 
-<h2 id="nseg-とは:ffc6e8e4c2073712378c7d26dc5d3680">NSEG とは？</h2>
+<h2 id="nseg-とは">NSEG とは？</h2>
 
 <p>一言で言うと「長野の IT 勉強会」ということになりますが、勉強会と言ってもお堅いものではなく、長野県やコンピュータにかかわることを幅広く取り上げて、楽しんだり技術の向上を目指す、といった感じで活動しております。詳しくは <a href="http://nseg.jp/">nseg.jp</a> もご覧ください。</p>
 
-<h2 id="これは何:ffc6e8e4c2073712378c7d26dc5d3680">これは何？</h2>
+<h2 id="これは何">これは何？</h2>
 
 <p>先日の<a href="https://github.com/nseg-jp/w/wiki/第69回勉強会">「理論から学ぶデータベース実践入門」読書会スペシャル</a>の懇親会で、「 Docker 周辺が盛り上がっているけど、実際業務に使ってたりする？」ということを聞かれたので、自分は「独自で RPM なんかのパッケージを作る時に便利に活用してますよ」ということを話したのですが、じゃあ具体的にどんなことをしているのか、というのを公開している <a href="https://github.com/tatsushid/h2o-rpm">h2o-rpm</a> を元に書いてみようかな、という趣旨です。</p>
 
 <p>Docker 自体はウェブアプリケーションなどの展開・運用にそのまま便利に使え、そちらが本筋とも思いますが、こんな使い方もできる、という一例にしてもらえれば幸いです。なお RPM の SPEC の書き方については、今回は省略します。</p>
 
-<h2 id="パッケージング作業の概要:ffc6e8e4c2073712378c7d26dc5d3680">パッケージング作業の概要</h2>
+<h2 id="パッケージング作業の概要">パッケージング作業の概要</h2>
 
 <p>そもそも RPM などのパッケージを作る時は、パッケージ対象のソースコードと関連ファイル、 SPEC ファイルのようなパッケージング手順が書かれたファイルなどが必要なわけですが、もう一つ、パッケージを作成する対象のディストリビューションのクリーンな環境が必要です。しかしながらこれを毎回物理サーバやいわゆる仮想マシン上でやっていると、メンテナンスが大変、起動に時間がかかる、など作業上のストレスがあっという間にたまることになるので、気軽に作成・削除のできる Docker でその部分をやろう、ということになります。かつての boot2docker や、最近では <a href="https://docs.docker.com/machine/">Docker Machine</a> のおかげで、自分のマシン上でもお手軽に作業ができるのも利点です。</p>
 
@@ -201,7 +328,7 @@ RUN bundle config --global bin &quot;$GEM_HOME/bin&quot;
 
 <p>以下、リポジトリの <code>Dockerfile</code> のうち <a href="https://github.com/tatsushid/h2o-rpm/blob/f167500a687aebb08fccb500c41a903363f94bca/Dockerfile.centos7"><code>Dockerfile.centos7</code></a> と <a href="https://github.com/tatsushid/h2o-rpm/blob/f167500a687aebb08fccb500c41a903363f94bca/Makefile"><code>Makefile</code></a> を元に、この流れを見ていきます。</p>
 
-<h2 id="ビルド環境の準備:ffc6e8e4c2073712378c7d26dc5d3680">ビルド環境の準備</h2>
+<h2 id="ビルド環境の準備">ビルド環境の準備</h2>
 
 <p>まず、ビルド環境の準備は <code>Dockerfile</code> に記述してある</p>
 
@@ -217,7 +344,7 @@ RUN echo '%dist   .el7' &gt;&gt; /.rpmmacros
 
 <p><code>ENV HOME /</code> については、 RPM のパッケージング処理がホームディレクトリ配下の <code>rpmbuild</code> ディレクトリを使う、という方式なのと、一般的なコンテナ内ではトップディレクトリが起点になっているというのを合わせる意味で指定しています。イメージ環境自体は使い捨てなので、通常やらないだろう設定をやってもいっこうに構いません。</p>
 
-<h2 id="ソース展開:ffc6e8e4c2073712378c7d26dc5d3680">ソース展開</h2>
+<h2 id="ソース展開">ソース展開</h2>
 
 <p>ソースの展開は <code>Makefile</code> の</p>
 
@@ -238,7 +365,7 @@ tar -czf - Dockerfile rpmbuild | docker build -t $(IMAGE_NAME) -
 
 <p>また、最初にこの方式で書いた時期とは異なり、現在では <code>.dockerignore</code> や <code>docker build</code> の <code>-f</code> オプションも使えますので、上記のような形ではなく、これらの機能を使うことでも同様のものを実現可能と思います。</p>
 
-<h2 id="ビルドとパッケージング:ffc6e8e4c2073712378c7d26dc5d3680">ビルドとパッケージング</h2>
+<h2 id="ビルドとパッケージング">ビルドとパッケージング</h2>
 
 <p>ここは <code>Dockerfile</code> 内の記述になりますが、</p>
 
@@ -251,7 +378,7 @@ CMD [&quot;/bin/true&quot;]
 
 <p>最後の <code>CMD</code> 行は、イメージから作成したコンテナを即時終了させるために便宜的に設定したものとなります。</p>
 
-<h2 id="パッケージの取り出し:ffc6e8e4c2073712378c7d26dc5d3680">パッケージの取り出し</h2>
+<h2 id="パッケージの取り出し">パッケージの取り出し</h2>
 
 <p>ここは <code>Makefile</code> 側の処理になりますが、前のステップまででできあがったイメージを参照し、</p>
 
@@ -270,7 +397,7 @@ docker rm $(IMAGE_NAME)-tmp
 
 <p>欲しいファイルを取り出せたので、後は好きにこれを展開すればいいのですが、本リポジトリではこれを <code>{dist}.build</code> のようなディレクトリ配下に展開しています。</p>
 
-<h2 id="まとめ:ffc6e8e4c2073712378c7d26dc5d3680">まとめ</h2>
+<h2 id="まとめ">まとめ</h2>
 
 <p>以上のような形で自動パッケージングを行い、ローカル側にコピーしてきているわけですが、もちろんできたものを直接特定のサーバにアップロードするなども自由自在です。対象もパッケージングに限らず、 Docker 環境中でなにかしらの成果物を作り、取り出す、という方法として一般的に使える、と思います。</p>
 

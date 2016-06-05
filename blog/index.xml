@@ -19,7 +19,7 @@
 
 &lt;p&gt;つい先日、 NGINX 公式ブログでアナウンスされた &lt;a href=&#34;https://www.nginx.com/blog/announcing-udp-load-balancing/&#34;&gt;UDP ロードバランシング機能&lt;/a&gt;が気になっていたので、まだ正式リリース前ではありますが試してみました。&lt;/p&gt;
 
-&lt;h2 id=&#34;構成:f07075f6590da3486ce18c8ef1061b72&#34;&gt;構成&lt;/h2&gt;
+&lt;h2 id=&#34;構成&#34;&gt;構成&lt;/h2&gt;
 
 &lt;p&gt;UDP で代表的なプロトコルといえば DNS なので、今回は&lt;/p&gt;
 
@@ -32,9 +32,9 @@ graph LR
 
 &lt;p&gt;という構成を Docker Compose で作り、 NGINX に対して &lt;code&gt;dig&lt;/code&gt; コマンドで &lt;code&gt;example.com&lt;/code&gt; の名前解決クエリを送った時に、 &lt;code&gt;127.0.0.10&lt;/code&gt; と &lt;code&gt;127.0.0.20&lt;/code&gt; が交互に返ってくるかどうかを見ることにしました。この構成を作るに当たって必要なファイルは &lt;a href=&#34;https://github.com/tatsushid/nginx-udp-lb-example&#34;&gt;Github リポジトリ&lt;/a&gt;として公開しています。&lt;/p&gt;
 
-&lt;h2 id=&#34;準備:f07075f6590da3486ce18c8ef1061b72&#34;&gt;準備&lt;/h2&gt;
+&lt;h2 id=&#34;準備&#34;&gt;準備&lt;/h2&gt;
 
-&lt;h3 id=&#34;nginx:f07075f6590da3486ce18c8ef1061b72&#34;&gt;NGINX&lt;/h3&gt;
+&lt;h3 id=&#34;nginx&#34;&gt;NGINX&lt;/h3&gt;
 
 &lt;p&gt;まず、 UDP ロードバランシング機能が含まれている NGINX を用意する必要がありますが、現時点では開発リポジトリ上にのみ存在する状態のため（ 1.9.13 で正式リリース予定）、 Mercurial 経由で&lt;/p&gt;
 
@@ -78,7 +78,7 @@ stream {
 
 &lt;p&gt;また、 &lt;code&gt;proxy_responses&lt;/code&gt; ディレクティブが追加され、それぞれのクライアント要求において、いくつアップストリームサーバから UDP パケットを受けとったかを数え、 &lt;code&gt;proxy_responses&lt;/code&gt; と同じだけパケットを受けとった場合には接続を閉じる、という処理を定義できます。デフォルトは無制限で、その場合、 &lt;code&gt;proxy_timeout&lt;/code&gt; の時間が経過するまで UDP パケットの到着を待ち続ける形となるようです。&lt;/p&gt;
 
-&lt;h3 id=&#34;dnsmasq:f07075f6590da3486ce18c8ef1061b72&#34;&gt;Dnsmasq&lt;/h3&gt;
+&lt;h3 id=&#34;dnsmasq&#34;&gt;Dnsmasq&lt;/h3&gt;
 
 &lt;p&gt;実際の DNS リクエストに応答する Dnsmasq は &lt;a href=&#34;https://hub.docker.com/r/andyshinn/dnsmasq/&#34;&gt;andyshinn/dnsmasq&lt;/a&gt; の Docker イメージを使い、二つのサーバの起動オプションにシンプルに &lt;code&gt;--host-record&lt;/code&gt; を追加し、&lt;/p&gt;
 
@@ -88,11 +88,11 @@ dnsmasq -k --host-record=example.com,127.0.0.20
 
 &lt;p&gt;という形でそれぞれ立ち上がるよう設定することとしました。&lt;/p&gt;
 
-&lt;h3 id=&#34;docker-compose:f07075f6590da3486ce18c8ef1061b72&#34;&gt;Docker Compose&lt;/h3&gt;
+&lt;h3 id=&#34;docker-compose&#34;&gt;Docker Compose&lt;/h3&gt;
 
 &lt;p&gt;上記の NGINX, Dnsmasq の一連の処理を &lt;a href=&#34;https://github.com/tatsushid/nginx-udp-lb-example/blob/master/docker-compose.yml&#34;&gt;docker-compose.yml&lt;/a&gt; にまとめ、 &lt;code&gt;docker-compose up&lt;/code&gt; で環境全体を構築できるようにしています。&lt;/p&gt;
 
-&lt;h2 id=&#34;動作確認:f07075f6590da3486ce18c8ef1061b72&#34;&gt;動作確認&lt;/h2&gt;
+&lt;h2 id=&#34;動作確認&#34;&gt;動作確認&lt;/h2&gt;
 
 &lt;p&gt;&lt;code&gt;docker-compose up&lt;/code&gt; を実行して環境を構築後、 Docker Machine を使っている場合はリクエスト先の IP アドレスを &lt;code&gt;docker-machine ip your-machine&lt;/code&gt; で調べておき、下記のようにコマンドを実行すると、交互に結果が返ってくることが確認できるかと思います。&lt;/p&gt;
 
@@ -104,7 +104,7 @@ $ dig @192.168.99.100 example.com +short
 127.0.0.10
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h2 id=&#34;まとめ:f07075f6590da3486ce18c8ef1061b72&#34;&gt;まとめ&lt;/h2&gt;
+&lt;h2 id=&#34;まとめ&#34;&gt;まとめ&lt;/h2&gt;
 
 &lt;p&gt;非常にシンプルな設定で UDP ロードバランサが構築できることを確認できました。&lt;/p&gt;
 
@@ -126,11 +126,11 @@ $ dig @192.168.99.100 example.com +short
 
 &lt;p&gt;&lt;a href=&#34;http://tatsushid.github.io/2015/12/packaging-with-docker/&#34;&gt;前回&lt;/a&gt; に引き続き Docker の話ですが、 &lt;a href=&#34;http://www.tinycorelinux.net/&#34;&gt;Tiny Core Linux&lt;/a&gt; の &lt;a href=&#34;https://hub.docker.com/r/tatsushid/tinycore/&#34;&gt;Docker イメージ&lt;/a&gt;とその仲間（たとえば &lt;a href=&#34;https://hub.docker.com/r/tatsushid/tinycore-ruby/&#34;&gt;tinycore-ruby&lt;/a&gt;）を作った話をまとめておこうと思います。&lt;/p&gt;
 
-&lt;h2 id=&#34;tiny-core-linux-とは:3b5f7e7f5ab00186906a8ce1b6a9a96c&#34;&gt;Tiny Core Linux とは？&lt;/h2&gt;
+&lt;h2 id=&#34;tiny-core-linux-とは&#34;&gt;Tiny Core Linux とは？&lt;/h2&gt;
 
 &lt;p&gt;&lt;a href=&#34;http://www.tinycorelinux.net/&#34;&gt;The Core Project&lt;/a&gt; で作成されている Linux ディストリビューションの一つで、有名どころでは &lt;a href=&#34;https://docs.docker.com/machine/&#34;&gt;Docker Machine&lt;/a&gt; の OS としても使われていたりします。コア機能に絞り込むと 10MB 以下、 GUI 関連パッケージまで含めても 100MB 以下と、ディスク消費が非常に小さいながらデスクトップ環境まで構築でき、独自形式ながらパッケージ機構も持っているため、他のメジャーなディストリビューションと比べて使用が難しすぎるということもなく、なかなか便利なディストリビューションです。&lt;/p&gt;
 
-&lt;h2 id=&#34;イメージ作成動機:3b5f7e7f5ab00186906a8ce1b6a9a96c&#34;&gt;イメージ作成動機&lt;/h2&gt;
+&lt;h2 id=&#34;イメージ作成動機&#34;&gt;イメージ作成動機&lt;/h2&gt;
 
 &lt;p&gt;Docker をある程度使っていると感じることかと思いますが、公式で提供されている各種ディストリビューションの Docker イメージは容量が少なくとも 200MB 越えしているものがほとんどで、かつ、それを元にした各言語の公式実行環境はそれ以上の容量となることが一般的です。&lt;/p&gt;
 
@@ -140,7 +140,7 @@ $ dig @192.168.99.100 example.com +short
 
 &lt;p&gt;結果、基本の OS イメージでは 7MB 弱、先に上げた &lt;a href=&#34;https://hub.docker.com/r/tatsushid/tinycore-ruby/&#34;&gt;tinycore-ruby&lt;/a&gt; イメージでも 60MB そこそこと、一通りの機能を組み込んだ上でもかなり容量を削ることに成功しています。&lt;/p&gt;
 
-&lt;h2 id=&#34;tiny-core-linux-基本イメージ:3b5f7e7f5ab00186906a8ce1b6a9a96c&#34;&gt;Tiny Core Linux 基本イメージ&lt;/h2&gt;
+&lt;h2 id=&#34;tiny-core-linux-基本イメージ&#34;&gt;Tiny Core Linux 基本イメージ&lt;/h2&gt;
 
 &lt;p&gt;各言語の環境を作る前に、まずは基本となる OS イメージが必要なので、それを &lt;a href=&#34;http://www.tinycorelinux.net/6.x/x86/release/distribution_files/&#34;&gt;x86&lt;/a&gt;, &lt;a href=&#34;http://www.tinycorelinux.net/6.x/x86_64/release/distribution_files/&#34;&gt;x86_64&lt;/a&gt; それぞれで配布されている rootfs.gz ないし rootfs64.gz から構築しています。&lt;/p&gt;
 
@@ -150,7 +150,7 @@ $ dig @192.168.99.100 example.com +short
 
 &lt;p&gt;イメージ生成に &lt;a href=&#34;https://docs.docker.com/docker-hub/builds/&#34;&gt;Docker の Automated Build&lt;/a&gt; を使えるようにするため、イメージ作成に必要な処理は &lt;a href=&#34;https://github.com/tatsushid/docker-tinycore&#34;&gt;Github&lt;/a&gt; にて公開していますので、詳しくはそちらを参照してください。&lt;/p&gt;
 
-&lt;h2 id=&#34;tinycore-ruby-イメージ:3b5f7e7f5ab00186906a8ce1b6a9a96c&#34;&gt;tinycore-ruby イメージ&lt;/h2&gt;
+&lt;h2 id=&#34;tinycore-ruby-イメージ&#34;&gt;tinycore-ruby イメージ&lt;/h2&gt;
 
 &lt;p&gt;OS イメージができたので、それを元にして使いたい言語の環境を作るのですが、ここでは Ruby のものを例として見ていきます。&lt;/p&gt;
 
@@ -176,7 +176,7 @@ RUN bundle config --global bin &amp;quot;$GEM_HOME/bin&amp;quot;
 
 &lt;p&gt;こちらも &lt;a href=&#34;https://github.com/tatsushid/docker-tinycore-ruby&#34;&gt;Github&lt;/a&gt; にてイメージ生成過程は公開してますので、具体的な内容などはそちらを参照してください。&lt;/p&gt;
 
-&lt;h2 id=&#34;まとめ:3b5f7e7f5ab00186906a8ce1b6a9a96c&#34;&gt;まとめ&lt;/h2&gt;
+&lt;h2 id=&#34;まとめ&#34;&gt;まとめ&lt;/h2&gt;
 
 &lt;p&gt;以上のような流れで、 Ruby 以外の言語のイメージや、特定のプログラムだけを配置したイメージも比較的簡単に作ることができます。容量だけで見れば公式で配布されている &lt;a href=&#34;https://hub.docker.com/_/busybox/&#34;&gt;busybox イメージ&lt;/a&gt;を使う、という方法もありますが、それだけでは機能不足であるとか、容量は抑えつつ欲しい機能を手軽に追加したい、という向きには、このイメージは便利に使っていただけるかと思います。&lt;/p&gt;
 
@@ -194,17 +194,17 @@ RUN bundle config --global bin &amp;quot;$GEM_HOME/bin&amp;quot;
 
 &lt;p&gt;これは &lt;a href=&#34;http://www.adventar.org/calendars/808&#34;&gt;NSEG Advent Calendar 2015 -Adventar&lt;/a&gt; 11 日目の記事です。&lt;/p&gt;
 
-&lt;h2 id=&#34;nseg-とは:ffc6e8e4c2073712378c7d26dc5d3680&#34;&gt;NSEG とは？&lt;/h2&gt;
+&lt;h2 id=&#34;nseg-とは&#34;&gt;NSEG とは？&lt;/h2&gt;
 
 &lt;p&gt;一言で言うと「長野の IT 勉強会」ということになりますが、勉強会と言ってもお堅いものではなく、長野県やコンピュータにかかわることを幅広く取り上げて、楽しんだり技術の向上を目指す、といった感じで活動しております。詳しくは &lt;a href=&#34;http://nseg.jp/&#34;&gt;nseg.jp&lt;/a&gt; もご覧ください。&lt;/p&gt;
 
-&lt;h2 id=&#34;これは何:ffc6e8e4c2073712378c7d26dc5d3680&#34;&gt;これは何？&lt;/h2&gt;
+&lt;h2 id=&#34;これは何&#34;&gt;これは何？&lt;/h2&gt;
 
 &lt;p&gt;先日の&lt;a href=&#34;https://github.com/nseg-jp/w/wiki/第69回勉強会&#34;&gt;「理論から学ぶデータベース実践入門」読書会スペシャル&lt;/a&gt;の懇親会で、「 Docker 周辺が盛り上がっているけど、実際業務に使ってたりする？」ということを聞かれたので、自分は「独自で RPM なんかのパッケージを作る時に便利に活用してますよ」ということを話したのですが、じゃあ具体的にどんなことをしているのか、というのを公開している &lt;a href=&#34;https://github.com/tatsushid/h2o-rpm&#34;&gt;h2o-rpm&lt;/a&gt; を元に書いてみようかな、という趣旨です。&lt;/p&gt;
 
 &lt;p&gt;Docker 自体はウェブアプリケーションなどの展開・運用にそのまま便利に使え、そちらが本筋とも思いますが、こんな使い方もできる、という一例にしてもらえれば幸いです。なお RPM の SPEC の書き方については、今回は省略します。&lt;/p&gt;
 
-&lt;h2 id=&#34;パッケージング作業の概要:ffc6e8e4c2073712378c7d26dc5d3680&#34;&gt;パッケージング作業の概要&lt;/h2&gt;
+&lt;h2 id=&#34;パッケージング作業の概要&#34;&gt;パッケージング作業の概要&lt;/h2&gt;
 
 &lt;p&gt;そもそも RPM などのパッケージを作る時は、パッケージ対象のソースコードと関連ファイル、 SPEC ファイルのようなパッケージング手順が書かれたファイルなどが必要なわけですが、もう一つ、パッケージを作成する対象のディストリビューションのクリーンな環境が必要です。しかしながらこれを毎回物理サーバやいわゆる仮想マシン上でやっていると、メンテナンスが大変、起動に時間がかかる、など作業上のストレスがあっという間にたまることになるので、気軽に作成・削除のできる Docker でその部分をやろう、ということになります。かつての boot2docker や、最近では &lt;a href=&#34;https://docs.docker.com/machine/&#34;&gt;Docker Machine&lt;/a&gt; のおかげで、自分のマシン上でもお手軽に作業ができるのも利点です。&lt;/p&gt;
 
@@ -236,7 +236,7 @@ RUN bundle config --global bin &amp;quot;$GEM_HOME/bin&amp;quot;
 
 &lt;p&gt;以下、リポジトリの &lt;code&gt;Dockerfile&lt;/code&gt; のうち &lt;a href=&#34;https://github.com/tatsushid/h2o-rpm/blob/f167500a687aebb08fccb500c41a903363f94bca/Dockerfile.centos7&#34;&gt;&lt;code&gt;Dockerfile.centos7&lt;/code&gt;&lt;/a&gt; と &lt;a href=&#34;https://github.com/tatsushid/h2o-rpm/blob/f167500a687aebb08fccb500c41a903363f94bca/Makefile&#34;&gt;&lt;code&gt;Makefile&lt;/code&gt;&lt;/a&gt; を元に、この流れを見ていきます。&lt;/p&gt;
 
-&lt;h2 id=&#34;ビルド環境の準備:ffc6e8e4c2073712378c7d26dc5d3680&#34;&gt;ビルド環境の準備&lt;/h2&gt;
+&lt;h2 id=&#34;ビルド環境の準備&#34;&gt;ビルド環境の準備&lt;/h2&gt;
 
 &lt;p&gt;まず、ビルド環境の準備は &lt;code&gt;Dockerfile&lt;/code&gt; に記述してある&lt;/p&gt;
 
@@ -252,7 +252,7 @@ RUN echo &#39;%dist   .el7&#39; &amp;gt;&amp;gt; /.rpmmacros
 
 &lt;p&gt;&lt;code&gt;ENV HOME /&lt;/code&gt; については、 RPM のパッケージング処理がホームディレクトリ配下の &lt;code&gt;rpmbuild&lt;/code&gt; ディレクトリを使う、という方式なのと、一般的なコンテナ内ではトップディレクトリが起点になっているというのを合わせる意味で指定しています。イメージ環境自体は使い捨てなので、通常やらないだろう設定をやってもいっこうに構いません。&lt;/p&gt;
 
-&lt;h2 id=&#34;ソース展開:ffc6e8e4c2073712378c7d26dc5d3680&#34;&gt;ソース展開&lt;/h2&gt;
+&lt;h2 id=&#34;ソース展開&#34;&gt;ソース展開&lt;/h2&gt;
 
 &lt;p&gt;ソースの展開は &lt;code&gt;Makefile&lt;/code&gt; の&lt;/p&gt;
 
@@ -273,7 +273,7 @@ tar -czf - Dockerfile rpmbuild | docker build -t $(IMAGE_NAME) -
 
 &lt;p&gt;また、最初にこの方式で書いた時期とは異なり、現在では &lt;code&gt;.dockerignore&lt;/code&gt; や &lt;code&gt;docker build&lt;/code&gt; の &lt;code&gt;-f&lt;/code&gt; オプションも使えますので、上記のような形ではなく、これらの機能を使うことでも同様のものを実現可能と思います。&lt;/p&gt;
 
-&lt;h2 id=&#34;ビルドとパッケージング:ffc6e8e4c2073712378c7d26dc5d3680&#34;&gt;ビルドとパッケージング&lt;/h2&gt;
+&lt;h2 id=&#34;ビルドとパッケージング&#34;&gt;ビルドとパッケージング&lt;/h2&gt;
 
 &lt;p&gt;ここは &lt;code&gt;Dockerfile&lt;/code&gt; 内の記述になりますが、&lt;/p&gt;
 
@@ -286,7 +286,7 @@ CMD [&amp;quot;/bin/true&amp;quot;]
 
 &lt;p&gt;最後の &lt;code&gt;CMD&lt;/code&gt; 行は、イメージから作成したコンテナを即時終了させるために便宜的に設定したものとなります。&lt;/p&gt;
 
-&lt;h2 id=&#34;パッケージの取り出し:ffc6e8e4c2073712378c7d26dc5d3680&#34;&gt;パッケージの取り出し&lt;/h2&gt;
+&lt;h2 id=&#34;パッケージの取り出し&#34;&gt;パッケージの取り出し&lt;/h2&gt;
 
 &lt;p&gt;ここは &lt;code&gt;Makefile&lt;/code&gt; 側の処理になりますが、前のステップまででできあがったイメージを参照し、&lt;/p&gt;
 
@@ -305,7 +305,7 @@ docker rm $(IMAGE_NAME)-tmp
 
 &lt;p&gt;欲しいファイルを取り出せたので、後は好きにこれを展開すればいいのですが、本リポジトリではこれを &lt;code&gt;{dist}.build&lt;/code&gt; のようなディレクトリ配下に展開しています。&lt;/p&gt;
 
-&lt;h2 id=&#34;まとめ:ffc6e8e4c2073712378c7d26dc5d3680&#34;&gt;まとめ&lt;/h2&gt;
+&lt;h2 id=&#34;まとめ&#34;&gt;まとめ&lt;/h2&gt;
 
 &lt;p&gt;以上のような形で自動パッケージングを行い、ローカル側にコピーしてきているわけですが、もちろんできたものを直接特定のサーバにアップロードするなども自由自在です。対象もパッケージングに限らず、 Docker 環境中でなにかしらの成果物を作り、取り出す、という方法として一般的に使える、と思います。&lt;/p&gt;
 
@@ -513,7 +513,7 @@ print $t-&amp;gt;strftime($format), &amp;quot;\n&amp;quot;;
 
 &lt;p&gt;など多々まとめがあるが、一応自分でも Time::Piece のコードを読んで確認したことと、とりあえずの回避策をメモしておきたい。なお、検証は Perl 5.18.2 と現時点での Time::Piece 最新版である 1.29 を使って行っている&lt;/p&gt;
 
-&lt;h2 id=&#34;回避策:f982ae70135bfa8403b8ce10daa2a9de&#34;&gt;回避策&lt;/h2&gt;
+&lt;h2 id=&#34;回避策&#34;&gt;回避策&lt;/h2&gt;
 
 &lt;p&gt;検証部分が長いので、まず回避策を先に書いてしまうが、結論としては先ほどのコードを&lt;/p&gt;
 
@@ -535,9 +535,9 @@ print $t-&amp;gt;strftime($format), &amp;quot;\n&amp;quot;;
 
 &lt;p&gt;のように書き換えればよい、と言うことになる。パースした結果の &lt;code&gt;epoch&lt;/code&gt; を取り出して &lt;code&gt;localhost&lt;/code&gt; （ Time::Piece でオーバーライドされてる）に渡せば、内部的には自身のタイムゾーンの値としてうまく扱ってくれる。以下はその理由&lt;/p&gt;
 
-&lt;h2 id=&#34;検証:f982ae70135bfa8403b8ce10daa2a9de&#34;&gt;検証&lt;/h2&gt;
+&lt;h2 id=&#34;検証&#34;&gt;検証&lt;/h2&gt;
 
-&lt;h3 id=&#34;strptime-の-z-で何をやっているか:f982ae70135bfa8403b8ce10daa2a9de&#34;&gt;strptime の %z で何をやっているか&lt;/h3&gt;
+&lt;h3 id=&#34;strptime-の-z-で何をやっているか&#34;&gt;strptime の %z で何をやっているか&lt;/h3&gt;
 
 &lt;p&gt;関連記事を読むと、 &lt;code&gt;%z&lt;/code&gt; を使ってる時に問題が出るケースが多く、かつ、この例でも使ってるので、まずはそこを調べてみる。 &lt;code&gt;Piece.xs&lt;/code&gt; によると、 &lt;code&gt;strptime&lt;/code&gt; の内部実装 &lt;code&gt;_strptime&lt;/code&gt; は&lt;/p&gt;
 
@@ -601,7 +601,7 @@ _strptime ( string, format )
 
 &lt;p&gt;となっていて、つまり &lt;code&gt;+0900&lt;/code&gt; の部分を時と分に分解して元の時と分の値を調整した後、 &lt;code&gt;GMT&lt;/code&gt; として扱うようフラグを立てている。従って内部的には &lt;code&gt;GMT&lt;/code&gt; で正しく計算された値が入っていることになる&lt;/p&gt;
 
-&lt;h3 id=&#34;strftime-は何をやっているか:f982ae70135bfa8403b8ce10daa2a9de&#34;&gt;strftime は何をやっているか&lt;/h3&gt;
+&lt;h3 id=&#34;strftime-は何をやっているか&#34;&gt;strftime は何をやっているか&lt;/h3&gt;
 
 &lt;p&gt;では、出力を生成している &lt;code&gt;strftime&lt;/code&gt; で何をやっているかというと、 &lt;code&gt;Piece.pm&lt;/code&gt; では&lt;/p&gt;
 
@@ -657,7 +657,7 @@ _strftime(fmt, sec, min, hour, mday, mon, year, wday = -1, yday = -1, isdst = -1
 
 &lt;p&gt;となっているが、どうやら &lt;code&gt;my_init_tm&lt;/code&gt; （この関数は Perl 5.8.0 以降では Perl 本体の &lt;code&gt;util.c&lt;/code&gt; に定義されている &lt;code&gt;init_tm&lt;/code&gt; のエイリアスになっている）でローカルタイムとして定義した後、 C 標準関数の &lt;code&gt;strftime&lt;/code&gt; を呼び出しており、そこで &lt;code&gt;%z&lt;/code&gt; は実行環境のタイムゾーンである &lt;code&gt;+0900&lt;/code&gt; を返してくることになる。つまり、 &lt;code&gt;GMT&lt;/code&gt; の時刻 + 実行環境のタイムゾーンが生成されていて、これがおかしな表示の理由ということになる。&lt;/p&gt;
 
-&lt;h3 id=&#34;gmtime-を-localtime-に変換する:f982ae70135bfa8403b8ce10daa2a9de&#34;&gt;gmtime を localtime に変換する&lt;/h3&gt;
+&lt;h3 id=&#34;gmtime-を-localtime-に変換する&#34;&gt;gmtime を localtime に変換する&lt;/h3&gt;
 
 &lt;p&gt;ここまでの結果からズレを直すには&lt;/p&gt;
 
@@ -712,7 +712,7 @@ my $t = localtime(Time::Piece-&amp;gt;strptime($datetime, $format)-&amp;gt;epoch
 
 &lt;p&gt;としてエポックタイムを渡すようにし、 &lt;code&gt;_mktime&lt;/code&gt; の &lt;code&gt;CORE::localtime($time)&lt;/code&gt; を通るようにしてやればよい。結果、前述の回避策、ということになる&lt;/p&gt;
 
-&lt;h2 id=&#34;まとめ:f982ae70135bfa8403b8ce10daa2a9de&#34;&gt;まとめ&lt;/h2&gt;
+&lt;h2 id=&#34;まとめ&#34;&gt;まとめ&lt;/h2&gt;
 
 &lt;p&gt;一つ一つ Time::Piece のコードを読んでいった結果、なんとか当初の目的は達成できた。が、標準モジュールとして入っている割には Time::Piece は細かな挙動が読めなくて使うのが難しいなとは感じた&lt;/p&gt;
 </description>
@@ -768,7 +768,7 @@ endfunction
 
 &lt;p&gt;先日の Bash 脆弱性騒ぎに関連して、ごく一部で残ってる RHEL3 系のマシンにも Bash のパッチを当てざるを得ない状況が発生したため、この際パッケージビルド用の Docker イメージも作っておくか、ということでやってみた&lt;/p&gt;
 
-&lt;h2 id=&#34;必要なもの:0f9548c31060b9cf09120147eb98969b&#34;&gt;必要なもの&lt;/h2&gt;
+&lt;h2 id=&#34;必要なもの&#34;&gt;必要なもの&lt;/h2&gt;
 
 &lt;ul&gt;
 &lt;li&gt;CentOS 3 がインストールされているサーバないし仮想マシン&lt;/li&gt;
@@ -778,7 +778,7 @@ endfunction
 
 &lt;p&gt;CentOS 3 のマシンは楽にやるには必須だと思う。初めは CentOS 6 上でやってみたが、後述のスクリプト実行時に最新の CentOS 6 のパッケージを拾ってこようとするのをうまく回避できなかったので、結局 CentOS 3 上で作業を行った&lt;/p&gt;
 
-&lt;h2 id=&#34;作成の流れ:0f9548c31060b9cf09120147eb98969b&#34;&gt;作成の流れ&lt;/h2&gt;
+&lt;h2 id=&#34;作成の流れ&#34;&gt;作成の流れ&lt;/h2&gt;
 
 &lt;p&gt;といっても、ほとんどやることはなくて、だいたい以下に集約される&lt;/p&gt;
 
@@ -791,7 +791,7 @@ endfunction
 
 &lt;p&gt;以下、個々の作業の説明&lt;/p&gt;
 
-&lt;h3 id=&#34;yum-conf-の編集:0f9548c31060b9cf09120147eb98969b&#34;&gt;yum.conf の編集&lt;/h3&gt;
+&lt;h3 id=&#34;yum-conf-の編集&#34;&gt;yum.conf の編集&lt;/h3&gt;
 
 &lt;p&gt;サーバ内に Yum が入っていなければ、まずはこれが必須なので入れておくのだが、 CentOS 3 はもうメンテされていないので、パッケージを拾ってこれるミラーサーバを &lt;code&gt;yum.conf&lt;/code&gt; に設定しておかなければならない。普通は &lt;code&gt;http://vault.centos.org/&lt;/code&gt; を設定しておけばいいと思うが、当たるミラーによってはかなり遅いことになるので、場合によっては速度の出るミラーサーバの IP アドレスを &lt;code&gt;dig&lt;/code&gt; なりなんなりで調べて直接 IP アドレスを指定しておく必要があるかもしれない。具体的な変更は &lt;code&gt;yum.conf&lt;/code&gt; 内にいくつかある&lt;/p&gt;
 
@@ -805,7 +805,7 @@ endfunction
 
 &lt;p&gt;のように書き換えておくだけである&lt;/p&gt;
 
-&lt;h3 id=&#34;mkimage-yum-sh-のカスタマイズ:0f9548c31060b9cf09120147eb98969b&#34;&gt;mkimage-yum.sh のカスタマイズ&lt;/h3&gt;
+&lt;h3 id=&#34;mkimage-yum-sh-のカスタマイズ&#34;&gt;mkimage-yum.sh のカスタマイズ&lt;/h3&gt;
 
 &lt;p&gt;一番手間取ったのがここだったが、わかってしまえばなんということもない内容。書き換えたスクリプトはこんな感じ&lt;/p&gt;
 
@@ -822,11 +822,11 @@ endfunction
 
 &lt;p&gt;といったところ&lt;/p&gt;
 
-&lt;h3 id=&#34;スクリプトの実行:0f9548c31060b9cf09120147eb98969b&#34;&gt;スクリプトの実行&lt;/h3&gt;
+&lt;h3 id=&#34;スクリプトの実行&#34;&gt;スクリプトの実行&lt;/h3&gt;
 
 &lt;p&gt;これはそのまんま、上記で作成しておいた &lt;code&gt;yum.conf&lt;/code&gt; を &lt;code&gt;mkimage-yum.sh&lt;/code&gt; に指定して実行するだけである。うまくいけば &lt;code&gt;os_image.tar.gz&lt;/code&gt; がカレントディレクトリ内に作られる&lt;/p&gt;
 
-&lt;h3 id=&#34;docker-でイメージ化:0f9548c31060b9cf09120147eb98969b&#34;&gt;Docker でイメージ化&lt;/h3&gt;
+&lt;h3 id=&#34;docker-でイメージ化&#34;&gt;Docker でイメージ化&lt;/h3&gt;
 
 &lt;p&gt;できた &lt;code&gt;os_image.tar.gz&lt;/code&gt; を Docker が動いている環境に持ってきて、下記のようにコマンドを実行する&lt;/p&gt;
 
@@ -840,7 +840,7 @@ endfunction
 
 &lt;p&gt;のようにして使い始めることができる&lt;/p&gt;
 
-&lt;h2 id=&#34;まとめ:0f9548c31060b9cf09120147eb98969b&#34;&gt;まとめ&lt;/h2&gt;
+&lt;h2 id=&#34;まとめ&#34;&gt;まとめ&lt;/h2&gt;
 
 &lt;p&gt;上記の流れでできたイメージを使って、無事パッチ済みの Bash の RPM の作成もできたので、日常の作業には十分な環境が作成できたと思う&lt;/p&gt;
 
@@ -858,7 +858,7 @@ endfunction
 
 &lt;p&gt;HAProxy で、アクセス元のクライアントの IP アドレスを元に、分散先サーバを固定したい場合、 &lt;code&gt;backend&lt;/code&gt; または &lt;code&gt;listen&lt;/code&gt; セクションで次のように設定すればよい&lt;/p&gt;
 
-&lt;h2 id=&#34;frontend-と-backend-を分けて設定してる場合:91b8713e75d1ee54903a1ba0ef999c8b&#34;&gt;frontend と backend を分けて設定してる場合&lt;/h2&gt;
+&lt;h2 id=&#34;frontend-と-backend-を分けて設定してる場合&#34;&gt;frontend と backend を分けて設定してる場合&lt;/h2&gt;
 
 &lt;pre&gt;&lt;code&gt;frontend web-front
 	bind *:80
@@ -870,7 +870,7 @@ backend web-back
 	server s2 192.168.1.12:80 check
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h2 id=&#34;listen-でまとめて設定している場合:91b8713e75d1ee54903a1ba0ef999c8b&#34;&gt;listen でまとめて設定している場合&lt;/h2&gt;
+&lt;h2 id=&#34;listen-でまとめて設定している場合&#34;&gt;listen でまとめて設定している場合&lt;/h2&gt;
 
 &lt;pre&gt;&lt;code&gt;listen web
 	bind *:80
@@ -881,7 +881,7 @@ backend web-back
 
 &lt;p&gt;簡単な設定の割にはドキュメントを探すのに結構苦労した&lt;/p&gt;
 
-&lt;h2 id=&#34;参考にしたページ:91b8713e75d1ee54903a1ba0ef999c8b&#34;&gt;参考にしたページ&lt;/h2&gt;
+&lt;h2 id=&#34;参考にしたページ&#34;&gt;参考にしたページ&lt;/h2&gt;
 
 &lt;ul&gt;
 &lt;li&gt;&lt;a href=&#34;http://blog.haproxy.com/2012/03/29/load-balancing-affinity-persistence-sticky-sessions-what-you-need-to-know/&#34;&gt;load balancing, affinity, persistence, sticky sessions: what you need to know&lt;/a&gt;&lt;/li&gt;
@@ -900,7 +900,7 @@ backend web-back
 
 &lt;p&gt;（下記は go 1.3.1 での話で、異なるバージョンだと動作も違う可能性があるので注意）&lt;/p&gt;
 
-&lt;h2 id=&#34;結論:5bfb78d2fd527d70f781ba5f5e936dd8&#34;&gt;結論&lt;/h2&gt;
+&lt;h2 id=&#34;結論&#34;&gt;結論&lt;/h2&gt;
 
 &lt;p&gt;Go で &lt;code&gt;encoding/xml&lt;/code&gt; を使って XML のエンコーディングを行っている時に、&lt;/p&gt;
 
@@ -911,7 +911,7 @@ backend web-back
 
 &lt;p&gt;を実現したい場合は、単純に要素のポインタ型を使って &lt;code&gt;omitempty&lt;/code&gt; は使わないのが正解&lt;/p&gt;
 
-&lt;h2 id=&#34;詳細:5bfb78d2fd527d70f781ba5f5e936dd8&#34;&gt;詳細&lt;/h2&gt;
+&lt;h2 id=&#34;詳細&#34;&gt;詳細&lt;/h2&gt;
 
 &lt;p&gt;上記のケースを最初は単純に&lt;/p&gt;
 

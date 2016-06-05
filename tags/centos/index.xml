@@ -19,7 +19,7 @@
 
 &lt;p&gt;先日の Bash 脆弱性騒ぎに関連して、ごく一部で残ってる RHEL3 系のマシンにも Bash のパッチを当てざるを得ない状況が発生したため、この際パッケージビルド用の Docker イメージも作っておくか、ということでやってみた&lt;/p&gt;
 
-&lt;h2 id=&#34;必要なもの:0f9548c31060b9cf09120147eb98969b&#34;&gt;必要なもの&lt;/h2&gt;
+&lt;h2 id=&#34;必要なもの&#34;&gt;必要なもの&lt;/h2&gt;
 
 &lt;ul&gt;
 &lt;li&gt;CentOS 3 がインストールされているサーバないし仮想マシン&lt;/li&gt;
@@ -29,7 +29,7 @@
 
 &lt;p&gt;CentOS 3 のマシンは楽にやるには必須だと思う。初めは CentOS 6 上でやってみたが、後述のスクリプト実行時に最新の CentOS 6 のパッケージを拾ってこようとするのをうまく回避できなかったので、結局 CentOS 3 上で作業を行った&lt;/p&gt;
 
-&lt;h2 id=&#34;作成の流れ:0f9548c31060b9cf09120147eb98969b&#34;&gt;作成の流れ&lt;/h2&gt;
+&lt;h2 id=&#34;作成の流れ&#34;&gt;作成の流れ&lt;/h2&gt;
 
 &lt;p&gt;といっても、ほとんどやることはなくて、だいたい以下に集約される&lt;/p&gt;
 
@@ -42,7 +42,7 @@
 
 &lt;p&gt;以下、個々の作業の説明&lt;/p&gt;
 
-&lt;h3 id=&#34;yum-conf-の編集:0f9548c31060b9cf09120147eb98969b&#34;&gt;yum.conf の編集&lt;/h3&gt;
+&lt;h3 id=&#34;yum-conf-の編集&#34;&gt;yum.conf の編集&lt;/h3&gt;
 
 &lt;p&gt;サーバ内に Yum が入っていなければ、まずはこれが必須なので入れておくのだが、 CentOS 3 はもうメンテされていないので、パッケージを拾ってこれるミラーサーバを &lt;code&gt;yum.conf&lt;/code&gt; に設定しておかなければならない。普通は &lt;code&gt;http://vault.centos.org/&lt;/code&gt; を設定しておけばいいと思うが、当たるミラーによってはかなり遅いことになるので、場合によっては速度の出るミラーサーバの IP アドレスを &lt;code&gt;dig&lt;/code&gt; なりなんなりで調べて直接 IP アドレスを指定しておく必要があるかもしれない。具体的な変更は &lt;code&gt;yum.conf&lt;/code&gt; 内にいくつかある&lt;/p&gt;
 
@@ -56,7 +56,7 @@
 
 &lt;p&gt;のように書き換えておくだけである&lt;/p&gt;
 
-&lt;h3 id=&#34;mkimage-yum-sh-のカスタマイズ:0f9548c31060b9cf09120147eb98969b&#34;&gt;mkimage-yum.sh のカスタマイズ&lt;/h3&gt;
+&lt;h3 id=&#34;mkimage-yum-sh-のカスタマイズ&#34;&gt;mkimage-yum.sh のカスタマイズ&lt;/h3&gt;
 
 &lt;p&gt;一番手間取ったのがここだったが、わかってしまえばなんということもない内容。書き換えたスクリプトはこんな感じ&lt;/p&gt;
 
@@ -73,11 +73,11 @@
 
 &lt;p&gt;といったところ&lt;/p&gt;
 
-&lt;h3 id=&#34;スクリプトの実行:0f9548c31060b9cf09120147eb98969b&#34;&gt;スクリプトの実行&lt;/h3&gt;
+&lt;h3 id=&#34;スクリプトの実行&#34;&gt;スクリプトの実行&lt;/h3&gt;
 
 &lt;p&gt;これはそのまんま、上記で作成しておいた &lt;code&gt;yum.conf&lt;/code&gt; を &lt;code&gt;mkimage-yum.sh&lt;/code&gt; に指定して実行するだけである。うまくいけば &lt;code&gt;os_image.tar.gz&lt;/code&gt; がカレントディレクトリ内に作られる&lt;/p&gt;
 
-&lt;h3 id=&#34;docker-でイメージ化:0f9548c31060b9cf09120147eb98969b&#34;&gt;Docker でイメージ化&lt;/h3&gt;
+&lt;h3 id=&#34;docker-でイメージ化&#34;&gt;Docker でイメージ化&lt;/h3&gt;
 
 &lt;p&gt;できた &lt;code&gt;os_image.tar.gz&lt;/code&gt; を Docker が動いている環境に持ってきて、下記のようにコマンドを実行する&lt;/p&gt;
 
@@ -91,7 +91,7 @@
 
 &lt;p&gt;のようにして使い始めることができる&lt;/p&gt;
 
-&lt;h2 id=&#34;まとめ:0f9548c31060b9cf09120147eb98969b&#34;&gt;まとめ&lt;/h2&gt;
+&lt;h2 id=&#34;まとめ&#34;&gt;まとめ&lt;/h2&gt;
 
 &lt;p&gt;上記の流れでできたイメージを使って、無事パッチ済みの Bash の RPM の作成もできたので、日常の作業には十分な環境が作成できたと思う&lt;/p&gt;
 

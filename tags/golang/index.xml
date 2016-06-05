@@ -59,7 +59,7 @@ endfunction
 
 &lt;p&gt;（下記は go 1.3.1 での話で、異なるバージョンだと動作も違う可能性があるので注意）&lt;/p&gt;
 
-&lt;h2 id=&#34;結論:5bfb78d2fd527d70f781ba5f5e936dd8&#34;&gt;結論&lt;/h2&gt;
+&lt;h2 id=&#34;結論&#34;&gt;結論&lt;/h2&gt;
 
 &lt;p&gt;Go で &lt;code&gt;encoding/xml&lt;/code&gt; を使って XML のエンコーディングを行っている時に、&lt;/p&gt;
 
@@ -70,7 +70,7 @@ endfunction
 
 &lt;p&gt;を実現したい場合は、単純に要素のポインタ型を使って &lt;code&gt;omitempty&lt;/code&gt; は使わないのが正解&lt;/p&gt;
 
-&lt;h2 id=&#34;詳細:5bfb78d2fd527d70f781ba5f5e936dd8&#34;&gt;詳細&lt;/h2&gt;
+&lt;h2 id=&#34;詳細&#34;&gt;詳細&lt;/h2&gt;
 
 &lt;p&gt;上記のケースを最初は単純に&lt;/p&gt;
 

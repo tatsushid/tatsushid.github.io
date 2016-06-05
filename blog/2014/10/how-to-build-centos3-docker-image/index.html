@@ -1,8 +1,134 @@
-<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ja" lang="ja"><head><link href="http://gmpg.org/xfn/11" rel="profile"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1"><title>CentOS 3 の Docker イメージを作ってみた &middot; tatsushid.github.io</title><link rel="stylesheet" href="http://fonts.googleapis.com/css?family=PT+Serif:400,400italic,700|PT+Sans:400"><link rel="stylesheet" href="/css/main.css"><script src="/js/highlight.pack.js" async></script><script src="/js/mermaid.min.js" async></script><link rel="apple-touch-icon-precomposed" sizes="144x144" href="/apple-touch-icon-precomposed.png"><link rel="shortcut icon" href="/favicon.ico"><link rel="alternate" type="application/rss+xml" title="RSS" href=""></head><body class="theme-base-0d layout-reverse sidebar-overlay"><input id="sidebar-checkbox" class="sidebar-checkbox" type="checkbox"><div id="sidebar" class="sidebar"><div class="sidebar-item"><p> </a></p></div><nav class="sidebar-nav"><ul><li><a class="sidebar-nav-item" href="/">Home</a></li><li><a class="sidebar-nav-item" href="/blog/">Blog</a></li><li><a class="sidebar-nav-item" href="/tags/">Tags</a></li></ul></nav><div class="sidebar-item"><ul class="media-links"><li><a href="https://twitter.com/tatsushi_d"><i class="fa fa-twitter" aria-label="twitter"></i></a></li><li><a href="https://github.com/tatsushid"><i class="fa fa-github" aria-label="github"></i></a></li></ul><div class="footnote">Powered by <a href="http://gohugo.io/">Hugo</a><br>&copy; 2014-2016. Tatsushi Demachi All rights reserved.</div></div></div><div class="wrap"><div class="masthead"><div class="container"><h3 class="masthead-title"><a href="/" title="Home">tatsushid.github.io</a></h3></div></div><div class="container content"><div class="post"><h1 class="post-title"><a href="/blog/2014/10/how-to-build-centos3-docker-image/">CentOS 3 の Docker イメージを作ってみた</a></h1><div class="post-meta">2014-10-04<ul><li><a href="/tags/docker">Docker</a></li><li><a href="/tags/centos">CentOS</a></li></ul></div>
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ja" lang="ja"><head><link href="http://gmpg.org/xfn/11" rel="profile"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1"><title>CentOS 3 の Docker イメージを作ってみた &middot; tatsushid.github.io</title><link rel="preload" as="style" href="http://fonts.googleapis.com/css?family=PT+Serif:400,400italic,700|PT+Sans:400" onload="this.rel='stylesheet'"><link rel="preload" as="style" href="/css/main.css" onload="this.rel='stylesheet'"><noscript><link rel="stylesheet" href="http://fonts.googleapis.com/css?family=PT+Serif:400,400italic,700|PT+Sans:400"></noscript><noscript><link rel="stylesheet" href="/css/main.css"></noscript><script type="text/javascript">
+ 
+/*! loadCSS: load a CSS file asynchronously. [c]2016 @scottjehl, Filament Group, Inc. Licensed MIT */
+(function(w){
+  "use strict";
+   
+  var loadCSS = function( href, before, media ){
+    
+    
+    
+      
+    
+    var doc = w.document;
+    var ss = doc.createElement( "link" );
+    var ref;
+    if( before ){
+      ref = before;
+    }
+    else {
+      var refs = ( doc.body || doc.getElementsByTagName( "head" )[ 0 ] ).childNodes;
+      ref = refs[ refs.length - 1];
+    }
+
+    var sheets = doc.styleSheets;
+    ss.rel = "stylesheet";
+    ss.href = href;
+    
+    ss.media = "only x";
+
+    
+    function ready( cb ){
+      if( doc.body ){
+        return cb();
+      }
+      setTimeout(function(){
+        ready( cb );
+      });
+    }
+    
+      
+      
+    ready( function(){
+      ref.parentNode.insertBefore( ss, ( before ? ref : ref.nextSibling ) );
+    });
+    
+    var onloadcssdefined = function( cb ){
+      var resolvedHref = ss.href;
+      var i = sheets.length;
+      while( i-- ){
+        if( sheets[ i ].href === resolvedHref ){
+          return cb();
+        }
+      }
+      setTimeout(function() {
+        onloadcssdefined( cb );
+      });
+    };
+
+    function loadCB(){
+      if( ss.addEventListener ){
+        ss.removeEventListener( "load", loadCB );
+      }
+      ss.media = media || "all";
+    }
+
+    
+    if( ss.addEventListener ){
+      ss.addEventListener( "load", loadCB);
+    }
+    ss.onloadcssdefined = onloadcssdefined;
+    onloadcssdefined( loadCB );
+    return ss;
+  };
+  
+  if( typeof exports !== "undefined" ){
+    exports.loadCSS = loadCSS;
+  }
+  else {
+    w.loadCSS = loadCSS;
+  }
+}( typeof global !== "undefined" ? global : this ));
+
+/*! CSS rel=preload polyfill. Depends on loadCSS function. [c]2016 @scottjehl, Filament Group, Inc. Licensed MIT  */
+(function( w ){
+  
+  if( !w.loadCSS ){
+    return;
+  }
+  var rp = loadCSS.relpreload = {};
+  rp.support = function(){
+    try {
+      return w.document.createElement( "link" ).relList.supports( "preload" );
+    } catch (e) {
+      return false;
+    }
+  };
+
+  
+  rp.poly = function(){
+    var links = w.document.getElementsByTagName( "link" );
+    for( var i = 0; i < links.length; i++ ){
+      var link = links[ i ];
+      if( link.rel === "preload" && link.getAttribute( "as" ) === "style" ){
+        w.loadCSS( link.href, link );
+        link.rel = null;
+      }
+    }
+  };
+
+  
+  if( !rp.support() ){
+    rp.poly();
+    var run = w.setInterval( rp.poly, 300 );
+    if( w.addEventListener ){
+      w.addEventListener( "load", function(){
+        w.clearInterval( run );
+      } );
+    }
+    if( w.attachEvent ){
+      w.attachEvent( "onload", function(){
+        w.clearInterval( run );
+      } )
+    }
+  }
+}( this ));
+
+</script><script src="/js/highlight.pack.js" async></script><script src="/js/mermaid.min.js" async></script><link rel="apple-touch-icon-precomposed" sizes="144x144" href="/apple-touch-icon-precomposed.png"><link rel="shortcut icon" href="/favicon.ico"><link rel="alternate" type="application/rss+xml" title="RSS" href=""></head><body class="theme-base-0d layout-reverse sidebar-overlay"><input id="sidebar-checkbox" class="sidebar-checkbox" type="checkbox"><div id="sidebar" class="sidebar"><div class="sidebar-item"><p> </a></p></div><nav class="sidebar-nav"><ul><li><a class="sidebar-nav-item" href="/">Home</a></li><li><a class="sidebar-nav-item" href="/blog/">Blog</a></li><li><a class="sidebar-nav-item" href="/tags/">Tags</a></li></ul></nav><div class="sidebar-item"><ul class="media-links"><li><a href="https://twitter.com/tatsushi_d"><i class="fa fa-twitter" aria-label="twitter"></i></a></li><li><a href="https://github.com/tatsushid"><i class="fa fa-github" aria-label="github"></i></a></li></ul><div class="footnote">Powered by <a href="http://gohugo.io/">Hugo</a><br>&copy; 2014-2016. Tatsushi Demachi All rights reserved.</div></div></div><div class="wrap"><div class="masthead"><div class="container"><h3 class="masthead-title"><a href="/" title="Home">tatsushid.github.io</a></h3></div></div><div class="container content"><div class="post"><h1 class="post-title"><a href="/blog/2014/10/how-to-build-centos3-docker-image/">CentOS 3 の Docker イメージを作ってみた</a></h1><div class="post-meta">2014-10-04<ul><li><a href="/tags/docker">Docker</a></li><li><a href="/tags/centos">CentOS</a></li></ul></div>
 
 <p>先日の Bash 脆弱性騒ぎに関連して、ごく一部で残ってる RHEL3 系のマシンにも Bash のパッチを当てざるを得ない状況が発生したため、この際パッケージビルド用の Docker イメージも作っておくか、ということでやってみた</p>
 
-<h2 id="必要なもの:0f9548c31060b9cf09120147eb98969b">必要なもの</h2>
+<h2 id="必要なもの">必要なもの</h2>
 
 <ul>
 <li>CentOS 3 がインストールされているサーバないし仮想マシン</li>
@@ -12,7 +138,7 @@
 
 <p>CentOS 3 のマシンは楽にやるには必須だと思う。初めは CentOS 6 上でやってみたが、後述のスクリプト実行時に最新の CentOS 6 のパッケージを拾ってこようとするのをうまく回避できなかったので、結局 CentOS 3 上で作業を行った</p>
 
-<h2 id="作成の流れ:0f9548c31060b9cf09120147eb98969b">作成の流れ</h2>
+<h2 id="作成の流れ">作成の流れ</h2>
 
 <p>といっても、ほとんどやることはなくて、だいたい以下に集約される</p>
 
@@ -25,7 +151,7 @@
 
 <p>以下、個々の作業の説明</p>
 
-<h3 id="yum-conf-の編集:0f9548c31060b9cf09120147eb98969b">yum.conf の編集</h3>
+<h3 id="yum-conf-の編集">yum.conf の編集</h3>
 
 <p>サーバ内に Yum が入っていなければ、まずはこれが必須なので入れておくのだが、 CentOS 3 はもうメンテされていないので、パッケージを拾ってこれるミラーサーバを <code>yum.conf</code> に設定しておかなければならない。普通は <code>http://vault.centos.org/</code> を設定しておけばいいと思うが、当たるミラーによってはかなり遅いことになるので、場合によっては速度の出るミラーサーバの IP アドレスを <code>dig</code> なりなんなりで調べて直接 IP アドレスを指定しておく必要があるかもしれない。具体的な変更は <code>yum.conf</code> 内にいくつかある</p>
 
@@ -39,7 +165,7 @@
 
 <p>のように書き換えておくだけである</p>
 
-<h3 id="mkimage-yum-sh-のカスタマイズ:0f9548c31060b9cf09120147eb98969b">mkimage-yum.sh のカスタマイズ</h3>
+<h3 id="mkimage-yum-sh-のカスタマイズ">mkimage-yum.sh のカスタマイズ</h3>
 
 <p>一番手間取ったのがここだったが、わかってしまえばなんということもない内容。書き換えたスクリプトはこんな感じ</p>
 
@@ -56,11 +182,11 @@
 
 <p>といったところ</p>
 
-<h3 id="スクリプトの実行:0f9548c31060b9cf09120147eb98969b">スクリプトの実行</h3>
+<h3 id="スクリプトの実行">スクリプトの実行</h3>
 
 <p>これはそのまんま、上記で作成しておいた <code>yum.conf</code> を <code>mkimage-yum.sh</code> に指定して実行するだけである。うまくいけば <code>os_image.tar.gz</code> がカレントディレクトリ内に作られる</p>
 
-<h3 id="docker-でイメージ化:0f9548c31060b9cf09120147eb98969b">Docker でイメージ化</h3>
+<h3 id="docker-でイメージ化">Docker でイメージ化</h3>
 
 <p>できた <code>os_image.tar.gz</code> を Docker が動いている環境に持ってきて、下記のようにコマンドを実行する</p>
 
@@ -74,7 +200,7 @@
 
 <p>のようにして使い始めることができる</p>
 
-<h2 id="まとめ:0f9548c31060b9cf09120147eb98969b">まとめ</h2>
+<h2 id="まとめ">まとめ</h2>
 
 <p>上記の流れでできたイメージを使って、無事パッチ済みの Bash の RPM の作成もできたので、日常の作業には十分な環境が作成できたと思う</p>
 

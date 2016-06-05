@@ -1,4 +1,130 @@
-<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ja" lang="ja"><head><link href="http://gmpg.org/xfn/11" rel="profile"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1"><title>メールの Date ヘッダを Time::Piece でパースしようとしてはまった話 &middot; tatsushid.github.io</title><link rel="stylesheet" href="http://fonts.googleapis.com/css?family=PT+Serif:400,400italic,700|PT+Sans:400"><link rel="stylesheet" href="/css/main.css"><script src="/js/highlight.pack.js" async></script><script src="/js/mermaid.min.js" async></script><link rel="apple-touch-icon-precomposed" sizes="144x144" href="/apple-touch-icon-precomposed.png"><link rel="shortcut icon" href="/favicon.ico"><link rel="alternate" type="application/rss+xml" title="RSS" href=""></head><body class="theme-base-0d layout-reverse sidebar-overlay"><input id="sidebar-checkbox" class="sidebar-checkbox" type="checkbox"><div id="sidebar" class="sidebar"><div class="sidebar-item"><p> </a></p></div><nav class="sidebar-nav"><ul><li><a class="sidebar-nav-item" href="/">Home</a></li><li><a class="sidebar-nav-item" href="/blog/">Blog</a></li><li><a class="sidebar-nav-item" href="/tags/">Tags</a></li></ul></nav><div class="sidebar-item"><ul class="media-links"><li><a href="https://twitter.com/tatsushi_d"><i class="fa fa-twitter" aria-label="twitter"></i></a></li><li><a href="https://github.com/tatsushid"><i class="fa fa-github" aria-label="github"></i></a></li></ul><div class="footnote">Powered by <a href="http://gohugo.io/">Hugo</a><br>&copy; 2014-2016. Tatsushi Demachi All rights reserved.</div></div></div><div class="wrap"><div class="masthead"><div class="container"><h3 class="masthead-title"><a href="/" title="Home">tatsushid.github.io</a></h3></div></div><div class="container content"><div class="post"><h1 class="post-title"><a href="/blog/2014/10/time-piece-problem-at-parsing-date-header-in-a-mail/">メールの Date ヘッダを Time::Piece でパースしようとしてはまった話</a></h1><div class="post-meta">2014-10-16<ul><li><a href="/tags/perl">Perl</a></li></ul></div>
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ja" lang="ja"><head><link href="http://gmpg.org/xfn/11" rel="profile"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1"><title>メールの Date ヘッダを Time::Piece でパースしようとしてはまった話 &middot; tatsushid.github.io</title><link rel="preload" as="style" href="http://fonts.googleapis.com/css?family=PT+Serif:400,400italic,700|PT+Sans:400" onload="this.rel='stylesheet'"><link rel="preload" as="style" href="/css/main.css" onload="this.rel='stylesheet'"><noscript><link rel="stylesheet" href="http://fonts.googleapis.com/css?family=PT+Serif:400,400italic,700|PT+Sans:400"></noscript><noscript><link rel="stylesheet" href="/css/main.css"></noscript><script type="text/javascript">
+ 
+/*! loadCSS: load a CSS file asynchronously. [c]2016 @scottjehl, Filament Group, Inc. Licensed MIT */
+(function(w){
+  "use strict";
+   
+  var loadCSS = function( href, before, media ){
+    
+    
+    
+      
+    
+    var doc = w.document;
+    var ss = doc.createElement( "link" );
+    var ref;
+    if( before ){
+      ref = before;
+    }
+    else {
+      var refs = ( doc.body || doc.getElementsByTagName( "head" )[ 0 ] ).childNodes;
+      ref = refs[ refs.length - 1];
+    }
+
+    var sheets = doc.styleSheets;
+    ss.rel = "stylesheet";
+    ss.href = href;
+    
+    ss.media = "only x";
+
+    
+    function ready( cb ){
+      if( doc.body ){
+        return cb();
+      }
+      setTimeout(function(){
+        ready( cb );
+      });
+    }
+    
+      
+      
+    ready( function(){
+      ref.parentNode.insertBefore( ss, ( before ? ref : ref.nextSibling ) );
+    });
+    
+    var onloadcssdefined = function( cb ){
+      var resolvedHref = ss.href;
+      var i = sheets.length;
+      while( i-- ){
+        if( sheets[ i ].href === resolvedHref ){
+          return cb();
+        }
+      }
+      setTimeout(function() {
+        onloadcssdefined( cb );
+      });
+    };
+
+    function loadCB(){
+      if( ss.addEventListener ){
+        ss.removeEventListener( "load", loadCB );
+      }
+      ss.media = media || "all";
+    }
+
+    
+    if( ss.addEventListener ){
+      ss.addEventListener( "load", loadCB);
+    }
+    ss.onloadcssdefined = onloadcssdefined;
+    onloadcssdefined( loadCB );
+    return ss;
+  };
+  
+  if( typeof exports !== "undefined" ){
+    exports.loadCSS = loadCSS;
+  }
+  else {
+    w.loadCSS = loadCSS;
+  }
+}( typeof global !== "undefined" ? global : this ));
+
+/*! CSS rel=preload polyfill. Depends on loadCSS function. [c]2016 @scottjehl, Filament Group, Inc. Licensed MIT  */
+(function( w ){
+  
+  if( !w.loadCSS ){
+    return;
+  }
+  var rp = loadCSS.relpreload = {};
+  rp.support = function(){
+    try {
+      return w.document.createElement( "link" ).relList.supports( "preload" );
+    } catch (e) {
+      return false;
+    }
+  };
+
+  
+  rp.poly = function(){
+    var links = w.document.getElementsByTagName( "link" );
+    for( var i = 0; i < links.length; i++ ){
+      var link = links[ i ];
+      if( link.rel === "preload" && link.getAttribute( "as" ) === "style" ){
+        w.loadCSS( link.href, link );
+        link.rel = null;
+      }
+    }
+  };
+
+  
+  if( !rp.support() ){
+    rp.poly();
+    var run = w.setInterval( rp.poly, 300 );
+    if( w.addEventListener ){
+      w.addEventListener( "load", function(){
+        w.clearInterval( run );
+      } );
+    }
+    if( w.attachEvent ){
+      w.attachEvent( "onload", function(){
+        w.clearInterval( run );
+      } )
+    }
+  }
+}( this ));
+
+</script><script src="/js/highlight.pack.js" async></script><script src="/js/mermaid.min.js" async></script><link rel="apple-touch-icon-precomposed" sizes="144x144" href="/apple-touch-icon-precomposed.png"><link rel="shortcut icon" href="/favicon.ico"><link rel="alternate" type="application/rss+xml" title="RSS" href=""></head><body class="theme-base-0d layout-reverse sidebar-overlay"><input id="sidebar-checkbox" class="sidebar-checkbox" type="checkbox"><div id="sidebar" class="sidebar"><div class="sidebar-item"><p> </a></p></div><nav class="sidebar-nav"><ul><li><a class="sidebar-nav-item" href="/">Home</a></li><li><a class="sidebar-nav-item" href="/blog/">Blog</a></li><li><a class="sidebar-nav-item" href="/tags/">Tags</a></li></ul></nav><div class="sidebar-item"><ul class="media-links"><li><a href="https://twitter.com/tatsushi_d"><i class="fa fa-twitter" aria-label="twitter"></i></a></li><li><a href="https://github.com/tatsushid"><i class="fa fa-github" aria-label="github"></i></a></li></ul><div class="footnote">Powered by <a href="http://gohugo.io/">Hugo</a><br>&copy; 2014-2016. Tatsushi Demachi All rights reserved.</div></div></div><div class="wrap"><div class="masthead"><div class="container"><h3 class="masthead-title"><a href="/" title="Home">tatsushid.github.io</a></h3></div></div><div class="container content"><div class="post"><h1 class="post-title"><a href="/blog/2014/10/time-piece-problem-at-parsing-date-header-in-a-mail/">メールの Date ヘッダを Time::Piece でパースしようとしてはまった話</a></h1><div class="post-meta">2014-10-16<ul><li><a href="/tags/perl">Perl</a></li></ul></div>
 
 <p>メールに含まれている Date ヘッダを Perl の Time::Piece でパースしようとしたところ、タイムゾーンがうまく扱えなくてはまった。たとえば、</p>
 
@@ -27,7 +153,7 @@ print $t-&gt;strftime($format), &quot;\n&quot;;
 
 <p>など多々まとめがあるが、一応自分でも Time::Piece のコードを読んで確認したことと、とりあえずの回避策をメモしておきたい。なお、検証は Perl 5.18.2 と現時点での Time::Piece 最新版である 1.29 を使って行っている</p>
 
-<h2 id="回避策:f982ae70135bfa8403b8ce10daa2a9de">回避策</h2>
+<h2 id="回避策">回避策</h2>
 
 <p>検証部分が長いので、まず回避策を先に書いてしまうが、結論としては先ほどのコードを</p>
 
@@ -49,9 +175,9 @@ print $t-&gt;strftime($format), &quot;\n&quot;;
 
 <p>のように書き換えればよい、と言うことになる。パースした結果の <code>epoch</code> を取り出して <code>localhost</code> （ Time::Piece でオーバーライドされてる）に渡せば、内部的には自身のタイムゾーンの値としてうまく扱ってくれる。以下はその理由</p>
 
-<h2 id="検証:f982ae70135bfa8403b8ce10daa2a9de">検証</h2>
+<h2 id="検証">検証</h2>
 
-<h3 id="strptime-の-z-で何をやっているか:f982ae70135bfa8403b8ce10daa2a9de">strptime の %z で何をやっているか</h3>
+<h3 id="strptime-の-z-で何をやっているか">strptime の %z で何をやっているか</h3>
 
 <p>関連記事を読むと、 <code>%z</code> を使ってる時に問題が出るケースが多く、かつ、この例でも使ってるので、まずはそこを調べてみる。 <code>Piece.xs</code> によると、 <code>strptime</code> の内部実装 <code>_strptime</code> は</p>
 
@@ -115,7 +241,7 @@ _strptime ( string, format )
 
 <p>となっていて、つまり <code>+0900</code> の部分を時と分に分解して元の時と分の値を調整した後、 <code>GMT</code> として扱うようフラグを立てている。従って内部的には <code>GMT</code> で正しく計算された値が入っていることになる</p>
 
-<h3 id="strftime-は何をやっているか:f982ae70135bfa8403b8ce10daa2a9de">strftime は何をやっているか</h3>
+<h3 id="strftime-は何をやっているか">strftime は何をやっているか</h3>
 
 <p>では、出力を生成している <code>strftime</code> で何をやっているかというと、 <code>Piece.pm</code> では</p>
 
@@ -171,7 +297,7 @@ _strftime(fmt, sec, min, hour, mday, mon, year, wday = -1, yday = -1, isdst = -1
 
 <p>となっているが、どうやら <code>my_init_tm</code> （この関数は Perl 5.8.0 以降では Perl 本体の <code>util.c</code> に定義されている <code>init_tm</code> のエイリアスになっている）でローカルタイムとして定義した後、 C 標準関数の <code>strftime</code> を呼び出しており、そこで <code>%z</code> は実行環境のタイムゾーンである <code>+0900</code> を返してくることになる。つまり、 <code>GMT</code> の時刻 + 実行環境のタイムゾーンが生成されていて、これがおかしな表示の理由ということになる。</p>
 
-<h3 id="gmtime-を-localtime-に変換する:f982ae70135bfa8403b8ce10daa2a9de">gmtime を localtime に変換する</h3>
+<h3 id="gmtime-を-localtime-に変換する">gmtime を localtime に変換する</h3>
 
 <p>ここまでの結果からズレを直すには</p>
 
@@ -226,7 +352,7 @@ my $t = localtime(Time::Piece-&gt;strptime($datetime, $format)-&gt;epoch);
 
 <p>としてエポックタイムを渡すようにし、 <code>_mktime</code> の <code>CORE::localtime($time)</code> を通るようにしてやればよい。結果、前述の回避策、ということになる</p>
 
-<h2 id="まとめ:f982ae70135bfa8403b8ce10daa2a9de">まとめ</h2>
+<h2 id="まとめ">まとめ</h2>
 
 <p>一つ一つ Time::Piece のコードを読んでいった結果、なんとか当初の目的は達成できた。が、標準モジュールとして入っている割には Time::Piece は細かな挙動が読めなくて使うのが難しいなとは感じた</p>
 </div><nav><h2>Related posts</h2><ul class="related-posts"></ul></nav><nav class="prev-next"><ul><li><a href="/blog/2015/01/how-to-convert-markdown-into-mediawiki/">Newer Post</a></li><li><a href="/blog/2014/10/switch-from-official-go-vim-plugin-to-vim-go/">Older Post</a></li></ul></nav></div></div><label class="sidebar-toggle" for="sidebar-checkbox"></label><script type="text/javascript">

@@ -19,7 +19,7 @@
 
 &lt;p&gt;つい先日、 NGINX 公式ブログでアナウンスされた &lt;a href=&#34;https://www.nginx.com/blog/announcing-udp-load-balancing/&#34;&gt;UDP ロードバランシング機能&lt;/a&gt;が気になっていたので、まだ正式リリース前ではありますが試してみました。&lt;/p&gt;
 
-&lt;h2 id=&#34;構成:f07075f6590da3486ce18c8ef1061b72&#34;&gt;構成&lt;/h2&gt;
+&lt;h2 id=&#34;構成&#34;&gt;構成&lt;/h2&gt;
 
 &lt;p&gt;UDP で代表的なプロトコルといえば DNS なので、今回は&lt;/p&gt;
 
@@ -32,9 +32,9 @@ graph LR
 
 &lt;p&gt;という構成を Docker Compose で作り、 NGINX に対して &lt;code&gt;dig&lt;/code&gt; コマンドで &lt;code&gt;example.com&lt;/code&gt; の名前解決クエリを送った時に、 &lt;code&gt;127.0.0.10&lt;/code&gt; と &lt;code&gt;127.0.0.20&lt;/code&gt; が交互に返ってくるかどうかを見ることにしました。この構成を作るに当たって必要なファイルは &lt;a href=&#34;https://github.com/tatsushid/nginx-udp-lb-example&#34;&gt;Github リポジトリ&lt;/a&gt;として公開しています。&lt;/p&gt;
 
-&lt;h2 id=&#34;準備:f07075f6590da3486ce18c8ef1061b72&#34;&gt;準備&lt;/h2&gt;
+&lt;h2 id=&#34;準備&#34;&gt;準備&lt;/h2&gt;
 
-&lt;h3 id=&#34;nginx:f07075f6590da3486ce18c8ef1061b72&#34;&gt;NGINX&lt;/h3&gt;
+&lt;h3 id=&#34;nginx&#34;&gt;NGINX&lt;/h3&gt;
 
 &lt;p&gt;まず、 UDP ロードバランシング機能が含まれている NGINX を用意する必要がありますが、現時点では開発リポジトリ上にのみ存在する状態のため（ 1.9.13 で正式リリース予定）、 Mercurial 経由で&lt;/p&gt;
 
@@ -78,7 +78,7 @@ stream {
 
 &lt;p&gt;また、 &lt;code&gt;proxy_responses&lt;/code&gt; ディレクティブが追加され、それぞれのクライアント要求において、いくつアップストリームサーバから UDP パケットを受けとったかを数え、 &lt;code&gt;proxy_responses&lt;/code&gt; と同じだけパケットを受けとった場合には接続を閉じる、という処理を定義できます。デフォルトは無制限で、その場合、 &lt;code&gt;proxy_timeout&lt;/code&gt; の時間が経過するまで UDP パケットの到着を待ち続ける形となるようです。&lt;/p&gt;
 
-&lt;h3 id=&#34;dnsmasq:f07075f6590da3486ce18c8ef1061b72&#34;&gt;Dnsmasq&lt;/h3&gt;
+&lt;h3 id=&#34;dnsmasq&#34;&gt;Dnsmasq&lt;/h3&gt;
 
 &lt;p&gt;実際の DNS リクエストに応答する Dnsmasq は &lt;a href=&#34;https://hub.docker.com/r/andyshinn/dnsmasq/&#34;&gt;andyshinn/dnsmasq&lt;/a&gt; の Docker イメージを使い、二つのサーバの起動オプションにシンプルに &lt;code&gt;--host-record&lt;/code&gt; を追加し、&lt;/p&gt;
 
@@ -88,11 +88,11 @@ dnsmasq -k --host-record=example.com,127.0.0.20
 
 &lt;p&gt;という形でそれぞれ立ち上がるよう設定することとしました。&lt;/p&gt;
 
-&lt;h3 id=&#34;docker-compose:f07075f6590da3486ce18c8ef1061b72&#34;&gt;Docker Compose&lt;/h3&gt;
+&lt;h3 id=&#34;docker-compose&#34;&gt;Docker Compose&lt;/h3&gt;
 
 &lt;p&gt;上記の NGINX, Dnsmasq の一連の処理を &lt;a href=&#34;https://github.com/tatsushid/nginx-udp-lb-example/blob/master/docker-compose.yml&#34;&gt;docker-compose.yml&lt;/a&gt; にまとめ、 &lt;code&gt;docker-compose up&lt;/code&gt; で環境全体を構築できるようにしています。&lt;/p&gt;
 
-&lt;h2 id=&#34;動作確認:f07075f6590da3486ce18c8ef1061b72&#34;&gt;動作確認&lt;/h2&gt;
+&lt;h2 id=&#34;動作確認&#34;&gt;動作確認&lt;/h2&gt;
 
 &lt;p&gt;&lt;code&gt;docker-compose up&lt;/code&gt; を実行して環境を構築後、 Docker Machine を使っている場合はリクエスト先の IP アドレスを &lt;code&gt;docker-machine ip your-machine&lt;/code&gt; で調べておき、下記のようにコマンドを実行すると、交互に結果が返ってくることが確認できるかと思います。&lt;/p&gt;
 
@@ -104,7 +104,7 @@ $ dig @192.168.99.100 example.com +short
 127.0.0.10
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h2 id=&#34;まとめ:f07075f6590da3486ce18c8ef1061b72&#34;&gt;まとめ&lt;/h2&gt;
+&lt;h2 id=&#34;まとめ&#34;&gt;まとめ&lt;/h2&gt;
 
 &lt;p&gt;非常にシンプルな設定で UDP ロードバランサが構築できることを確認できました。&lt;/p&gt;
 

@@ -21,11 +21,11 @@
 
 &lt;p&gt;&lt;a href=&#34;http://tatsushid.github.io/2015/12/packaging-with-docker/&#34;&gt;前回&lt;/a&gt; に引き続き Docker の話ですが、 &lt;a href=&#34;http://www.tinycorelinux.net/&#34;&gt;Tiny Core Linux&lt;/a&gt; の &lt;a href=&#34;https://hub.docker.com/r/tatsushid/tinycore/&#34;&gt;Docker イメージ&lt;/a&gt;とその仲間（たとえば &lt;a href=&#34;https://hub.docker.com/r/tatsushid/tinycore-ruby/&#34;&gt;tinycore-ruby&lt;/a&gt;）を作った話をまとめておこうと思います。&lt;/p&gt;
 
-&lt;h2 id=&#34;tiny-core-linux-とは:3b5f7e7f5ab00186906a8ce1b6a9a96c&#34;&gt;Tiny Core Linux とは？&lt;/h2&gt;
+&lt;h2 id=&#34;tiny-core-linux-とは&#34;&gt;Tiny Core Linux とは？&lt;/h2&gt;
 
 &lt;p&gt;&lt;a href=&#34;http://www.tinycorelinux.net/&#34;&gt;The Core Project&lt;/a&gt; で作成されている Linux ディストリビューションの一つで、有名どころでは &lt;a href=&#34;https://docs.docker.com/machine/&#34;&gt;Docker Machine&lt;/a&gt; の OS としても使われていたりします。コア機能に絞り込むと 10MB 以下、 GUI 関連パッケージまで含めても 100MB 以下と、ディスク消費が非常に小さいながらデスクトップ環境まで構築でき、独自形式ながらパッケージ機構も持っているため、他のメジャーなディストリビューションと比べて使用が難しすぎるということもなく、なかなか便利なディストリビューションです。&lt;/p&gt;
 
-&lt;h2 id=&#34;イメージ作成動機:3b5f7e7f5ab00186906a8ce1b6a9a96c&#34;&gt;イメージ作成動機&lt;/h2&gt;
+&lt;h2 id=&#34;イメージ作成動機&#34;&gt;イメージ作成動機&lt;/h2&gt;
 
 &lt;p&gt;Docker をある程度使っていると感じることかと思いますが、公式で提供されている各種ディストリビューションの Docker イメージは容量が少なくとも 200MB 越えしているものがほとんどで、かつ、それを元にした各言語の公式実行環境はそれ以上の容量となることが一般的です。&lt;/p&gt;
 
@@ -35,7 +35,7 @@
 
 &lt;p&gt;結果、基本の OS イメージでは 7MB 弱、先に上げた &lt;a href=&#34;https://hub.docker.com/r/tatsushid/tinycore-ruby/&#34;&gt;tinycore-ruby&lt;/a&gt; イメージでも 60MB そこそこと、一通りの機能を組み込んだ上でもかなり容量を削ることに成功しています。&lt;/p&gt;
 
-&lt;h2 id=&#34;tiny-core-linux-基本イメージ:3b5f7e7f5ab00186906a8ce1b6a9a96c&#34;&gt;Tiny Core Linux 基本イメージ&lt;/h2&gt;
+&lt;h2 id=&#34;tiny-core-linux-基本イメージ&#34;&gt;Tiny Core Linux 基本イメージ&lt;/h2&gt;
 
 &lt;p&gt;各言語の環境を作る前に、まずは基本となる OS イメージが必要なので、それを &lt;a href=&#34;http://www.tinycorelinux.net/6.x/x86/release/distribution_files/&#34;&gt;x86&lt;/a&gt;, &lt;a href=&#34;http://www.tinycorelinux.net/6.x/x86_64/release/distribution_files/&#34;&gt;x86_64&lt;/a&gt; それぞれで配布されている rootfs.gz ないし rootfs64.gz から構築しています。&lt;/p&gt;
 
@@ -45,7 +45,7 @@
 
 &lt;p&gt;イメージ生成に &lt;a href=&#34;https://docs.docker.com/docker-hub/builds/&#34;&gt;Docker の Automated Build&lt;/a&gt; を使えるようにするため、イメージ作成に必要な処理は &lt;a href=&#34;https://github.com/tatsushid/docker-tinycore&#34;&gt;Github&lt;/a&gt; にて公開していますので、詳しくはそちらを参照してください。&lt;/p&gt;
 
-&lt;h2 id=&#34;tinycore-ruby-イメージ:3b5f7e7f5ab00186906a8ce1b6a9a96c&#34;&gt;tinycore-ruby イメージ&lt;/h2&gt;
+&lt;h2 id=&#34;tinycore-ruby-イメージ&#34;&gt;tinycore-ruby イメージ&lt;/h2&gt;
 
 &lt;p&gt;OS イメージができたので、それを元にして使いたい言語の環境を作るのですが、ここでは Ruby のものを例として見ていきます。&lt;/p&gt;
 
@@ -71,7 +71,7 @@ RUN bundle config --global bin &amp;quot;$GEM_HOME/bin&amp;quot;
 
 &lt;p&gt;こちらも &lt;a href=&#34;https://github.com/tatsushid/docker-tinycore-ruby&#34;&gt;Github&lt;/a&gt; にてイメージ生成過程は公開してますので、具体的な内容などはそちらを参照してください。&lt;/p&gt;
 
-&lt;h2 id=&#34;まとめ:3b5f7e7f5ab00186906a8ce1b6a9a96c&#34;&gt;まとめ&lt;/h2&gt;
+&lt;h2 id=&#34;まとめ&#34;&gt;まとめ&lt;/h2&gt;
 
 &lt;p&gt;以上のような流れで、 Ruby 以外の言語のイメージや、特定のプログラムだけを配置したイメージも比較的簡単に作ることができます。容量だけで見れば公式で配布されている &lt;a href=&#34;https://hub.docker.com/_/busybox/&#34;&gt;busybox イメージ&lt;/a&gt;を使う、という方法もありますが、それだけでは機能不足であるとか、容量は抑えつつ欲しい機能を手軽に追加したい、という向きには、このイメージは便利に使っていただけるかと思います。&lt;/p&gt;
 
@@ -89,17 +89,17 @@ RUN bundle config --global bin &amp;quot;$GEM_HOME/bin&amp;quot;
 
 &lt;p&gt;これは &lt;a href=&#34;http://www.adventar.org/calendars/808&#34;&gt;NSEG Advent Calendar 2015 -Adventar&lt;/a&gt; 11 日目の記事です。&lt;/p&gt;
 
-&lt;h2 id=&#34;nseg-とは:ffc6e8e4c2073712378c7d26dc5d3680&#34;&gt;NSEG とは？&lt;/h2&gt;
+&lt;h2 id=&#34;nseg-とは&#34;&gt;NSEG とは？&lt;/h2&gt;
 
 &lt;p&gt;一言で言うと「長野の IT 勉強会」ということになりますが、勉強会と言ってもお堅いものではなく、長野県やコンピュータにかかわることを幅広く取り上げて、楽しんだり技術の向上を目指す、といった感じで活動しております。詳しくは &lt;a href=&#34;http://nseg.jp/&#34;&gt;nseg.jp&lt;/a&gt; もご覧ください。&lt;/p&gt;
 
-&lt;h2 id=&#34;これは何:ffc6e8e4c2073712378c7d26dc5d3680&#34;&gt;これは何？&lt;/h2&gt;
+&lt;h2 id=&#34;これは何&#34;&gt;これは何？&lt;/h2&gt;
 
 &lt;p&gt;先日の&lt;a href=&#34;https://github.com/nseg-jp/w/wiki/第69回勉強会&#34;&gt;「理論から学ぶデータベース実践入門」読書会スペシャル&lt;/a&gt;の懇親会で、「 Docker 周辺が盛り上がっているけど、実際業務に使ってたりする？」ということを聞かれたので、自分は「独自で RPM なんかのパッケージを作る時に便利に活用してますよ」ということを話したのですが、じゃあ具体的にどんなことをしているのか、というのを公開している &lt;a href=&#34;https://github.com/tatsushid/h2o-rpm&#34;&gt;h2o-rpm&lt;/a&gt; を元に書いてみようかな、という趣旨です。&lt;/p&gt;
 
 &lt;p&gt;Docker 自体はウェブアプリケーションなどの展開・運用にそのまま便利に使え、そちらが本筋とも思いますが、こんな使い方もできる、という一例にしてもらえれば幸いです。なお RPM の SPEC の書き方については、今回は省略します。&lt;/p&gt;
 
-&lt;h2 id=&#34;パッケージング作業の概要:ffc6e8e4c2073712378c7d26dc5d3680&#34;&gt;パッケージング作業の概要&lt;/h2&gt;
+&lt;h2 id=&#34;パッケージング作業の概要&#34;&gt;パッケージング作業の概要&lt;/h2&gt;
 
 &lt;p&gt;そもそも RPM などのパッケージを作る時は、パッケージ対象のソースコードと関連ファイル、 SPEC ファイルのようなパッケージング手順が書かれたファイルなどが必要なわけですが、もう一つ、パッケージを作成する対象のディストリビューションのクリーンな環境が必要です。しかしながらこれを毎回物理サーバやいわゆる仮想マシン上でやっていると、メンテナンスが大変、起動に時間がかかる、など作業上のストレスがあっという間にたまることになるので、気軽に作成・削除のできる Docker でその部分をやろう、ということになります。かつての boot2docker や、最近では &lt;a href=&#34;https://docs.docker.com/machine/&#34;&gt;Docker Machine&lt;/a&gt; のおかげで、自分のマシン上でもお手軽に作業ができるのも利点です。&lt;/p&gt;
 
@@ -131,7 +131,7 @@ RUN bundle config --global bin &amp;quot;$GEM_HOME/bin&amp;quot;
 
 &lt;p&gt;以下、リポジトリの &lt;code&gt;Dockerfile&lt;/code&gt; のうち &lt;a href=&#34;https://github.com/tatsushid/h2o-rpm/blob/f167500a687aebb08fccb500c41a903363f94bca/Dockerfile.centos7&#34;&gt;&lt;code&gt;Dockerfile.centos7&lt;/code&gt;&lt;/a&gt; と &lt;a href=&#34;https://github.com/tatsushid/h2o-rpm/blob/f167500a687aebb08fccb500c41a903363f94bca/Makefile&#34;&gt;&lt;code&gt;Makefile&lt;/code&gt;&lt;/a&gt; を元に、この流れを見ていきます。&lt;/p&gt;
 
-&lt;h2 id=&#34;ビルド環境の準備:ffc6e8e4c2073712378c7d26dc5d3680&#34;&gt;ビルド環境の準備&lt;/h2&gt;
+&lt;h2 id=&#34;ビルド環境の準備&#34;&gt;ビルド環境の準備&lt;/h2&gt;
 
 &lt;p&gt;まず、ビルド環境の準備は &lt;code&gt;Dockerfile&lt;/code&gt; に記述してある&lt;/p&gt;
 
@@ -147,7 +147,7 @@ RUN echo &#39;%dist   .el7&#39; &amp;gt;&amp;gt; /.rpmmacros
 
 &lt;p&gt;&lt;code&gt;ENV HOME /&lt;/code&gt; については、 RPM のパッケージング処理がホームディレクトリ配下の &lt;code&gt;rpmbuild&lt;/code&gt; ディレクトリを使う、という方式なのと、一般的なコンテナ内ではトップディレクトリが起点になっているというのを合わせる意味で指定しています。イメージ環境自体は使い捨てなので、通常やらないだろう設定をやってもいっこうに構いません。&lt;/p&gt;
 
-&lt;h2 id=&#34;ソース展開:ffc6e8e4c2073712378c7d26dc5d3680&#34;&gt;ソース展開&lt;/h2&gt;
+&lt;h2 id=&#34;ソース展開&#34;&gt;ソース展開&lt;/h2&gt;
 
 &lt;p&gt;ソースの展開は &lt;code&gt;Makefile&lt;/code&gt; の&lt;/p&gt;
 
@@ -168,7 +168,7 @@ tar -czf - Dockerfile rpmbuild | docker build -t $(IMAGE_NAME) -
 
 &lt;p&gt;また、最初にこの方式で書いた時期とは異なり、現在では &lt;code&gt;.dockerignore&lt;/code&gt; や &lt;code&gt;docker build&lt;/code&gt; の &lt;code&gt;-f&lt;/code&gt; オプションも使えますので、上記のような形ではなく、これらの機能を使うことでも同様のものを実現可能と思います。&lt;/p&gt;
 
-&lt;h2 id=&#34;ビルドとパッケージング:ffc6e8e4c2073712378c7d26dc5d3680&#34;&gt;ビルドとパッケージング&lt;/h2&gt;
+&lt;h2 id=&#34;ビルドとパッケージング&#34;&gt;ビルドとパッケージング&lt;/h2&gt;
 
 &lt;p&gt;ここは &lt;code&gt;Dockerfile&lt;/code&gt; 内の記述になりますが、&lt;/p&gt;
 
@@ -181,7 +181,7 @@ CMD [&amp;quot;/bin/true&amp;quot;]
 
 &lt;p&gt;最後の &lt;code&gt;CMD&lt;/code&gt; 行は、イメージから作成したコンテナを即時終了させるために便宜的に設定したものとなります。&lt;/p&gt;
 
-&lt;h2 id=&#34;パッケージの取り出し:ffc6e8e4c2073712378c7d26dc5d3680&#34;&gt;パッケージの取り出し&lt;/h2&gt;
+&lt;h2 id=&#34;パッケージの取り出し&#34;&gt;パッケージの取り出し&lt;/h2&gt;
 
 &lt;p&gt;ここは &lt;code&gt;Makefile&lt;/code&gt; 側の処理になりますが、前のステップまででできあがったイメージを参照し、&lt;/p&gt;
 
@@ -200,7 +200,7 @@ docker rm $(IMAGE_NAME)-tmp
 
 &lt;p&gt;欲しいファイルを取り出せたので、後は好きにこれを展開すればいいのですが、本リポジトリではこれを &lt;code&gt;{dist}.build&lt;/code&gt; のようなディレクトリ配下に展開しています。&lt;/p&gt;
 
-&lt;h2 id=&#34;まとめ:ffc6e8e4c2073712378c7d26dc5d3680&#34;&gt;まとめ&lt;/h2&gt;
+&lt;h2 id=&#34;まとめ&#34;&gt;まとめ&lt;/h2&gt;
 
 &lt;p&gt;以上のような形で自動パッケージングを行い、ローカル側にコピーしてきているわけですが、もちろんできたものを直接特定のサーバにアップロードするなども自由自在です。対象もパッケージングに限らず、 Docker 環境中でなにかしらの成果物を作り、取り出す、という方法として一般的に使える、と思います。&lt;/p&gt;
 
@@ -358,7 +358,7 @@ docker run --name mymongo -d mongo
 
 &lt;p&gt;先日の Bash 脆弱性騒ぎに関連して、ごく一部で残ってる RHEL3 系のマシンにも Bash のパッチを当てざるを得ない状況が発生したため、この際パッケージビルド用の Docker イメージも作っておくか、ということでやってみた&lt;/p&gt;
 
-&lt;h2 id=&#34;必要なもの:0f9548c31060b9cf09120147eb98969b&#34;&gt;必要なもの&lt;/h2&gt;
+&lt;h2 id=&#34;必要なもの&#34;&gt;必要なもの&lt;/h2&gt;
 
 &lt;ul&gt;
 &lt;li&gt;CentOS 3 がインストールされているサーバないし仮想マシン&lt;/li&gt;
@@ -368,7 +368,7 @@ docker run --name mymongo -d mongo
 
 &lt;p&gt;CentOS 3 のマシンは楽にやるには必須だと思う。初めは CentOS 6 上でやってみたが、後述のスクリプト実行時に最新の CentOS 6 のパッケージを拾ってこようとするのをうまく回避できなかったので、結局 CentOS 3 上で作業を行った&lt;/p&gt;
 
-&lt;h2 id=&#34;作成の流れ:0f9548c31060b9cf09120147eb98969b&#34;&gt;作成の流れ&lt;/h2&gt;
+&lt;h2 id=&#34;作成の流れ&#34;&gt;作成の流れ&lt;/h2&gt;
 
 &lt;p&gt;といっても、ほとんどやることはなくて、だいたい以下に集約される&lt;/p&gt;
 
@@ -381,7 +381,7 @@ docker run --name mymongo -d mongo
 
 &lt;p&gt;以下、個々の作業の説明&lt;/p&gt;
 
-&lt;h3 id=&#34;yum-conf-の編集:0f9548c31060b9cf09120147eb98969b&#34;&gt;yum.conf の編集&lt;/h3&gt;
+&lt;h3 id=&#34;yum-conf-の編集&#34;&gt;yum.conf の編集&lt;/h3&gt;
 
 &lt;p&gt;サーバ内に Yum が入っていなければ、まずはこれが必須なので入れておくのだが、 CentOS 3 はもうメンテされていないので、パッケージを拾ってこれるミラーサーバを &lt;code&gt;yum.conf&lt;/code&gt; に設定しておかなければならない。普通は &lt;code&gt;http://vault.centos.org/&lt;/code&gt; を設定しておけばいいと思うが、当たるミラーによってはかなり遅いことになるので、場合によっては速度の出るミラーサーバの IP アドレスを &lt;code&gt;dig&lt;/code&gt; なりなんなりで調べて直接 IP アドレスを指定しておく必要があるかもしれない。具体的な変更は &lt;code&gt;yum.conf&lt;/code&gt; 内にいくつかある&lt;/p&gt;
 
@@ -395,7 +395,7 @@ docker run --name mymongo -d mongo
 
 &lt;p&gt;のように書き換えておくだけである&lt;/p&gt;
 
-&lt;h3 id=&#34;mkimage-yum-sh-のカスタマイズ:0f9548c31060b9cf09120147eb98969b&#34;&gt;mkimage-yum.sh のカスタマイズ&lt;/h3&gt;
+&lt;h3 id=&#34;mkimage-yum-sh-のカスタマイズ&#34;&gt;mkimage-yum.sh のカスタマイズ&lt;/h3&gt;
 
 &lt;p&gt;一番手間取ったのがここだったが、わかってしまえばなんということもない内容。書き換えたスクリプトはこんな感じ&lt;/p&gt;
 
@@ -412,11 +412,11 @@ docker run --name mymongo -d mongo
 
 &lt;p&gt;といったところ&lt;/p&gt;
 
-&lt;h3 id=&#34;スクリプトの実行:0f9548c31060b9cf09120147eb98969b&#34;&gt;スクリプトの実行&lt;/h3&gt;
+&lt;h3 id=&#34;スクリプトの実行&#34;&gt;スクリプトの実行&lt;/h3&gt;
 
 &lt;p&gt;これはそのまんま、上記で作成しておいた &lt;code&gt;yum.conf&lt;/code&gt; を &lt;code&gt;mkimage-yum.sh&lt;/code&gt; に指定して実行するだけである。うまくいけば &lt;code&gt;os_image.tar.gz&lt;/code&gt; がカレントディレクトリ内に作られる&lt;/p&gt;
 
-&lt;h3 id=&#34;docker-でイメージ化:0f9548c31060b9cf09120147eb98969b&#34;&gt;Docker でイメージ化&lt;/h3&gt;
+&lt;h3 id=&#34;docker-でイメージ化&#34;&gt;Docker でイメージ化&lt;/h3&gt;
 
 &lt;p&gt;できた &lt;code&gt;os_image.tar.gz&lt;/code&gt; を Docker が動いている環境に持ってきて、下記のようにコマンドを実行する&lt;/p&gt;
 
@@ -430,7 +430,7 @@ docker run --name mymongo -d mongo
 
 &lt;p&gt;のようにして使い始めることができる&lt;/p&gt;
 
-&lt;h2 id=&#34;まとめ:0f9548c31060b9cf09120147eb98969b&#34;&gt;まとめ&lt;/h2&gt;
+&lt;h2 id=&#34;まとめ&#34;&gt;まとめ&lt;/h2&gt;
 
 &lt;p&gt;上記の流れでできたイメージを使って、無事パッチ済みの Bash の RPM の作成もできたので、日常の作業には十分な環境が作成できたと思う&lt;/p&gt;
 
