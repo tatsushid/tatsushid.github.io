@@ -2,24 +2,24 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Docker on tatsushid.github.io</title>
-    <link>http://tatsushid.github.io/tags/docker/</link>
+    <link>https://tatsushid.github.io/tags/docker/</link>
     <description>Recent content in Docker on tatsushid.github.io</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>ja-jp</language>
     <lastBuildDate>Tue, 15 Dec 2015 19:06:29 +0900</lastBuildDate>
-    <atom:link href="http://tatsushid.github.io/tags/docker/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="https://tatsushid.github.io/tags/docker/index.xml" rel="self" type="application/rss+xml" />
     
     <item>
       <title>TinyCoreLinux の Docker イメージを作った話</title>
-      <link>http://tatsushid.github.io/blog/2015/12/making-docker-image-of-tinycorelinux/</link>
+      <link>https://tatsushid.github.io/blog/2015/12/making-docker-image-of-tinycorelinux/</link>
       <pubDate>Tue, 15 Dec 2015 19:06:29 +0900</pubDate>
       
-      <guid>http://tatsushid.github.io/blog/2015/12/making-docker-image-of-tinycorelinux/</guid>
+      <guid>https://tatsushid.github.io/blog/2015/12/making-docker-image-of-tinycorelinux/</guid>
       <description>
 
 &lt;p&gt;これは &lt;a href=&#34;http://www.adventar.org/calendars/808&#34;&gt;NSEG Advent Calendar 2015 -Adventar&lt;/a&gt; 15 日目の記事です。&lt;/p&gt;
 
-&lt;p&gt;&lt;a href=&#34;http://tatsushid.github.io/2015/12/packaging-with-docker/&#34;&gt;前回&lt;/a&gt; に引き続き Docker の話ですが、 &lt;a href=&#34;http://www.tinycorelinux.net/&#34;&gt;Tiny Core Linux&lt;/a&gt; の &lt;a href=&#34;https://hub.docker.com/r/tatsushid/tinycore/&#34;&gt;Docker イメージ&lt;/a&gt;とその仲間（たとえば &lt;a href=&#34;https://hub.docker.com/r/tatsushid/tinycore-ruby/&#34;&gt;tinycore-ruby&lt;/a&gt;）を作った話をまとめておこうと思います。&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://tatsushid.github.io/2015/12/packaging-with-docker/&#34;&gt;前回&lt;/a&gt; に引き続き Docker の話ですが、 &lt;a href=&#34;http://www.tinycorelinux.net/&#34;&gt;Tiny Core Linux&lt;/a&gt; の &lt;a href=&#34;https://hub.docker.com/r/tatsushid/tinycore/&#34;&gt;Docker イメージ&lt;/a&gt;とその仲間（たとえば &lt;a href=&#34;https://hub.docker.com/r/tatsushid/tinycore-ruby/&#34;&gt;tinycore-ruby&lt;/a&gt;）を作った話をまとめておこうと思います。&lt;/p&gt;
 
 &lt;h2 id=&#34;tiny-core-linux-とは&#34;&gt;Tiny Core Linux とは？&lt;/h2&gt;
 
@@ -81,10 +81,10 @@ RUN bundle config --global bin &amp;quot;$GEM_HOME/bin&amp;quot;
     
     <item>
       <title>Docker を使ってパッケージング</title>
-      <link>http://tatsushid.github.io/blog/2015/12/packaging-with-docker/</link>
+      <link>https://tatsushid.github.io/blog/2015/12/packaging-with-docker/</link>
       <pubDate>Fri, 11 Dec 2015 00:33:25 +0900</pubDate>
       
-      <guid>http://tatsushid.github.io/blog/2015/12/packaging-with-docker/</guid>
+      <guid>https://tatsushid.github.io/blog/2015/12/packaging-with-docker/</guid>
       <description>
 
 &lt;p&gt;これは &lt;a href=&#34;http://www.adventar.org/calendars/808&#34;&gt;NSEG Advent Calendar 2015 -Adventar&lt;/a&gt; 11 日目の記事です。&lt;/p&gt;
@@ -212,10 +212,10 @@ docker rm $(IMAGE_NAME)-tmp
     
     <item>
       <title>docker-machine の env 設定が MacVim と競合する、らしい</title>
-      <link>http://tatsushid.github.io/blog/2015/08/docker-machine-env-prevents-macvim-from-opening-window/</link>
+      <link>https://tatsushid.github.io/blog/2015/08/docker-machine-env-prevents-macvim-from-opening-window/</link>
       <pubDate>Mon, 31 Aug 2015 18:51:34 +0900</pubDate>
       
-      <guid>http://tatsushid.github.io/blog/2015/08/docker-machine-env-prevents-macvim-from-opening-window/</guid>
+      <guid>https://tatsushid.github.io/blog/2015/08/docker-machine-env-prevents-macvim-from-opening-window/</guid>
       <description>&lt;p&gt;docker-machine を使っている環境上で MacVim を起動すると、なぜか編集ウィンドウが開かない問題に遭遇したので、対応内容をメモ。&lt;/p&gt;
 
 &lt;p&gt;結論から言うと、 docker-machine の仮想マシン起動後に設定される各種環境変数（たとえば &lt;code&gt;DOCKER_HOST&lt;/code&gt; ）を自動設定するために &lt;code&gt;.bash_profile&lt;/code&gt; の中に書いていた&lt;/p&gt;
@@ -240,11 +240,11 @@ fi
     
     <item>
       <title>Fig で Libreboard 環境を構築してみた</title>
-      <link>http://tatsushid.github.io/blog/2015/01/managing-libreboard-containers-by-fig/</link>
+      <link>https://tatsushid.github.io/blog/2015/01/managing-libreboard-containers-by-fig/</link>
       <pubDate>Sun, 18 Jan 2015 23:21:58 +0900</pubDate>
       
-      <guid>http://tatsushid.github.io/blog/2015/01/managing-libreboard-containers-by-fig/</guid>
-      <description>&lt;p&gt;&lt;a href=&#34;http://tatsushid.github.io/blog/2015/01/run-libreboard-on-docker/&#34;&gt;前回&lt;/a&gt; は Docker 上で Libreboard を動かしてみたが、今のところ Libreboard の開発は非常に活発で、更新を Docker コンテナに反映させるたびに長々としたコマンドを叩くのが不便に感じてきたため、 &lt;a href=&#34;http://www.fig.sh/&#34;&gt;Fig&lt;/a&gt; を使って必要なコマンドなどをあらかじめ定義しておき、 &lt;code&gt;fig build&lt;/code&gt; や &lt;code&gt;fig up&lt;/code&gt; で楽に更新適用ができるようにしてみた。以下はその手順&lt;/p&gt;
+      <guid>https://tatsushid.github.io/blog/2015/01/managing-libreboard-containers-by-fig/</guid>
+      <description>&lt;p&gt;&lt;a href=&#34;https://tatsushid.github.io/blog/2015/01/run-libreboard-on-docker/&#34;&gt;前回&lt;/a&gt; は Docker 上で Libreboard を動かしてみたが、今のところ Libreboard の開発は非常に活発で、更新を Docker コンテナに反映させるたびに長々としたコマンドを叩くのが不便に感じてきたため、 &lt;a href=&#34;http://www.fig.sh/&#34;&gt;Fig&lt;/a&gt; を使って必要なコマンドなどをあらかじめ定義しておき、 &lt;code&gt;fig build&lt;/code&gt; や &lt;code&gt;fig up&lt;/code&gt; で楽に更新適用ができるようにしてみた。以下はその手順&lt;/p&gt;
 
 &lt;ol&gt;
 &lt;li&gt;Fig をインストール。今回は手元のサーバが Gentoo だったので emerge で入れてしまったが、 &lt;a href=&#34;http://www.fig.sh/install.html&#34;&gt;Installing Fig&lt;/a&gt; を見る限り、他の環境でも簡単に導入できると思う&lt;/li&gt;
@@ -290,7 +290,7 @@ mongo:
 &lt;li&gt;&lt;code&gt;backup&lt;/code&gt; は、 &lt;code&gt;data&lt;/code&gt; からは &lt;code&gt;/data/db&lt;/code&gt; の中身が見えなかったため、確認作業などのために便宜上作成しておいたコンテナ。これがあると気軽に &lt;code&gt;fig run --rm backup ls -al /data/db&lt;/code&gt; などと打って中身を確認したり、 tar でのバックアップ作業がやりやすくなる。が、特別稼働そのものには関係ないので、なくてもかまわない&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;p&gt;といったところ。起動コマンドやポートの設定は &lt;a href=&#34;http://tatsushid.github.io/blog/2015/01/run-libreboard-on-docker/&#34;&gt;前回&lt;/a&gt; のものを引き継ぐ形で指定している&lt;/p&gt;&lt;/li&gt;
+&lt;p&gt;といったところ。起動コマンドやポートの設定は &lt;a href=&#34;https://tatsushid.github.io/blog/2015/01/run-libreboard-on-docker/&#34;&gt;前回&lt;/a&gt; のものを引き継ぐ形で指定している&lt;/p&gt;&lt;/li&gt;
 
 &lt;li&gt;&lt;p&gt;上記設定ができたら、 &lt;code&gt;fig up&lt;/code&gt; を実行してコンテナ群を起動する。初回は &lt;code&gt;libreboard&lt;/code&gt; コンテナ用のイメージのビルドが実行されるので、少しばかり時間がかかる。無事に起動してウェブブラウザで 5555 番ポートにアクセスしてログイン画面が出れば成功。バックグラウンドでの起動に切り替えたい場合は、いったん &lt;code&gt;Ctrl-c&lt;/code&gt; を入力してコンテナ群を停止し、改めて &lt;code&gt;fig up -d&lt;/code&gt; で起動すればよい。&lt;/p&gt;&lt;/li&gt;
 
@@ -303,10 +303,10 @@ mongo:
     
     <item>
       <title>Docker で Libreboard 動かしてみた</title>
-      <link>http://tatsushid.github.io/blog/2015/01/run-libreboard-on-docker/</link>
+      <link>https://tatsushid.github.io/blog/2015/01/run-libreboard-on-docker/</link>
       <pubDate>Mon, 12 Jan 2015 10:39:52 +0900</pubDate>
       
-      <guid>http://tatsushid.github.io/blog/2015/01/run-libreboard-on-docker/</guid>
+      <guid>https://tatsushid.github.io/blog/2015/01/run-libreboard-on-docker/</guid>
       <description>&lt;p&gt;昨日「 &lt;a href=&#34;http://www.ryuzee.com/contents/blog/7032&#34;&gt;オープンソースのTrelloクローン Libreboard | Ryuzee.com&lt;/a&gt; 」の記事を読んで面白そうだと思ったので、 Docker で動かしてみた。一手間かかったけど動かすことはできたので、以下その手順。 Docker はインストールされてることを前提&lt;/p&gt;
 
 &lt;ol&gt;
@@ -350,10 +350,10 @@ docker run --name mymongo -d mongo
     
     <item>
       <title>CentOS 3 の Docker イメージを作ってみた</title>
-      <link>http://tatsushid.github.io/blog/2014/10/how-to-build-centos3-docker-image/</link>
+      <link>https://tatsushid.github.io/blog/2014/10/how-to-build-centos3-docker-image/</link>
       <pubDate>Sat, 04 Oct 2014 14:34:47 +0900</pubDate>
       
-      <guid>http://tatsushid.github.io/blog/2014/10/how-to-build-centos3-docker-image/</guid>
+      <guid>https://tatsushid.github.io/blog/2014/10/how-to-build-centos3-docker-image/</guid>
       <description>
 
 &lt;p&gt;先日の Bash 脆弱性騒ぎに関連して、ごく一部で残ってる RHEL3 系のマシンにも Bash のパッチを当てざるを得ない状況が発生したため、この際パッケージビルド用の Docker イメージも作っておくか、ということでやってみた&lt;/p&gt;

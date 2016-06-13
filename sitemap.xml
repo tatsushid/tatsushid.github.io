@@ -2,107 +2,107 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
-    <loc>http://tatsushid.github.io/</loc>
+    <loc>https://tatsushid.github.io/</loc>
     <lastmod>2016-03-19T14:28:15+09:00</lastmod>
   </url>
   
   <url>
-    <loc>http://tatsushid.github.io/blog/2016/03/tried-udp-load-balancing-added-to-nginx/</loc>
+    <loc>https://tatsushid.github.io/blog/2016/03/tried-udp-load-balancing-added-to-nginx/</loc>
     <lastmod>2016-03-19T14:28:15+09:00</lastmod>
   </url>
   
   <url>
-    <loc>http://tatsushid.github.io/blog/2015/12/making-docker-image-of-tinycorelinux/</loc>
+    <loc>https://tatsushid.github.io/blog/2015/12/making-docker-image-of-tinycorelinux/</loc>
     <lastmod>2015-12-15T19:06:29+09:00</lastmod>
   </url>
   
   <url>
-    <loc>http://tatsushid.github.io/blog/2015/12/packaging-with-docker/</loc>
+    <loc>https://tatsushid.github.io/blog/2015/12/packaging-with-docker/</loc>
     <lastmod>2015-12-11T00:33:25+09:00</lastmod>
   </url>
   
   <url>
-    <loc>http://tatsushid.github.io/blog/2015/08/docker-machine-env-prevents-macvim-from-opening-window/</loc>
+    <loc>https://tatsushid.github.io/blog/2015/08/docker-machine-env-prevents-macvim-from-opening-window/</loc>
     <lastmod>2015-08-31T18:51:34+09:00</lastmod>
   </url>
   
   <url>
-    <loc>http://tatsushid.github.io/blog/2015/01/managing-libreboard-containers-by-fig/</loc>
+    <loc>https://tatsushid.github.io/blog/2015/01/managing-libreboard-containers-by-fig/</loc>
     <lastmod>2015-01-18T23:21:58+09:00</lastmod>
   </url>
   
   <url>
-    <loc>http://tatsushid.github.io/blog/2015/01/run-libreboard-on-docker/</loc>
+    <loc>https://tatsushid.github.io/blog/2015/01/run-libreboard-on-docker/</loc>
     <lastmod>2015-01-12T10:39:52+09:00</lastmod>
   </url>
   
   <url>
-    <loc>http://tatsushid.github.io/blog/2015/01/how-to-convert-markdown-into-mediawiki/</loc>
+    <loc>https://tatsushid.github.io/blog/2015/01/how-to-convert-markdown-into-mediawiki/</loc>
     <lastmod>2015-01-05T20:53:48+09:00</lastmod>
   </url>
   
   <url>
-    <loc>http://tatsushid.github.io/blog/2014/10/time-piece-problem-at-parsing-date-header-in-a-mail/</loc>
+    <loc>https://tatsushid.github.io/blog/2014/10/time-piece-problem-at-parsing-date-header-in-a-mail/</loc>
     <lastmod>2014-10-16T00:10:40+09:00</lastmod>
   </url>
   
   <url>
-    <loc>http://tatsushid.github.io/blog/2014/10/switch-from-official-go-vim-plugin-to-vim-go/</loc>
+    <loc>https://tatsushid.github.io/blog/2014/10/switch-from-official-go-vim-plugin-to-vim-go/</loc>
     <lastmod>2014-10-13T13:59:29+09:00</lastmod>
   </url>
   
   <url>
-    <loc>http://tatsushid.github.io/blog/2014/10/how-to-build-centos3-docker-image/</loc>
+    <loc>https://tatsushid.github.io/blog/2014/10/how-to-build-centos3-docker-image/</loc>
     <lastmod>2014-10-04T14:34:47+09:00</lastmod>
   </url>
   
   <url>
-    <loc>http://tatsushid.github.io/blog/2014/09/source-ip-address-affinty-configuration-in-haproxy/</loc>
+    <loc>https://tatsushid.github.io/blog/2014/09/source-ip-address-affinty-configuration-in-haproxy/</loc>
     <lastmod>2014-09-29T22:11:18+09:00</lastmod>
   </url>
   
   <url>
-    <loc>http://tatsushid.github.io/blog/2014/09/go-structure-pointer-and-omitempty/</loc>
+    <loc>https://tatsushid.github.io/blog/2014/09/go-structure-pointer-and-omitempty/</loc>
     <lastmod>2014-09-23T06:42:55+09:00</lastmod>
   </url>
   
   <url>
-    <loc>http://tatsushid.github.io/blog/2014/09/how-to-get-reflect-type-of-interface-type-in-go/</loc>
+    <loc>https://tatsushid.github.io/blog/2014/09/how-to-get-reflect-type-of-interface-type-in-go/</loc>
     <lastmod>2014-09-19T21:46:21+09:00</lastmod>
   </url>
   
   <url>
-    <loc>http://tatsushid.github.io/blog/2014/09/how-to-check-centos-mirrorlist/</loc>
+    <loc>https://tatsushid.github.io/blog/2014/09/how-to-check-centos-mirrorlist/</loc>
     <lastmod>2014-09-18T22:10:41+09:00</lastmod>
   </url>
   
   <url>
-    <loc>http://tatsushid.github.io/blog/2014/08/change-site-generator-to-hugo/</loc>
+    <loc>https://tatsushid.github.io/blog/2014/08/change-site-generator-to-hugo/</loc>
     <lastmod>2014-08-16T14:00:00+09:00</lastmod>
   </url>
   
   <url>
-    <loc>http://tatsushid.github.io/blog/2014/08/specify-wget-savedir/</loc>
+    <loc>https://tatsushid.github.io/blog/2014/08/specify-wget-savedir/</loc>
     <lastmod>2014-08-11T16:54:00+09:00</lastmod>
   </url>
   
   <url>
-    <loc>http://tatsushid.github.io/blog/2014/07/install-centos7-on-gpt-drive/</loc>
+    <loc>https://tatsushid.github.io/blog/2014/07/install-centos7-on-gpt-drive/</loc>
     <lastmod>2014-07-25T13:04:00+09:00</lastmod>
   </url>
   
   <url>
-    <loc>http://tatsushid.github.io/blog/2014/07/install-centos5-on-gpt-drive/</loc>
+    <loc>https://tatsushid.github.io/blog/2014/07/install-centos5-on-gpt-drive/</loc>
     <lastmod>2014-07-08T20:06:00+09:00</lastmod>
   </url>
   
   <url>
-    <loc>http://tatsushid.github.io/blog/2014/07/install-centos6-on-gpt-drive/</loc>
+    <loc>https://tatsushid.github.io/blog/2014/07/install-centos6-on-gpt-drive/</loc>
     <lastmod>2014-07-07T19:15:00+09:00</lastmod>
   </url>
   
   <url>
-    <loc>http://tatsushid.github.io/blog/archives/</loc>
+    <loc>https://tatsushid.github.io/blog/archives/</loc>
   </url>
   
 </urlset>

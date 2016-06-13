@@ -2,19 +2,19 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Vim on tatsushid.github.io</title>
-    <link>http://tatsushid.github.io/tags/vim/</link>
+    <link>https://tatsushid.github.io/tags/vim/</link>
     <description>Recent content in Vim on tatsushid.github.io</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>ja-jp</language>
     <lastBuildDate>Mon, 31 Aug 2015 18:51:34 +0900</lastBuildDate>
-    <atom:link href="http://tatsushid.github.io/tags/vim/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="https://tatsushid.github.io/tags/vim/index.xml" rel="self" type="application/rss+xml" />
     
     <item>
       <title>docker-machine の env 設定が MacVim と競合する、らしい</title>
-      <link>http://tatsushid.github.io/blog/2015/08/docker-machine-env-prevents-macvim-from-opening-window/</link>
+      <link>https://tatsushid.github.io/blog/2015/08/docker-machine-env-prevents-macvim-from-opening-window/</link>
       <pubDate>Mon, 31 Aug 2015 18:51:34 +0900</pubDate>
       
-      <guid>http://tatsushid.github.io/blog/2015/08/docker-machine-env-prevents-macvim-from-opening-window/</guid>
+      <guid>https://tatsushid.github.io/blog/2015/08/docker-machine-env-prevents-macvim-from-opening-window/</guid>
       <description>&lt;p&gt;docker-machine を使っている環境上で MacVim を起動すると、なぜか編集ウィンドウが開かない問題に遭遇したので、対応内容をメモ。&lt;/p&gt;
 
 &lt;p&gt;結論から言うと、 docker-machine の仮想マシン起動後に設定される各種環境変数（たとえば &lt;code&gt;DOCKER_HOST&lt;/code&gt; ）を自動設定するために &lt;code&gt;.bash_profile&lt;/code&gt; の中に書いていた&lt;/p&gt;
@@ -39,10 +39,10 @@ fi
     
     <item>
       <title>Go の Vim プラグインを vim-go に切り替えた</title>
-      <link>http://tatsushid.github.io/blog/2014/10/switch-from-official-go-vim-plugin-to-vim-go/</link>
+      <link>https://tatsushid.github.io/blog/2014/10/switch-from-official-go-vim-plugin-to-vim-go/</link>
       <pubDate>Mon, 13 Oct 2014 13:59:29 +0900</pubDate>
       
-      <guid>http://tatsushid.github.io/blog/2014/10/switch-from-official-go-vim-plugin-to-vim-go/</guid>
+      <guid>https://tatsushid.github.io/blog/2014/10/switch-from-official-go-vim-plugin-to-vim-go/</guid>
       <description>&lt;p&gt;Vim で Go のコードを書いていて、エディタ内からお手軽にカバレッジ取れたらいいなと思って調べていたら、オフィシャルの Go の Vim プラグインではなく &lt;a href=&#34;https://github.com/fatih/vim-go&#34;&gt;vim-go&lt;/a&gt; を使えばできそうだということがわかったので、切り替えることにした&lt;/p&gt;
 
 &lt;p&gt;まずは&lt;/p&gt;

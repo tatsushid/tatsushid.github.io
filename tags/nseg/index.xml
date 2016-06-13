@@ -2,24 +2,24 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Nseg on tatsushid.github.io</title>
-    <link>http://tatsushid.github.io/tags/nseg/</link>
+    <link>https://tatsushid.github.io/tags/nseg/</link>
     <description>Recent content in Nseg on tatsushid.github.io</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>ja-jp</language>
     <lastBuildDate>Tue, 15 Dec 2015 19:06:29 +0900</lastBuildDate>
-    <atom:link href="http://tatsushid.github.io/tags/nseg/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="https://tatsushid.github.io/tags/nseg/index.xml" rel="self" type="application/rss+xml" />
     
     <item>
       <title>TinyCoreLinux の Docker イメージを作った話</title>
-      <link>http://tatsushid.github.io/blog/2015/12/making-docker-image-of-tinycorelinux/</link>
+      <link>https://tatsushid.github.io/blog/2015/12/making-docker-image-of-tinycorelinux/</link>
       <pubDate>Tue, 15 Dec 2015 19:06:29 +0900</pubDate>
       
-      <guid>http://tatsushid.github.io/blog/2015/12/making-docker-image-of-tinycorelinux/</guid>
+      <guid>https://tatsushid.github.io/blog/2015/12/making-docker-image-of-tinycorelinux/</guid>
       <description>
 
 &lt;p&gt;これは &lt;a href=&#34;http://www.adventar.org/calendars/808&#34;&gt;NSEG Advent Calendar 2015 -Adventar&lt;/a&gt; 15 日目の記事です。&lt;/p&gt;
 
-&lt;p&gt;&lt;a href=&#34;http://tatsushid.github.io/2015/12/packaging-with-docker/&#34;&gt;前回&lt;/a&gt; に引き続き Docker の話ですが、 &lt;a href=&#34;http://www.tinycorelinux.net/&#34;&gt;Tiny Core Linux&lt;/a&gt; の &lt;a href=&#34;https://hub.docker.com/r/tatsushid/tinycore/&#34;&gt;Docker イメージ&lt;/a&gt;とその仲間（たとえば &lt;a href=&#34;https://hub.docker.com/r/tatsushid/tinycore-ruby/&#34;&gt;tinycore-ruby&lt;/a&gt;）を作った話をまとめておこうと思います。&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://tatsushid.github.io/2015/12/packaging-with-docker/&#34;&gt;前回&lt;/a&gt; に引き続き Docker の話ですが、 &lt;a href=&#34;http://www.tinycorelinux.net/&#34;&gt;Tiny Core Linux&lt;/a&gt; の &lt;a href=&#34;https://hub.docker.com/r/tatsushid/tinycore/&#34;&gt;Docker イメージ&lt;/a&gt;とその仲間（たとえば &lt;a href=&#34;https://hub.docker.com/r/tatsushid/tinycore-ruby/&#34;&gt;tinycore-ruby&lt;/a&gt;）を作った話をまとめておこうと思います。&lt;/p&gt;
 
 &lt;h2 id=&#34;tiny-core-linux-とは&#34;&gt;Tiny Core Linux とは？&lt;/h2&gt;
 
@@ -81,10 +81,10 @@ RUN bundle config --global bin &amp;quot;$GEM_HOME/bin&amp;quot;
     
     <item>
       <title>Docker を使ってパッケージング</title>
-      <link>http://tatsushid.github.io/blog/2015/12/packaging-with-docker/</link>
+      <link>https://tatsushid.github.io/blog/2015/12/packaging-with-docker/</link>
       <pubDate>Fri, 11 Dec 2015 00:33:25 +0900</pubDate>
       
-      <guid>http://tatsushid.github.io/blog/2015/12/packaging-with-docker/</guid>
+      <guid>https://tatsushid.github.io/blog/2015/12/packaging-with-docker/</guid>
       <description>
 
 &lt;p&gt;これは &lt;a href=&#34;http://www.adventar.org/calendars/808&#34;&gt;NSEG Advent Calendar 2015 -Adventar&lt;/a&gt; 11 日目の記事です。&lt;/p&gt;

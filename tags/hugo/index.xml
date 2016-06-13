@@ -2,19 +2,19 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Hugo on tatsushid.github.io</title>
-    <link>http://tatsushid.github.io/tags/hugo/</link>
+    <link>https://tatsushid.github.io/tags/hugo/</link>
     <description>Recent content in Hugo on tatsushid.github.io</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>ja-jp</language>
     <lastBuildDate>Sat, 16 Aug 2014 14:00:00 +0900</lastBuildDate>
-    <atom:link href="http://tatsushid.github.io/tags/hugo/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="https://tatsushid.github.io/tags/hugo/index.xml" rel="self" type="application/rss+xml" />
     
     <item>
       <title>静的サイトジェネレーターを Hugo に切り替えた</title>
-      <link>http://tatsushid.github.io/blog/2014/08/change-site-generator-to-hugo/</link>
+      <link>https://tatsushid.github.io/blog/2014/08/change-site-generator-to-hugo/</link>
       <pubDate>Sat, 16 Aug 2014 14:00:00 +0900</pubDate>
       
-      <guid>http://tatsushid.github.io/blog/2014/08/change-site-generator-to-hugo/</guid>
+      <guid>https://tatsushid.github.io/blog/2014/08/change-site-generator-to-hugo/</guid>
       <description>&lt;p&gt;ここ半年から一年の間、ちょっとしたコマンドラインツールの開発にはずっと golang を使ってきてて、せっかくなのでサイトジェネレーターもこの際 golang 製に変えてみようということで、 &lt;a href=&#34;http://hugo.spf13.com/&#34;&gt;Hugo&lt;/a&gt; を使ってみることにした。今のところの使用感としては、&lt;/p&gt;
 
 &lt;ul&gt;

@@ -2,19 +2,19 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Perl on tatsushid.github.io</title>
-    <link>http://tatsushid.github.io/tags/perl/</link>
+    <link>https://tatsushid.github.io/tags/perl/</link>
     <description>Recent content in Perl on tatsushid.github.io</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>ja-jp</language>
     <lastBuildDate>Thu, 16 Oct 2014 00:10:40 +0900</lastBuildDate>
-    <atom:link href="http://tatsushid.github.io/tags/perl/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="https://tatsushid.github.io/tags/perl/index.xml" rel="self" type="application/rss+xml" />
     
     <item>
       <title>メールの Date ヘッダを Time::Piece でパースしようとしてはまった話</title>
-      <link>http://tatsushid.github.io/blog/2014/10/time-piece-problem-at-parsing-date-header-in-a-mail/</link>
+      <link>https://tatsushid.github.io/blog/2014/10/time-piece-problem-at-parsing-date-header-in-a-mail/</link>
       <pubDate>Thu, 16 Oct 2014 00:10:40 +0900</pubDate>
       
-      <guid>http://tatsushid.github.io/blog/2014/10/time-piece-problem-at-parsing-date-header-in-a-mail/</guid>
+      <guid>https://tatsushid.github.io/blog/2014/10/time-piece-problem-at-parsing-date-header-in-a-mail/</guid>
       <description>
 
 &lt;p&gt;メールに含まれている Date ヘッダを Perl の Time::Piece でパースしようとしたところ、タイムゾーンがうまく扱えなくてはまった。たとえば、&lt;/p&gt;

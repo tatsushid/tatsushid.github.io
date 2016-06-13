@@ -2,19 +2,19 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Centos on tatsushid.github.io</title>
-    <link>http://tatsushid.github.io/tags/centos/</link>
+    <link>https://tatsushid.github.io/tags/centos/</link>
     <description>Recent content in Centos on tatsushid.github.io</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>ja-jp</language>
     <lastBuildDate>Sat, 04 Oct 2014 14:34:47 +0900</lastBuildDate>
-    <atom:link href="http://tatsushid.github.io/tags/centos/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="https://tatsushid.github.io/tags/centos/index.xml" rel="self" type="application/rss+xml" />
     
     <item>
       <title>CentOS 3 の Docker イメージを作ってみた</title>
-      <link>http://tatsushid.github.io/blog/2014/10/how-to-build-centos3-docker-image/</link>
+      <link>https://tatsushid.github.io/blog/2014/10/how-to-build-centos3-docker-image/</link>
       <pubDate>Sat, 04 Oct 2014 14:34:47 +0900</pubDate>
       
-      <guid>http://tatsushid.github.io/blog/2014/10/how-to-build-centos3-docker-image/</guid>
+      <guid>https://tatsushid.github.io/blog/2014/10/how-to-build-centos3-docker-image/</guid>
       <description>
 
 &lt;p&gt;先日の Bash 脆弱性騒ぎに関連して、ごく一部で残ってる RHEL3 系のマシンにも Bash のパッチを当てざるを得ない状況が発生したため、この際パッケージビルド用の Docker イメージも作っておくか、ということでやってみた&lt;/p&gt;
@@ -101,10 +101,10 @@
     
     <item>
       <title>CentOSのyumミラーリストの調べ方</title>
-      <link>http://tatsushid.github.io/blog/2014/09/how-to-check-centos-mirrorlist/</link>
+      <link>https://tatsushid.github.io/blog/2014/09/how-to-check-centos-mirrorlist/</link>
       <pubDate>Thu, 18 Sep 2014 22:10:41 +0900</pubDate>
       
-      <guid>http://tatsushid.github.io/blog/2014/09/how-to-check-centos-mirrorlist/</guid>
+      <guid>https://tatsushid.github.io/blog/2014/09/how-to-check-centos-mirrorlist/</guid>
       <description>&lt;p&gt;ここ最近 CentOS の yum で updates からパッケージを持ってくる時の速度がやけに遅いので、 yum にはどんなミラーが返ってきてるのか調べてみた。 yum は 64bit 環境で特別設定を変えてなければ、通常 &lt;code&gt;http://mirrorlist.centos.org/?release=6&amp;amp;arch=x86_64&amp;amp;repo=os&lt;/code&gt; や &lt;code&gt;http://mirrorlist.centos.org/?release=6&amp;amp;arch=x86_64&amp;amp;repo=updates&lt;/code&gt; にアクセスしているので、この URL にブラウザでアクセスするか、&lt;/p&gt;
 
 &lt;pre&gt;&lt;code class=&#34;language-sh&#34;&gt;curl &#39;http://mirrorlist.centos.org/?release=6&amp;amp;arch=x86_64&amp;amp;repo=os&#39;
@@ -148,10 +148,10 @@ http://mirror.awanti.com/centos/6.5/updates/x86_64/
     
     <item>
       <title>CentOS7をGPTパーティションで新規インストールする</title>
-      <link>http://tatsushid.github.io/blog/2014/07/install-centos7-on-gpt-drive/</link>
+      <link>https://tatsushid.github.io/blog/2014/07/install-centos7-on-gpt-drive/</link>
       <pubDate>Fri, 25 Jul 2014 13:04:00 +0900</pubDate>
       
-      <guid>http://tatsushid.github.io/blog/2014/07/install-centos7-on-gpt-drive/</guid>
+      <guid>https://tatsushid.github.io/blog/2014/07/install-centos7-on-gpt-drive/</guid>
       <description>&lt;p&gt;CentOS 7 を GPT パーティションでインストールするのは難しくない。 &lt;a href=&#34;https://bugzilla.redhat.com/show_bug.cgi?id=1032428&#34;&gt;Bug 1032428 - Need a 1MB &amp;lsquo;biosboot&amp;rsquo; type partition when install RHEL7 on a GPT disk with custom partition&lt;/a&gt; によると、&lt;/p&gt;
 
 &lt;ul&gt;
@@ -165,10 +165,10 @@ http://mirror.awanti.com/centos/6.5/updates/x86_64/
     
     <item>
       <title>CentOS5をGPTパーティションで新規インストールする</title>
-      <link>http://tatsushid.github.io/blog/2014/07/install-centos5-on-gpt-drive/</link>
+      <link>https://tatsushid.github.io/blog/2014/07/install-centos5-on-gpt-drive/</link>
       <pubDate>Tue, 08 Jul 2014 20:06:00 +0900</pubDate>
       
-      <guid>http://tatsushid.github.io/blog/2014/07/install-centos5-on-gpt-drive/</guid>
+      <guid>https://tatsushid.github.io/blog/2014/07/install-centos5-on-gpt-drive/</guid>
       <description>&lt;p&gt;CentOS 5 の新規インストール時に GPT パーティションを使いたい場合は、 CentOS 6 の様に一筋縄では行かない。今回は&lt;/p&gt;
 
 &lt;ul&gt;
@@ -265,10 +265,10 @@ grub&amp;gt; quit
     
     <item>
       <title>CentOS6をGPTパーティションで新規インストールする</title>
-      <link>http://tatsushid.github.io/blog/2014/07/install-centos6-on-gpt-drive/</link>
+      <link>https://tatsushid.github.io/blog/2014/07/install-centos6-on-gpt-drive/</link>
       <pubDate>Mon, 07 Jul 2014 19:15:00 +0900</pubDate>
       
-      <guid>http://tatsushid.github.io/blog/2014/07/install-centos6-on-gpt-drive/</guid>
+      <guid>https://tatsushid.github.io/blog/2014/07/install-centos6-on-gpt-drive/</guid>
       <description>&lt;p&gt;毎度毎度コマンドの打ち方を忘れてしまうのでメモ。 RHEL 6 互換のディストリビューションを新規インストールする際、 GPT パーティションを使いたい場合は、インストーラーで適当なところ（パーティション設定の直前辺り）まで進めたところで下記のようにコマンドを実行すると、自分でパーティションを切ることができる&lt;/p&gt;
 
 &lt;ul&gt;

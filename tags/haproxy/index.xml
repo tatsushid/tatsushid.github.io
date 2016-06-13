@@ -2,19 +2,19 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Haproxy on tatsushid.github.io</title>
-    <link>http://tatsushid.github.io/tags/haproxy/</link>
+    <link>https://tatsushid.github.io/tags/haproxy/</link>
     <description>Recent content in Haproxy on tatsushid.github.io</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>ja-jp</language>
     <lastBuildDate>Mon, 29 Sep 2014 22:11:18 +0900</lastBuildDate>
-    <atom:link href="http://tatsushid.github.io/tags/haproxy/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="https://tatsushid.github.io/tags/haproxy/index.xml" rel="self" type="application/rss+xml" />
     
     <item>
       <title>HAProxy でのソース IP アドレスアフィニティ設定方法</title>
-      <link>http://tatsushid.github.io/blog/2014/09/source-ip-address-affinty-configuration-in-haproxy/</link>
+      <link>https://tatsushid.github.io/blog/2014/09/source-ip-address-affinty-configuration-in-haproxy/</link>
       <pubDate>Mon, 29 Sep 2014 22:11:18 +0900</pubDate>
       
-      <guid>http://tatsushid.github.io/blog/2014/09/source-ip-address-affinty-configuration-in-haproxy/</guid>
+      <guid>https://tatsushid.github.io/blog/2014/09/source-ip-address-affinty-configuration-in-haproxy/</guid>
       <description>
 
 &lt;p&gt;HAProxy で、アクセス元のクライアントの IP アドレスを元に、分散先サーバを固定したい場合、 &lt;code&gt;backend&lt;/code&gt; または &lt;code&gt;listen&lt;/code&gt; セクションで次のように設定すればよい&lt;/p&gt;
